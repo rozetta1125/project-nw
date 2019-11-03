@@ -7,38 +7,55 @@ canvas {
     z-index: -1;
     // background-image: linear-gradient(to top, #7f8eb8 0%, #bbd0ec 100%);
     // background:linear-gradient(to bottom, rgba(251,202,203,1) 0%,rgba(247,150,151,1) 100%);
-    background:#ADD2E6;
+    //background:#ADD2E6;
+    // background: linear-gradient(to bottom, #a9d2f8 0%,#a6bbed 100%)
+    background: linear-gradient(rgb(208, 242, 205) 0%, rgb(186, 230, 177) 100%);
+    
 }
+
+@mixin phone {
+    @media (max-width: 599px) { @content; }
+}
+
 .cursor{
     position: absolute;
-    width: 44px;
-    height: 44px;
     top: 0;
     left: 0;
     pointer-events: none;
-    span{
-        position: absolute;
-        left: 0;
-        right: 0;
+    transform: translate(-22px,-22px);
+    .circle{
+        transform: translate(-28px,-28px) rotate(180deg);
+        stroke-dasharray:270;
+        stroke-dashoffset: 270;
+    }
+    .outer{
+        width: 40px;
+        height: 40px;
+        border:2px solid #fff;
+        border-radius: 50%;
+        top:0;
+        left:0;
+        right:0;
         bottom: 0;
-        top: 0;
-        border: 2px solid white;
+        position: absolute;
+    }
+    .dot{
+        position: absolute;
+        transform: scale(0.75);
+        top:18px;
+        left:18px;
+        right:0;
+        bottom: 0;
+        width:8px;
+        height: 8px;
+        background: #ffffff;
         border-radius: 50%;
     }
 }
-.dot{
-    position: absolute;
-    pointer-events: none;
-    transform: scale(0.75);
-    top:0;
-    left:0;
-    width:8px;
-    height: 8px;
-    background: #ffffff;
-    border-radius: 50%;
-}
 
-@keyframes MouseDown {
+
+
+@keyframes BalloonMouseDown {
     from{
         transform: scale(1)
     }
@@ -47,7 +64,7 @@ canvas {
     }
 }
 
-@keyframes MouseUp {
+@keyframes BalloonMouseUp {
     from{
         transform: scale(0.75)
     }
@@ -56,21 +73,40 @@ canvas {
     }
 }
 
-.MouseDown{
-    animation: MouseDown .3s forwards;
+.BalloonMouseDown{
+    animation: BalloonMouseDown .3s forwards;
 }
 
-.MouseUp{
-    animation: MouseUp .3s forwards;
+.BalloonMouseUp{
+    animation: BalloonMouseUp .3s forwards;
 }
+
+
 
 .nav{
     color: #fff;
     font-family: Montserrat,sans-serif;
-    padding: 40px 50px;
     font-size: 24px;
     font-weight: bold;
-    display: flex;
-    justify-content: space-between;
-    user-select: none;
+    display: inline-block;
+    .nav-left{
+        position: fixed;
+        top: 40px;
+        left: 50px;
+        @include phone{
+            font-size: 16px;
+            top:3%;
+            left:3%;
+        }
+    }
+    .nav-right{
+        position: fixed;
+        top: 40px;
+        right: 50px;
+        @include phone{
+            font-size: 16px;
+            top:3%;
+            right:3%;
+        }
+    }
 }
