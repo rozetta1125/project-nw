@@ -7,10 +7,10 @@ canvas {
     z-index: -1;
     // background-image: linear-gradient(to top, #7f8eb8 0%, #bbd0ec 100%);
     // background:linear-gradient(to bottom, rgba(251,202,203,1) 0%,rgba(247,150,151,1) 100%);
-    //background:#ADD2E6;
+    // background:#ADD2E6;
+    background: #848484;
     // background: linear-gradient(to bottom, #a9d2f8 0%,#a6bbed 100%)
-    background: linear-gradient(rgb(208, 242, 205) 0%, rgb(186, 230, 177) 100%);
-    
+    // background: linear-gradient(rgb(208, 242, 205) 0%, rgb(186, 230, 177) 100%);
 }
 
 @mixin phone {

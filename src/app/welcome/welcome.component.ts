@@ -13,7 +13,7 @@ export class WelcomeComponent implements OnInit {
 
   ngOnInit() {
     this.welService.InitThree(this.welcomeCanvas);
-    this.welService.ZeroInit();
+    this.welService.FirstInit();
   }
 
 }
