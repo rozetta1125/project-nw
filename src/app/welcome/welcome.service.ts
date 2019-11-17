@@ -2013,48 +2013,48 @@ export class welcomeService {
         
       } else {
         if (this.LetterArray[i].letterArrayA != null) {
-          this.scene.remove(this.LetterArray[i].StringTA)
+        //   this.scene.remove(this.LetterArray[i].StringTA)
 
-          this.LetterArray[i].AttachPointV.setFromMatrixPosition(this.LetterArray[i].AttachPoint.matrixWorld);
+        //   this.LetterArray[i].AttachPointV.setFromMatrixPosition(this.LetterArray[i].AttachPoint.matrixWorld);
 
-          // this.LetterArray[i].letterArrayA[3].position.set(this.LetterArray[i].AttachPointV.x, this.LetterArray[i].AttachPointV.y, this.LetterArray[i].AttachPointV.z)
+        //   // this.LetterArray[i].letterArrayA[3].position.set(this.LetterArray[i].AttachPointV.x, this.LetterArray[i].AttachPointV.y, this.LetterArray[i].AttachPointV.z)
 
-          this.LetterArray[i].StringCA = new THREE.CubicBezierCurve3(
-            new THREE.Vector3(this.LetterArray[i].letterArrayA[0].position.x, this.LetterArray[i].letterArrayA[0].position.y, this.LetterArray[i].letterArrayA[0].position.z),
-            new THREE.Vector3(this.LetterArray[i].letterArrayA[1].position.x, this.LetterArray[i].letterArrayA[1].position.y, this.LetterArray[i].letterArrayA[1].position.z),
-            new THREE.Vector3(this.LetterArray[i].letterArrayA[2].position.x, this.LetterArray[i].letterArrayA[2].position.y, this.LetterArray[i].letterArrayA[2].position.z),
-            new THREE.Vector3(this.LetterArray[i].letterArrayA[3].position.x, this.LetterArray[i].letterArrayA[3].position.y, this.LetterArray[i].letterArrayA[3].position.z),
-          )
+        //   this.LetterArray[i].StringCA = new THREE.CubicBezierCurve3(
+        //     new THREE.Vector3(this.LetterArray[i].letterArrayA[0].position.x, this.LetterArray[i].letterArrayA[0].position.y, this.LetterArray[i].letterArrayA[0].position.z),
+        //     new THREE.Vector3(this.LetterArray[i].letterArrayA[1].position.x, this.LetterArray[i].letterArrayA[1].position.y, this.LetterArray[i].letterArrayA[1].position.z),
+        //     new THREE.Vector3(this.LetterArray[i].letterArrayA[2].position.x, this.LetterArray[i].letterArrayA[2].position.y, this.LetterArray[i].letterArrayA[2].position.z),
+        //     new THREE.Vector3(this.LetterArray[i].letterArrayA[3].position.x, this.LetterArray[i].letterArrayA[3].position.y, this.LetterArray[i].letterArrayA[3].position.z),
+        //   )
 
-          this.LetterArray[i].StringTA = new THREE.Mesh(
-            new THREE.TubeBufferGeometry(this.LetterArray[i].StringCA, 64, 0.005, 8, false),
-            this.StringM);
-          this.scene.add(this.LetterArray[i].StringTA);
+        //   this.LetterArray[i].StringTA = new THREE.Mesh(
+        //     new THREE.TubeBufferGeometry(this.LetterArray[i].StringCA, 64, 0.005, 8, false),
+        //     this.StringM);
+        //   this.scene.add(this.LetterArray[i].StringTA);
 
-          // if (this.LetterArray[i].letterArrayA[0].position.y > 2) {
-          //   this.scene.remove(this.LetterArray[i].StringTA);
-          //   this.scene.remove(this.LetterArray[i].Object3D);
-          //   for (var j = 0; j < this.LetterArray[i].letterArrayA.length; j++) {
-          //     this.world.remove(this.LetterArray[i].letterArrayA[j]);
-          //   }
-          //   this.world.remove(this.LetterArray[i].ObjectBody)
-          //   this.LetterArray[i].letterArrayA = null;
-          // }
-        }
+        //   // if (this.LetterArray[i].letterArrayA[0].position.y > 2) {
+        //   //   this.scene.remove(this.LetterArray[i].StringTA);
+        //   //   this.scene.remove(this.LetterArray[i].Object3D);
+        //   //   for (var j = 0; j < this.LetterArray[i].letterArrayA.length; j++) {
+        //   //     this.world.remove(this.LetterArray[i].letterArrayA[j]);
+        //   //   }
+        //   //   this.world.remove(this.LetterArray[i].ObjectBody)
+        //   //   this.LetterArray[i].letterArrayA = null;
+        //   // }
+        // }
 
-        // Bottom
-        if (this.LetterArray[i].letterArrayAB != null) {
-          this.scene.remove(this.LetterArray[i].StringTAB)
-          this.LetterArray[i].StringCAB = new THREE.CubicBezierCurve3(
-            new THREE.Vector3(this.LetterArray[i].letterArrayAB[0].position.x, this.LetterArray[i].letterArrayAB[0].position.y, this.LetterArray[i].letterArrayAB[0].position.z),
-            new THREE.Vector3(this.LetterArray[i].letterArrayAB[1].position.x, this.LetterArray[i].letterArrayAB[1].position.y, this.LetterArray[i].letterArrayAB[1].position.z),
-            new THREE.Vector3(this.LetterArray[i].letterArrayAB[2].position.x, this.LetterArray[i].letterArrayAB[2].position.y, this.LetterArray[i].letterArrayAB[2].position.z),
-            new THREE.Vector3(this.LetterArray[i].letterArrayAB[3].position.x, this.LetterArray[i].letterArrayAB[3].position.y, this.LetterArray[i].letterArrayAB[3].position.z),
-          )
-          this.LetterArray[i].StringTAB = new THREE.Mesh(
-            new THREE.TubeBufferGeometry(this.LetterArray[i].StringCAB, 64, 0.005, 8, false),
-            this.StringM);
-          this.scene.add(this.LetterArray[i].StringTAB);
+        // // Bottom
+        // if (this.LetterArray[i].letterArrayAB != null) {
+        //   this.scene.remove(this.LetterArray[i].StringTAB)
+        //   this.LetterArray[i].StringCAB = new THREE.CubicBezierCurve3(
+        //     new THREE.Vector3(this.LetterArray[i].letterArrayAB[0].position.x, this.LetterArray[i].letterArrayAB[0].position.y, this.LetterArray[i].letterArrayAB[0].position.z),
+        //     new THREE.Vector3(this.LetterArray[i].letterArrayAB[1].position.x, this.LetterArray[i].letterArrayAB[1].position.y, this.LetterArray[i].letterArrayAB[1].position.z),
+        //     new THREE.Vector3(this.LetterArray[i].letterArrayAB[2].position.x, this.LetterArray[i].letterArrayAB[2].position.y, this.LetterArray[i].letterArrayAB[2].position.z),
+        //     new THREE.Vector3(this.LetterArray[i].letterArrayAB[3].position.x, this.LetterArray[i].letterArrayAB[3].position.y, this.LetterArray[i].letterArrayAB[3].position.z),
+        //   )
+        //   this.LetterArray[i].StringTAB = new THREE.Mesh(
+        //     new THREE.TubeBufferGeometry(this.LetterArray[i].StringCAB, 64, 0.005, 8, false),
+        //     this.StringM);
+        //   this.scene.add(this.LetterArray[i].StringTAB);
 
           // if (this.LetterArray[i].letterArrayAB[0].position.y < this.LetterArray[i].letterArrayAB[3].position.y) {
           //   this.scene.remove(this.LetterArray[i].StringTAB);
@@ -2134,51 +2134,51 @@ export class welcomeService {
           this.LetterArray[i].LConstraint = null;
           this.scene.remove(this.LetterArray[i].StringT)
 
-          let curve = new THREE.LineCurve3(new THREE.Vector3(it.x, it.y, this.LetterArray[i].ObjectBody.position.z), this.LetterArray[i].StringC.v2)
+          // let curve = new THREE.LineCurve3(new THREE.Vector3(it.x, it.y, this.LetterArray[i].ObjectBody.position.z), this.LetterArray[i].StringC.v2)
 
-          let point = curve.getPoints(3);
+          // let point = curve.getPoints(3);
 
-          let distance = this.distance(point[0].x, point[0].y, point[0].z,
-            point[1].x, point[1].y, point[1].z);
+          // let distance = this.distance(point[0].x, point[0].y, point[0].z,
+          //   point[1].x, point[1].y, point[1].z);
 
-          let lastbody: CANNON.Body;
-          for (var j = 0; j < 4; j++) {
-            let body = new CANNON.Body({ mass: j == 3 ? .1 : .1 });
-            body.addShape(new CANNON.Box(new CANNON.Vec3(.01, .01, .01)));
-            body.angularDamping = 0.5;
-            body.linearDamping = 0.5;
-            body.position.set(point[j].x, point[j].y, point[j].z);
-            this.world.addBody(body);
-            this.LetterArray[i].letterArrayA.push(body);
-            if (j != 0) {
-              this.world.addConstraint(new CANNON.DistanceConstraint(body, lastbody, distance))
-            }
-            lastbody = body;
-          }
+          // let lastbody: CANNON.Body;
+          // for (var j = 0; j < 4; j++) {
+          //   let body = new CANNON.Body({ mass: j == 3 ? .1 : .1 });
+          //   body.addShape(new CANNON.Box(new CANNON.Vec3(.01, .01, .01)));
+          //   body.angularDamping = 0.5;
+          //   body.linearDamping = 0.5;
+          //   body.position.set(point[j].x, point[j].y, point[j].z);
+          //   this.world.addBody(body);
+          //   this.LetterArray[i].letterArrayA.push(body);
+          //   if (j != 0) {
+          //     this.world.addConstraint(new CANNON.DistanceConstraint(body, lastbody, distance))
+          //   }
+          //   lastbody = body;
+          // }
 
-          curve = new THREE.LineCurve3(new THREE.Vector3(it.x, it.y, this.LetterArray[i].ObjectBody.position.z), this.LetterArray[i].StringC.v1)
-          console.log(this.LetterArray[i].ObjectBody.position.z)
+          // curve = new THREE.LineCurve3(new THREE.Vector3(it.x, it.y, this.LetterArray[i].ObjectBody.position.z), this.LetterArray[i].StringC.v1)
+          // console.log(this.LetterArray[i].ObjectBody.position.z)
 
-          point = curve.getPoints(3);
-          distance = this.distance(point[0].x, point[0].y, point[0].z,
-            point[1].x, point[1].y, point[1].z);
+          // point = curve.getPoints(3);
+          // distance = this.distance(point[0].x, point[0].y, point[0].z,
+          //   point[1].x, point[1].y, point[1].z);
 
-          this.world.remove(this.LetterArray[i].letterArray[1])
-          this.world.remove(this.LetterArray[i].letterArray[0])
+          // this.world.remove(this.LetterArray[i].letterArray[1])
+          // this.world.remove(this.LetterArray[i].letterArray[0])
 
-          for (var j = 0; j < 4; j++) {
-            let body = new CANNON.Body({ mass: j == 3 ? 0 : 1 });
-            body.addShape(new CANNON.Box(new CANNON.Vec3(.01, .01, .01)));
-            body.angularDamping = 0.5;
-            body.linearDamping = 0.5;
-            body.position.set(point[j].x, point[j].y, point[j].z);
-            this.world.addBody(body);
-            this.LetterArray[i].letterArrayAB.push(body);
-            if (j != 0) {
-              this.world.addConstraint(new CANNON.DistanceConstraint(body, lastbody, distance));
-            }
-            lastbody = body;
-          }
+          // for (var j = 0; j < 4; j++) {
+          //   let body = new CANNON.Body({ mass: j == 3 ? 0 : 1 });
+          //   body.addShape(new CANNON.Box(new CANNON.Vec3(.01, .01, .01)));
+          //   body.angularDamping = 0.5;
+          //   body.linearDamping = 0.5;
+          //   body.position.set(point[j].x, point[j].y, point[j].z);
+          //   this.world.addBody(body);
+          //   this.LetterArray[i].letterArrayAB.push(body);
+          //   if (j != 0) {
+          //     this.world.addConstraint(new CANNON.DistanceConstraint(body, lastbody, distance));
+          //   }
+          //   lastbody = body;
+          // }
         }
       }
     }
