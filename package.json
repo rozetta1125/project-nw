@@ -30,6 +30,7 @@
     "three": "^0.108.0",
     "three-gltf-loader": "^1.108.0",
     "three-orbitcontrols": "^2.102.2",
+    "three.meshline": "^1.2.0",
     "tslib": "^1.9.0",
     "zone.js": "~0.8.26"
   },
