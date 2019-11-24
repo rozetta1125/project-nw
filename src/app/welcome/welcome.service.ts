@@ -332,7 +332,7 @@ export class welcomeService {
       color: "#ffffff",
       intensity: 0.2,
       x: 2,
-      y: 2,
+      y: 2.5,
       z: 2,
     }
 
@@ -1245,6 +1245,13 @@ export class welcomeService {
     // this.CreateLetterE();
     // this.CreateLetterH();
     // this.CreateLetterO();
+
+    let box = new THREE.Mesh(new THREE.BoxBufferGeometry(40,30,20),
+      new THREE.MeshLambertMaterial({side:THREE.BackSide,emissiveIntensity:0,color:0xADD2E6})
+      );
+    this.scene.add(box);
+    box.position.set(0,15,0);
+
 
     // this.CreateLetterE('C',0,1,0,0.25,0.4,0,0);
     this.CreateDoubleLineLetter('U',
