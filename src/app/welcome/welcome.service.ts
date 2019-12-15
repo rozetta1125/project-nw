@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import * as CANNON from 'cannon';
-import { TweenLite,Power0,Power1,Power2 } from 'gsap';
+import { TimelineLite,TweenLite,Power0,Power1,Power2 } from 'gsap';
 import * as OrbitControls from 'three-orbitcontrols';
 import GLTFLoader from 'three-gltf-loader';
 // import thisWork from 'three-dragcontrols';
@@ -177,8 +177,11 @@ export class welcomeService {
     this.scene = new THREE.Scene();
     this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, .1, 1000);
     // this.camera.position.set(3,2,6);
-    this.camera.position.set(0,1,6);
-    // this.camera.position.set(0, 4, 5.5);
+    // this.camera.position.set(0,1,6);
+
+    this.camera.position.set(0, 2, 7);
+    // this.camera.position.set(0, 3.5, 7);
+
     // this.camera.lookAt(0,2,0);
     this.scene.add(this.camera);
 
@@ -196,7 +199,7 @@ export class welcomeService {
     //this.scene.add(this.light);
     this.controls = new OrbitControls(this.camera, this.canvas);
     // this.controls.target.set(0,0,-.5);
-    this.controls.target.set(0,1,0);
+    this.controls.target.set(0,0,-5);
     this.controls.update();
     this.controls.enableRotate = false;
     this.gui.add(this.controls,'enableRotate');
@@ -1222,51 +1225,31 @@ export class welcomeService {
       this.BaseMatcap.encoding=THREE.sRGBEncoding;
     });
 
-    var letterMC = this.textureLoader.load('assets/matcaps/LetterMC.png',()=>{
+    var letterMC = this.textureLoader.load('assets/matcaps/testPlane.png',()=>{
       letterMC.encoding=THREE.sRGBEncoding;
     });
 
     let bgparams = {
       background: "#ffffff",
-    }
-    let boxBG = new THREE.MeshMatcapMaterial({color:0xcecdc9,matcap:this.BaseMatcap,side:THREE.BackSide})
+    };
+
+
+
+    let boxBG = new THREE.MeshMatcapMaterial({color:0xE6DCD0,matcap:letterMC})
     var bg = this.gui.addFolder("Background Box");
     bg.addColor(bgparams, "background")
       .onChange(() => {
         boxBG.color.set(bgparams.background);
     });
 
-    let box = new THREE.Mesh(new THREE.BoxBufferGeometry(20,10,10),boxBG);
-    this.scene.add(box);
-    box.position.set(0,5,0);
+    // let box = new THREE.Mesh(new THREE.BoxBufferGeometry(40,10,10),boxBG);
+    // this.scene.add(box);
+    // box.position.set(0,5,0);
 
     this.BalloonM = new THREE.MeshMatcapMaterial({
       color:0xE79691,
       matcap:letterMC
     })
-
-    var f1 = this.gui.addFolder("Balloon");
-    // f1.add(params, 'metalness', 0, 1)
-    //   .onChange(() => {
-    //     this.BalloonM.metalness = params.metalness;
-    //     for(var i=0;i<this.LetterArray.length;i++){
-    //       this.LetterArray[i].Scene.children["0"].material.copy(this.BalloonM);
-    //     }
-    //   });
-    // f1.add(params, 'roughness', 0, 1)
-    //   .onChange(() => {
-    //     this.BalloonM.roughness = params.roughness;
-    //     for(var i=0;i<this.LetterArray.length;i++){
-    //       this.LetterArray[i].Scene.children["0"].material.copy(this.BalloonM);
-    //     }
-    //   });
-    // f1.addColor(params, 'color')
-    //   .onChange(() => {
-    //     this.BalloonM.color.set(params.color);
-    //     for(var i=0;i<this.LetterArray.length;i++){
-    //       this.LetterArray[i].Scene.children["0"].material.copy(this.BalloonM);
-    //     }
-    //   });
 
     var PlaneMaterial = new THREE.MeshMatcapMaterial({
       color:0x95E79B,
@@ -1278,36 +1261,74 @@ export class welcomeService {
       matcap:this.BaseMatcap
     })
 
-    // this.loader.load(
-    //   'assets/model/StringPlane.glb',
-    //   (gltf) => {
-    //     let ThreeStage = gltf.scene;
-    //     ThreeStage.position.set(0,-.04,0);
-    //     ThreeStage.rotation.set(0,0,0);
-    //     ThreeStage.children["0"].children[0].scale.set(.65,.5,.65);
-    //     ThreeStage.children["0"].children[1].scale.set(.65,.5,.65);
-    //     ThreeStage.children["0"].children[0].material=PlaneMaterial;
-    //     ThreeStage.children["0"].children[1].material=PlaneMaterial02;
-    //     this.scene.add(ThreeStage);
-    //   }
-    // );
+
+    var PlaneMaterial03 = new THREE.MeshMatcapMaterial({color:0x8bca78,matcap:this.BaseMatcap})
+
+    let StringPlane = new THREE.Object3D();
+    let planeTop = new THREE.Mesh(new THREE.PlaneBufferGeometry(60,10),boxBG);
+    planeTop.position.set(0,0,-7);
+    planeTop.rotation.x=-Math.PI/2
+    StringPlane.add(planeTop)
+
+    let planeLeft = new THREE.Mesh(new THREE.PlaneBufferGeometry(10,15),boxBG);
+    planeLeft.position.set(-10,0,0);
+    planeLeft.rotation.x=-Math.PI/2
+    StringPlane.add(planeLeft)
+
+    let planeRight = new THREE.Mesh(new THREE.PlaneBufferGeometry(10,15),boxBG);
+    planeRight.position.set(10,0,0);
+    planeRight.rotation.x=-Math.PI/2
+    StringPlane.add(planeRight)
+    
+    this.loader.load(
+      'assets/model/StringPlane02.glb',
+      (gltf) => {
+        let ThreeStage = gltf.scene;
+        ThreeStage.position.set(0,0,0);
+        ThreeStage.rotation.set(0,0,0);
+        ThreeStage.scale.set(2.6,3,2.2);
+        ThreeStage.children["0"].material=boxBG;
+        StringPlane.add(ThreeStage);
+        this.scene.add(StringPlane);
+      }
+    );
+
+
+    let Object3D = new THREE.Object3D();
+    // let tl = new TimelineLite();
+    // tl.to()
+
+    // TweenLite.to(Object3D.position,1.5,{delay:3.5,y:-3})
+    // TweenLite.to(Object3D.position,1.5,{delay:5,y:0-0.0006})
+
+
+
+    let StringPlaneTop;
+    this.loader.load(
+      'assets/model/StringPlaneTop.glb',
+      (gltf) => {
+        StringPlaneTop = gltf.scene;
+        StringPlaneTop.position.set(0,0-0.0006-2.01,0);
+        StringPlaneTop.rotation.set(0,0,0);
+        StringPlaneTop.scale.set(2.8+0.05,1,2.5+0.01);
+        StringPlaneTop.children["0"].material=boxBG;
+
+        Object3D.add(StringPlaneTop)
+        this.scene.add(Object3D);
+      }
+    );
 
     // this.loader.load(
-    //   'assets/model/GolfStage03.glb',
+    //   'assets/model/GolfStage05.glb',
     //   (gltf) => {
-    //     gltf.scene.traverse((node)=>{
-    //       if(node instanceof THREE.Mesh){
-    //         node.castShadow=true;
-    //         node.receiveShadow=true;
-    //       }
-    //     });
     //     let ThreeStage = gltf.scene;
     //     this.positionarray.push(ThreeStage);
-    //     // ThreeStage.position.set(-1.405,0,-1.925);
-    //     ThreeStage.position.set(-5,0,-1.925);
-    //     ThreeStage.rotation.set(0,Math.PI/4,0);
-
-    //     this.scene.add(ThreeStage);
+    //     ThreeStage.position.set(8.5,-0.1,-.5);
+    //     ThreeStage.rotation.set(0,0,0);
+    //     ThreeStage.children["0"].children[0].material=PlaneMaterial02;
+    //     ThreeStage.children["0"].children[1].material=PlaneMaterial;
+        
+    //     Object3D.add(ThreeStage);
 
     //     let add={
     //       hide:false
@@ -1323,9 +1344,10 @@ export class welcomeService {
     //       .onChange(()=>{
     //         this.scene.add(ThreeStage);
     //       })
-
     //   }
     // );
+
+
 
     let CTR = new THREE.Object3D();
     let CTRMater = new THREE.MeshBasicMaterial({transparent:true,opacity:0})
@@ -1369,6 +1391,25 @@ export class welcomeService {
     CTR.rotation.set(0,15*Math.PI/180,0);
     CTR.position.set(-2.2,2.4,-1.5)
     this.scene.add(CTR);
+
+    let BalloonPos = new THREE.Object3D();
+
+       
+    let B0 = new THREE.Mesh(new THREE.BoxBufferGeometry(.1,.1,.1),CTRMater);
+    BalloonPos.add(B0);
+   
+    let B1 = new THREE.Mesh(new THREE.BoxBufferGeometry(.1,.1,.1),CTRMater);
+    B1.position.set(0.3,-.2,0);
+    BalloonPos.add(B1)
+
+    let B2 = new THREE.Mesh(new THREE.BoxBufferGeometry(.1,.1,.1),CTRMater);
+    B2.position.set(-0.3,-.2,0);
+    BalloonPos.add(B2);
+
+
+    // BalloonPos.rotation.set(0,15*Math.PI/180,0);
+    BalloonPos.position.set(2.2,2.4,0)
+    this.scene.add(BalloonPos);
 
 
     var position = new THREE.Vector3();
@@ -1429,7 +1470,24 @@ export class welcomeService {
 
       this.CreateHAB('HAB',.2,.2,.2,-.022,-.65,-.61,0,.8,0,0.21,-0.022,0,0,0);
 
-      this.CreateBalloon("balloon",2,2,0,0,-.16,0,2,1,0,0,0,0)
+      position.setFromMatrixPosition(B0.matrixWorld);
+      this.CreateBalloon('balloon',
+        position.x,position.y,position.z,
+        position.x,1,position.z,
+        0,0,0);
+
+      position.setFromMatrixPosition(B1.matrixWorld);
+      this.CreateBalloon('balloon',
+        position.x,position.y,position.z,
+        position.x,1,position.z,
+        0,0,0);
+
+      position.setFromMatrixPosition(B2.matrixWorld);
+      this.CreateBalloon('balloon',
+        position.x,position.y,position.z,
+        position.x,1,position.z,
+        0,0,0);
+      // this.CreateBalloon("balloon",2,2,0,0,-.16,0,2,1,0,0,0,0)
     });
   
   
@@ -1503,8 +1561,8 @@ export class welcomeService {
     this.CursorCurve.setPositions(this.CursorPoints);
     
     let Ma = new LineMaterial({
-      color:0xff0000,
-      linewidth:.002,
+      color:0xffffff,
+      linewidth:.001,
     })
     this.CursorString = new Line2(
       this.CursorCurve,Ma
@@ -1608,17 +1666,17 @@ export class welcomeService {
 
 
   BalloonSceneRender() {
-    // this.raycaster.setFromCamera(this.mouse,this.camera);
-    // var intersect = this.raycaster.intersectObjects(this.Lines,false)
-    // if(intersect.length>0){
-    //   // intersect[j].object.material=new THREE.MeshBasicMaterial({color:0x000000});
-    //   this.sphereInter.visible = true;
-    //   this.sphereInter.position.copy( intersect[ 0 ].point );
-    // } else {
-    //   this.sphereInter.visible=false;
-    // }
+    this.raycaster.setFromCamera(this.mouse,this.camera);
+    var intersect = this.raycaster.intersectObjects(this.Lines,false)
+    if(intersect.length>0){
+      // intersect[j].object.material=new THREE.MeshBasicMaterial({color:0x000000});
+      this.sphereInter.visible = true;
+      this.sphereInter.position.copy( intersect[ 0 ].point );
+    } else {
+      this.sphereInter.visible=false;
+    }
 
-    // this.controls.update();
+    this.controls.update();
     for (var i = 0; i < this.meshes.length; i++) {
       this.meshes[i].position.set(this.bodies[i].position.x.toFixed(3),this.bodies[i].position.y.toFixed(3),this.bodies[i].position.z.toFixed(3));
       this.meshes[i].quaternion.copy(this.bodies[i].quaternion);
@@ -1638,6 +1696,7 @@ export class welcomeService {
   private debugger02;
   private LetterMaterial:CANNON.Material;
   private PlaneMaterial:CANNON.Material;
+  private BalloonMaterial:CANNON.Material;
   InitBalloonCannon(): void {
     this.world = new CANNON.World();
     this.world.gravity.set(0, 0, 0);
@@ -1646,7 +1705,7 @@ export class welcomeService {
 
     TweenLite.delayedCall(1,()=>{
       this.world.gravity.set(0, -7, 0);
-      this.world02.gravity.set(0, 3, 0);
+      // this.world02.gravity.set(0, 3, 0);
     })
     
     this.LetterMaterial = new CANNON.Material("LetterMaterial");
@@ -1659,10 +1718,13 @@ export class welcomeService {
     });
     this.world.addContactMaterial(Contact);
 
-    // let Contact02 = new CANNON.ContactMaterial(this.LetterMaterial,this.LetterMaterial,{
-    //   contactEquationStiffness: 100000,
-    // });
-    // this.world.addContactMaterial(Contact02);
+    // this.BalloonMaterial = new CANNON.Material("BalloonMaterial");
+    // let Contact02 = new CANNON.ContactMaterial(this.BalloonMaterial,this.BalloonMaterial,{
+    //   restitution:0.5,
+    // })
+    // this.world02.addContactMaterial(Contact02);
+
+
 
     this.debugger = new CannonDebugRenderer(this.scene, this.world);
     this.debugger02 = new CannonDebugRenderer(this.scene, this.world02);
@@ -1819,7 +1881,7 @@ export class welcomeService {
     this.scene.add(anchorT)
   }
 
-  CreateBalloon(name:string,Px,Py,Pz,Ax,Ay,Az,Cx,Cy,Cz,RotateX,RotateY,RotateZ) {
+  CreateBalloon(name:string,Px,Py,Pz,Cx,Cy,Cz,RotateX,RotateY,RotateZ) {
     let E = new LetterProperty;
     this.LetterArray.push(E)
 
@@ -1831,17 +1893,16 @@ export class welcomeService {
       (gltf) => {
         E.Scene = gltf.scene;
         E.Scene.children["0"].position.set(0,-0.2,0);
-        E.Scene.scale.set(.7,.7,.7);
         E.Scene.children["0"].material=this.BalloonM;
         E.Object3D.add(E.Scene);
       }
     );
 
-    E.ObjectBody = new CANNON.Body({ mass: 1,material:this.LetterMaterial });
+    E.ObjectBody = new CANNON.Body({ mass: 1,material:this.BalloonMaterial });
     // E.ObjectBody.allowSleep=true;
-
-    E.ObjectBody.addShape(new CANNON.Sphere(.12),new CANNON.Vec3(0,0,0));
-
+    E.ObjectBody.addShape(new CANNON.Sphere(.19),new CANNON.Vec3(0,0.11,0));
+    E.ObjectBody.addShape(new CANNON.Sphere(.15),new CANNON.Vec3(0,0,0));
+      
 
     let quat = new THREE.Mesh();
     quat.rotation.set(RotateX, RotateY, RotateZ);
@@ -1857,7 +1918,7 @@ export class welcomeService {
       new THREE.BoxBufferGeometry(.03, .03, .03),
       new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.5 })
     )
-    E.AttachPoint.position.set(Ax, Ay, Az);
+    E.AttachPoint.position.set(0, -0.2, 0);
     E.AttachPointV = new THREE.Vector3();
     E.AttachPointV.set(Px, Py, Pz);
     E.Object3D.add(E.AttachPoint);
@@ -1878,7 +1939,7 @@ export class welcomeService {
       if(i==0){
         SphereBody.position.set(Cx, Cy, Cz);
       } else {
-        SphereBody.position.set(Px, Py+Ay, Pz);
+        SphereBody.position.set(Px, Py-0.2, Pz);
       }
       
       SphereBody.angularDamping = 0.99;
@@ -1889,7 +1950,8 @@ export class welcomeService {
       if (i != 0) {
 
         var distance = this.distance(SphereBody.position.x,SphereBody.position.y,SphereBody.position.z,lastBody.position.x,lastBody.position.y,lastBody.position.z)
-        E.DConstraint = new CANNON.DistanceConstraint(SphereBody, lastBody, distance);
+        // E.DConstraint = new CANNON.DistanceConstraint(SphereBody, lastBody, distance);
+        E.DConstraint = new CANNON.LockConstraint(SphereBody, lastBody);
         this.world02.addConstraint(E.DConstraint)
 
         E.LConstraint = new CANNON.LockConstraint(E.ObjectBody, SphereBody);
@@ -1897,8 +1959,9 @@ export class welcomeService {
       }
       lastBody = SphereBody;
     }
-    TweenLite.delayedCall(1,()=>{
-      TweenLite.to(E.letterArray[0].position,1,{x:1.5})
+
+    TweenLite.delayedCall(.5,()=>{
+      TweenLite.to(E.letterArray[0].position,1,{x:2});
     })
   }
 
@@ -2120,26 +2183,26 @@ export class welcomeService {
 
   CreateBalloonStuff(){
     //tree 
-    // this.CreateTree("tree01",-1.8,0,1,1,1,1);
-    // this.CreateTree("tree02",1.8,0,0,1,1,1);
-    // this.CreateTree("tree01",1.9,0,1,1,1,1);
+    this.CreateTree("tree01",-2,0,1,1,1,1);
+    this.CreateTree("tree02",2,0,0,1,1,1);
+    this.CreateTree("tree01",2.2,0,1,1,1,1);
 
     // bench
     var TreeMaterial02 = new THREE.MeshMatcapMaterial({
       color:0xE7D39F,
       matcap:this.BaseMatcap
     })
-    this.loader.load(
-      'assets/model/bench.glb',
-      (gltf) => {
-        gltf.scene.position.set(1,0.06,1);
-        gltf.scene.scale.set(.75,.75,.75);
-        gltf.scene.children["0"].position.set(0,0,0);
-        gltf.scene.children["0"].rotation.set(0,-20*Math.PI/180,0);
-        gltf.scene.children["0"].material=TreeMaterial02;
-        this.scene.add(gltf.scene);
-      }
-    );
+    // this.loader.load(
+    //   'assets/model/bench.glb',
+    //   (gltf) => {
+    //     gltf.scene.position.set(1,0.06,1);
+    //     gltf.scene.scale.set(.75,.75,.75);
+    //     gltf.scene.children["0"].position.set(0,0,0);
+    //     gltf.scene.children["0"].rotation.set(0,-20*Math.PI/180,0);
+    //     gltf.scene.children["0"].material=TreeMaterial02;
+    //     this.scene.add(gltf.scene);
+    //   }
+    // );
   }
 
 
@@ -2168,9 +2231,8 @@ export class welcomeService {
   RenderLetter() {
     for (var i = 0; i < this.LetterArray.length; i++) {
       if (this.LetterArray[i].LConstraint!=null) {
-        this.LetterArray[i].AttachPointV.setFromMatrixPosition(this.LetterArray[i].AttachPoint.matrixWorld);
-
         if(this.LetterArray[i].type==2){
+          this.LetterArray[i].AttachPointV.setFromMatrixPosition(this.LetterArray[i].AttachPoint.matrixWorld);
           // LINES
           var curve = new THREE.CatmullRomCurve3([
             this.LetterArray[i].AttachPointV,
@@ -2185,7 +2247,19 @@ export class welcomeService {
           for(var j=0;j<point.length;j++){
             this.LetterArray[i].Points.push(point[j].x,point[j].y,point[j].z);
           }
+        // } else if (this.LetterArray[i].type == 3){
+        //   this.LetterArray[i].Points = [];
+        //   this.LetterArray[i].Points.push(this.LetterArray[i].letterArray[0].position.x,this.LetterArray[i].letterArray[0].position.y,this.LetterArray[i].letterArray[0].position.z);
+        //   this.LetterArray[i].Points.push(this.LetterArray[i].Object3D.position.x,this.LetterArray[i].Object3D.position.y,this.LetterArray[i].Object3D.position.z);
+        //   // LINES
+        //   var geo = new THREE.Geometry();
+        //   geo.vertices.push(
+        //     new THREE.Vector3(this.LetterArray[i].letterArray[0].position.x,this.LetterArray[i].letterArray[0].position.y,this.LetterArray[i].letterArray[0].position.z),
+        //     this.LetterArray[i].Object3D.position
+        //   )
         } else {
+          this.LetterArray[i].AttachPointV.setFromMatrixPosition(this.LetterArray[i].AttachPoint.matrixWorld);
+
           this.LetterArray[i].Points = [];
           this.LetterArray[i].Points.push(this.LetterArray[i].letterArray[0].position.x,this.LetterArray[i].letterArray[0].position.y,this.LetterArray[i].letterArray[0].position.z);
           this.LetterArray[i].Points.push(this.LetterArray[i].AttachPointV.x,this.LetterArray[i].AttachPointV.y,this.LetterArray[i].AttachPointV.z);
@@ -2223,6 +2297,9 @@ export class welcomeService {
           if(this.LetterArray[i].type==2){
             this.LetterArray[i].AttachPointV.setFromMatrixPosition(this.LetterArray[i].AttachPoint.matrixWorld);
             this.LetterArray[i].letterArray[0].position.copy(this.LetterArray[i].AttachPointV);
+          } else if (this.LetterArray[i].type==3) {
+            this.LetterArray[i].AttachPointV.setFromMatrixPosition(this.LetterArray[i].AttachPoint.matrixWorld);
+            this.LetterArray[i].letterArray[0].position.copy(this.LetterArray[i].AttachPointV);
           }
           var line = new THREE.CubicBezierCurve3(
             new THREE.Vector3(this.LetterArray[i].letterArray[0].position.x, this.LetterArray[i].letterArray[0].position.y, this.LetterArray[i].letterArray[0].position.z),
@@ -2252,7 +2329,6 @@ export class welcomeService {
         }
         // bottom
         if (this.LetterArray[i].letterArrayA != null) {
-
           var line = new THREE.CubicBezierCurve3(
             new THREE.Vector3(this.LetterArray[i].letterArrayA[0].position.x, this.LetterArray[i].letterArrayA[0].position.y, this.LetterArray[i].letterArrayA[0].position.z),
             new THREE.Vector3(this.LetterArray[i].letterArrayA[1].position.x, this.LetterArray[i].letterArrayA[1].position.y, this.LetterArray[i].letterArrayA[1].position.z),
@@ -2404,6 +2480,8 @@ export class welcomeService {
       if(this.LetterArray[i].Line.id == Iid && this.LetterArray[i].LConstraint != null){
         this.world.removeConstraint(this.LetterArray[i].DConstraint);
         this.world.removeConstraint(this.LetterArray[i].LConstraint);
+        this.world02.removeConstraint(this.LetterArray[i].DConstraint);
+        this.world02.removeConstraint(this.LetterArray[i].LConstraint);
         this.LetterArray[i].LConstraint = null;
 
         // bottom
@@ -2412,6 +2490,11 @@ export class welcomeService {
           TweenLite.to(this.LetterArray[i].ObjectBody.position,4,{y:4,ease:Power1.easeIn})
           curve = new THREE.LineCurve3(Ipoint,
             this.LetterArray[i].letterArray[1].position);
+        } else if (this.LetterArray[i].type==3){
+          TweenLite.to(this.LetterArray[i].ObjectBody.velocity,4,{y:5,ease:Power0.easeNone})
+          TweenLite.to(this.LetterArray[i].ObjectBody.quaternion,4,{z:0,ease:Power0.easeNone})
+          curve = new THREE.LineCurve3(Ipoint,
+            this.LetterArray[i].letterArray[0].position);
         } else {
           curve = new THREE.LineCurve3(Ipoint,
             this.LetterArray[i].AttachPointV);
@@ -2446,6 +2529,9 @@ export class welcomeService {
         if(this.LetterArray[i].type==2){
           curve = new THREE.LineCurve3(this.LetterArray[i].AttachPointV,
           Ipoint);
+        } else if (this.LetterArray[i].type==3){
+          curve = new THREE.LineCurve3(this.LetterArray[i].AttachPointV,
+            Ipoint);
         } else {
           curve = new THREE.LineCurve3(new THREE.Vector3(this.LetterArray[i].letterArray[0].position.x,this.LetterArray[i].letterArray[0].position.y,this.LetterArray[i].letterArray[0].position.z),
           Ipoint);
@@ -2459,7 +2545,6 @@ export class welcomeService {
         this.scene.remove(this.LetterArray[i].StringT);
 
         point = curve.getPoints(3);
-
         distance = this.distance(point[0].x, point[0].y, point[0].z,
           point[1].x, point[1].y, point[1].z);
         
