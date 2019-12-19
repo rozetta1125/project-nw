@@ -1183,6 +1183,58 @@ export class welcomeService {
     // this.camera.lookAt(this.GolfC.position.x,this.GolfC.position.y,this.GolfC.position.z)
   }
 
+  private TrainBalloon;
+  ChooChoo() {
+    let mate01 = new THREE.MeshMatcapMaterial({
+      color:0xffffff,
+      matcap:this.BaseMatcap
+    })
+    let mate02 = new THREE.MeshMatcapMaterial({
+      color:0xDFE7CB,
+      matcap:this.BaseMatcap
+    })
+    let mate03 = new THREE.MeshMatcapMaterial({
+      color:0xE79691,
+      matcap:this.BaseMatcap
+    })
+
+    let railMate = new THREE.MeshMatcapMaterial({
+      color:0x90AAE7,
+      matcap:this.BaseMatcap
+    })
+
+    let train = new THREE.Object3D();
+    
+    this.loader.load(
+      'assets/model/choochooTrain02.glb',
+      (gltf) => {
+        this.TrainBalloon = gltf.scene;
+        this.mixer = new THREE.AnimationMixer(this.TrainBalloon);
+        this.mixer.clipAction(gltf.animations[0]).play();
+        this.mixer.timeScale = 0.25;
+        this.TrainBalloon.scale.set(.265, .265, .265);
+        this.TrainBalloon.position.set(0, .027, 0);
+        this.TrainBalloon.children["0"].children[0].material=railMate
+        this.TrainBalloon.children["0"].children[1].material=mate03
+        this.TrainBalloon.children["0"].children[2].material=mate01
+        this.TrainBalloon.children["0"].children[3].material=mate02
+        train.add(this.TrainBalloon);
+        // this.TrainBalloon = new THREE.Mesh(new THREE.BoxBufferGeometry(.1,.1,.1),new THREE.MeshBasicMaterial({transparent:true,opacity:0.2}))
+        // train.add(this.TrainBalloon)
+        this.scene.add(train);
+      }
+    );
+    this.loader.load(
+      'assets/model/choochooRail02.glb',
+      (gltf) => {
+        let rail = gltf.scene;
+        rail.scale.set(.07, .07, .07);
+        rail.position.set(0, .027, 0);
+        rail.children["0"].material=railMate;
+        this.scene.add(rail);
+      }
+    );
+  }
 
   private BaseMatcap;
   FirstInit(): void {
@@ -1235,38 +1287,29 @@ export class welcomeService {
 
 
 
-    let boxBG = new THREE.MeshMatcapMaterial({color:0xE6DCD0,matcap:letterMC})
+    let boxBG = new THREE.MeshMatcapMaterial({color:0xdcc7b4,matcap:letterMC})
     var bg = this.gui.addFolder("Background Box");
     bg.addColor(bgparams, "background")
       .onChange(() => {
         boxBG.color.set(bgparams.background);
     });
 
+    this.ChooChoo();
+
     // let box = new THREE.Mesh(new THREE.BoxBufferGeometry(40,10,10),boxBG);
     // this.scene.add(box);
     // box.position.set(0,5,0);
 
     this.BalloonM = new THREE.MeshMatcapMaterial({
-      color:0xE79691,
-      matcap:letterMC
-    })
-
-    var PlaneMaterial = new THREE.MeshMatcapMaterial({
-      color:0x95E79B,
+      color:0xFFA6A0,
       matcap:this.BaseMatcap
     })
-
-    var PlaneMaterial02 = new THREE.MeshMatcapMaterial({
-      color:0xffffff,
-      matcap:this.BaseMatcap
-    })
-
 
     var PlaneMaterial03 = new THREE.MeshMatcapMaterial({color:0x8bca78,matcap:this.BaseMatcap})
 
     let StringPlane = new THREE.Object3D();
     let planeTop = new THREE.Mesh(new THREE.PlaneBufferGeometry(60,10),boxBG);
-    planeTop.position.set(0,0,-7);
+    planeTop.position.set(0,0,-10);
     planeTop.rotation.x=-Math.PI/2
     StringPlane.add(planeTop)
 
@@ -1308,7 +1351,7 @@ export class welcomeService {
       'assets/model/StringPlaneTop.glb',
       (gltf) => {
         StringPlaneTop = gltf.scene;
-        StringPlaneTop.position.set(0,0-0.0006-2.01,0);
+        StringPlaneTop.position.set(0,0-0.0006-0.1,0);
         StringPlaneTop.rotation.set(0,0,0);
         StringPlaneTop.scale.set(2.8+0.05,1,2.5+0.01);
         StringPlaneTop.children["0"].material=boxBG;
@@ -1399,16 +1442,39 @@ export class welcomeService {
     BalloonPos.add(B0);
    
     let B1 = new THREE.Mesh(new THREE.BoxBufferGeometry(.1,.1,.1),CTRMater);
-    B1.position.set(0.3,-.2,0);
+    B1.position.set(0.2,-.35,.2);
     BalloonPos.add(B1)
 
     let B2 = new THREE.Mesh(new THREE.BoxBufferGeometry(.1,.1,.1),CTRMater);
-    B2.position.set(-0.3,-.2,0);
+    B2.position.set(-0.2,-.25,.2);
     BalloonPos.add(B2);
 
+    let B3 = new THREE.Mesh(new THREE.BoxBufferGeometry(.1,.1,.1),CTRMater);
+    B3.position.set(0.2,-.05,0);
+    BalloonPos.add(B3);
+   
+    let B4 = new THREE.Mesh(new THREE.BoxBufferGeometry(.1,.1,.1),CTRMater);
+    B4.position.set(-0.2,0,0);
+    BalloonPos.add(B4)
+
+    let B5 = new THREE.Mesh(new THREE.BoxBufferGeometry(.1,.1,.1),CTRMater);
+    B5.position.set(-0.2,.25,-.2);
+    BalloonPos.add(B5);
+
+    let B6 = new THREE.Mesh(new THREE.BoxBufferGeometry(.1,.1,.1),CTRMater);
+    B6.position.set(0.2,.25,-.2);
+    BalloonPos.add(B6);
+
+    // let B7 = new THREE.Mesh(new THREE.BoxBufferGeometry(.1,.1,.1),CTRMater);
+    // B7.position.set(0.2,.25,-.4);
+    // BalloonPos.add(B7);
+
+    // let B8 = new THREE.Mesh(new THREE.BoxBufferGeometry(.1,.1,.1),CTRMater);
+    // B8.position.set(-0.2,.3,-.4);
+    // BalloonPos.add(B8);
 
     // BalloonPos.rotation.set(0,15*Math.PI/180,0);
-    BalloonPos.position.set(2.2,2.4,0)
+    BalloonPos.position.set(1.8,2.4,0)
     this.scene.add(BalloonPos);
 
 
@@ -1487,7 +1553,42 @@ export class welcomeService {
         position.x,position.y,position.z,
         position.x,1,position.z,
         0,0,0);
-      // this.CreateBalloon("balloon",2,2,0,0,-.16,0,2,1,0,0,0,0)
+
+      position.setFromMatrixPosition(B3.matrixWorld);
+      this.CreateBalloon('balloon',
+        position.x,position.y,position.z,
+        position.x,1,position.z,
+        0,0,0);
+
+      position.setFromMatrixPosition(B4.matrixWorld);
+      this.CreateBalloon('balloon',
+        position.x,position.y,position.z,
+        position.x,1,position.z,
+        0,0,0);
+
+      position.setFromMatrixPosition(B5.matrixWorld);
+      this.CreateBalloon('balloon',
+        position.x,position.y,position.z,
+        position.x,1,position.z,
+        0,0,0);
+
+      position.setFromMatrixPosition(B6.matrixWorld);
+      this.CreateBalloon('balloon',
+        position.x,position.y,position.z,
+        position.x,1,position.z,
+        0,0,0);
+
+      // position.setFromMatrixPosition(B7.matrixWorld);
+      // this.CreateBalloon('balloon',
+      //   position.x,position.y,position.z,
+      //   position.x,1,position.z,
+      //   0,0,0);
+      
+      //  position.setFromMatrixPosition(B8.matrixWorld);
+      // this.CreateBalloon('balloon',
+      //   position.x,position.y,position.z,
+      //   position.x,1,position.z,
+      //   0,0,0);
     });
   
   
@@ -1686,6 +1787,13 @@ export class welcomeService {
       this.RenderMouseCursor();
     }
     this.RenderLetter();
+    
+    // var pos = new THREE.Vector3()
+    // pos.setFromMatrixPosition(this.TrainBalloon.children["0"].children[0].matrixWorld);
+
+
+    
+    
     if(this.controls.enableRotate){
       this.debugger.update();
       this.debugger02.update();
@@ -1892,7 +2000,8 @@ export class welcomeService {
       'assets/model/'+name+'.glb',
       (gltf) => {
         E.Scene = gltf.scene;
-        E.Scene.children["0"].position.set(0,-0.2,0);
+        E.Scene.scale.set(1.2,1.2,1.2)
+        E.Scene.children["0"].position.set(0,-0.12,0);
         E.Scene.children["0"].material=this.BalloonM;
         E.Object3D.add(E.Scene);
       }
@@ -1900,8 +2009,8 @@ export class welcomeService {
 
     E.ObjectBody = new CANNON.Body({ mass: 1,material:this.BalloonMaterial });
     // E.ObjectBody.allowSleep=true;
-    E.ObjectBody.addShape(new CANNON.Sphere(.19),new CANNON.Vec3(0,0.11,0));
-    E.ObjectBody.addShape(new CANNON.Sphere(.15),new CANNON.Vec3(0,0,0));
+    E.ObjectBody.addShape(new CANNON.Sphere(.155),new CANNON.Vec3(0,0.1,0));
+    E.ObjectBody.addShape(new CANNON.Sphere(.12),new CANNON.Vec3(0,0,0));
       
 
     let quat = new THREE.Mesh();
@@ -1918,7 +2027,7 @@ export class welcomeService {
       new THREE.BoxBufferGeometry(.03, .03, .03),
       new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.5 })
     )
-    E.AttachPoint.position.set(0, -0.2, 0);
+    E.AttachPoint.position.set(0, -0.14, 0);
     E.AttachPointV = new THREE.Vector3();
     E.AttachPointV.set(Px, Py, Pz);
     E.Object3D.add(E.AttachPoint);
@@ -1961,7 +2070,7 @@ export class welcomeService {
     }
 
     TweenLite.delayedCall(.5,()=>{
-      TweenLite.to(E.letterArray[0].position,1,{x:2});
+      TweenLite.to(E.letterArray[0].position,1,{x:1.8,z:0});
     })
   }
 
@@ -2183,9 +2292,9 @@ export class welcomeService {
 
   CreateBalloonStuff(){
     //tree 
-    this.CreateTree("tree01",-2,0,1,1,1,1);
-    this.CreateTree("tree02",2,0,0,1,1,1);
-    this.CreateTree("tree01",2.2,0,1,1,1,1);
+    // this.CreateTree("tree01",-2,0,1,1,1,1);
+    // this.CreateTree("tree02",2,0,0,1,1,1);
+    // this.CreateTree("tree01",2.2,0,1,1,1,1);
 
     // bench
     var TreeMaterial02 = new THREE.MeshMatcapMaterial({
@@ -2247,16 +2356,6 @@ export class welcomeService {
           for(var j=0;j<point.length;j++){
             this.LetterArray[i].Points.push(point[j].x,point[j].y,point[j].z);
           }
-        // } else if (this.LetterArray[i].type == 3){
-        //   this.LetterArray[i].Points = [];
-        //   this.LetterArray[i].Points.push(this.LetterArray[i].letterArray[0].position.x,this.LetterArray[i].letterArray[0].position.y,this.LetterArray[i].letterArray[0].position.z);
-        //   this.LetterArray[i].Points.push(this.LetterArray[i].Object3D.position.x,this.LetterArray[i].Object3D.position.y,this.LetterArray[i].Object3D.position.z);
-        //   // LINES
-        //   var geo = new THREE.Geometry();
-        //   geo.vertices.push(
-        //     new THREE.Vector3(this.LetterArray[i].letterArray[0].position.x,this.LetterArray[i].letterArray[0].position.y,this.LetterArray[i].letterArray[0].position.z),
-        //     this.LetterArray[i].Object3D.position
-        //   )
         } else {
           this.LetterArray[i].AttachPointV.setFromMatrixPosition(this.LetterArray[i].AttachPoint.matrixWorld);
 
@@ -2687,68 +2786,10 @@ export class welcomeService {
   }
 
   LastScene(): void {
-    this.ChooChoo();
+    
   }
 
-  private choochooLight = new THREE.HemisphereLight(0xffffff, 0xe1e1e1, .7);
-  ChooChoo() {
-    this.scene.add(this.choochooLight);
-    this.gui.add
 
-    var params = {
-      skyColor: "#ffffff",
-      groundColor: "#e1e1e1",
-      intensity: this.choochooLight.intensity,
-    }
-
-    var l1 = this.gui.addFolder("HemisphereLight 1");
-    l1.addColor(params, "skyColor")
-      .onChange(() => {
-        this.choochooLight.color.set(params.skyColor)
-      });
-    l1.addColor(params, "groundColor")
-      .onChange(() => {
-        this.choochooLight.groundColor.set(params.groundColor)
-      });
-    l1.add(params, "intensity", 0, 1)
-      .onChange(() => {
-        this.choochooLight.intensity = params.intensity;
-      });
-
-    this.loader = new GLTFLoader();
-    this.loader.load(
-      'assets/model/choochooTrain.glb',
-      (gltf) => {
-        gltf.scene.traverse((node) => {
-          if (node instanceof THREE.Mesh) {
-            node.castShadow = true;
-          }
-        });
-        let train = gltf.scene;
-        console.log(train);
-        this.mixer = new THREE.AnimationMixer(train);
-        this.mixer.clipAction(gltf.animations[0]).play();
-        this.mixer.timeScale = 0.5;
-        train.scale.set(.32, .32, .32);
-        train.position.set(0, .027, .5);
-        this.scene.add(train);
-      }
-    );
-    this.loader.load(
-      'assets/model/choochooRail.glb',
-      (gltf) => {
-        gltf.scene.traverse((node) => {
-          if (node instanceof THREE.Mesh) {
-            node.castShadow = true;
-          }
-        });
-        let rail = gltf.scene;
-        rail.scale.set(.085, .085, .085);
-        rail.position.set(0, .027, .5);
-        this.scene.add(rail);
-      }
-    );
-  }
 
   
   ThreePlane() {
