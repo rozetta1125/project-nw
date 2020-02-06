@@ -148,6 +148,7 @@ export class welcomeService {
   private offset = new THREE.Vector3();
   private intersection = new THREE.Vector3();
   private Lines=[];
+  private ParkObjects=[];
 
   private exporter = new GLTFExporter();
   private textureLoader;
@@ -164,8 +165,6 @@ export class welcomeService {
     this.renderer.gammaOutput=true;
     this.renderer.toneMapping = THREE.LinearToneMapping;
     this.renderer.toneMappingExposure = .95;
-    // this.renderer.gammaOutput=false;
-    // this.renderer.gammaFactor=2;
     this.textureLoader = new THREE.TextureLoader();
     this.clock = new THREE.Clock();
     this.renderer.setSize(window.innerWidth, window.innerHeight);
@@ -199,7 +198,7 @@ export class welcomeService {
     //this.scene.add(this.light);
     this.controls = new OrbitControls(this.camera, this.canvas);
     // this.controls.target.set(0,0,-.5);
-    this.controls.target.set(0,0,-5);
+    this.controls.target.set(0,0,-4);
     this.controls.update();
     this.controls.enableRotate = false;
     this.gui.add(this.controls,'enableRotate');
@@ -1189,17 +1188,19 @@ export class welcomeService {
   private Carnival;
   private CarnivalPlane;
   private Swing;
+  private FerrisAnimation;
+  private TrainAnimation;
   ChooChoo() {
-    let white = this.textureLoader.load('assets/matcaps/FFFFFF.png',()=>{
+    let white = this.textureLoader.load('assets/matcaps/FFFFFF03.png',()=>{
       white.encoding=THREE.sRGBEncoding;
     });
-    let blue = this.textureLoader.load('assets/matcaps/A4BCEC.png',()=>{
+    let blue = this.textureLoader.load('assets/matcaps/A4BCEC03.png',()=>{
       blue.encoding=THREE.sRGBEncoding;
     });
-    let pink = this.textureLoader.load('assets/matcaps/E7B9BE.png',()=>{
+    let pink = this.textureLoader.load('assets/matcaps/E7B9BE03.png',()=>{
       pink.encoding=THREE.sRGBEncoding;
     });
-    let pink02 = this.textureLoader.load('assets/matcaps/E7CBCB.png',()=>{
+    let pink02 = this.textureLoader.load('assets/matcaps/E7CBCB03.png',()=>{
       pink02.encoding=THREE.sRGBEncoding;
     });
     let e7 = this.textureLoader.load('assets/matcaps/FFFFFF03.png',()=>{
@@ -1232,7 +1233,7 @@ export class welcomeService {
     this.loader.load('assets/model/Swing.glb',
       (gltf)=>{
         this.Swing=gltf.scene;
-        this.Swing.position.set(0,0,-1)
+        this.Swing.position.set(-.2,0,-1)
         this.Swing.scale.set(.8,.8,.8);
         this.Swing.rotation.set(0,30*Math.PI/180,0)
         for(var i=0;i<gltf.scene.children.length;i++){
@@ -1245,9 +1246,9 @@ export class welcomeService {
           } else {
             gltf.scene.children[""+i+""].material=mate01;
           }
-
         }
 
+        this.ParkObjects.push(this.Swing);
         this.scene.add(this.Swing)
       }
     );
@@ -1258,14 +1259,13 @@ export class welcomeService {
     let Plane02 = new THREE.Object3D();
     let Plane03 = new THREE.Object3D();
     let Plane04 = new THREE.Object3D();
-    let Plane05 = new THREE.Object3D();
     let Fan = new THREE.Object3D();
     let PlanePart = new THREE.Object3D();
     this.loader.load('assets/model/CarnivalPlane.glb',
       (gltf)=>{
         
         for(var i=0;i<2;i++){
-          if(gltf.scene.children[i].name=="Cylinder020"){
+          if(gltf.scene.children[i].name=="CarnivalPlane00"){
             PlanePart = gltf.scene.children[i].clone();
             PlanePart.children["0"].material=mate02;
             PlanePart.children["1"].material=mate03;
@@ -1298,6 +1298,8 @@ export class welcomeService {
         Plane04.rotation.set(0,(-270-4)*Math.PI/180,0)
         this.CarnivalPlane.add(Plane04)
 
+        this.CarnivalPlane.position.set(0,0, .5)
+        this.ParkObjects.push(this.CarnivalPlane)
         this.scene.add(this.CarnivalPlane);
         TweenLite.to(this.CarnivalPlane.rotation,180,{y:-Math.PI*6})
 
@@ -1311,7 +1313,7 @@ export class welcomeService {
       (gltf) => {
         this.Carnival = gltf.scene;
         this.Carnival.scale.set(.8, .8, .8);
-        this.Carnival.position.set(0, 0, 0);
+        this.Carnival.position.set(0, 0, .5);
         this.Carnival.rotation.set(0,8.5*Math.PI/180,0);
         // TweenLite.to(this.Carnival.rotation,5,{y:Math.PI*2});
 
@@ -1326,44 +1328,88 @@ export class welcomeService {
         }
         TweenLite.to(this.Carnival.rotation,180,{y:this.Carnival.rotation.y-Math.PI*6})
         this.scene.add(this.Carnival);
+        this.ParkObjects.push(this.Carnival)
       }
     );
 
     this.loader.load(
       'assets/model/Ferris.glb',
       (gltf) => {
-        this.Ferris = gltf.scene;
-        this.mixer01 = new THREE.AnimationMixer(this.Ferris);
-        for(var i=0;i<gltf.animations.length;i++){
-          this.mixer01.clipAction(gltf.animations[i]).play();
-        }
-        this.mixer01.timeScale = .1;
-        // console.log(this.Ferris)
-        this.Ferris.scale.set(.8, .8, .8);
-        this.Ferris.position.set(.2, -.05, -1);
-        this.Ferris.rotation.set(0,-30*Math.PI/180,0);
-        // TweenLite.to(this.Ferris.rotation,5,{y:Math.PI*2});
+        this.Ferris = gltf;
+        this.mixer01 = new THREE.AnimationMixer(this.Ferris.scene);
+        this.mixer01.timeScale = .05;
+
+
+        this.Ferris.scene.scale.set(.9, .9, .9);
+        this.Ferris.scene.position.set(0, -.05, -1);
+        this.Ferris.scene.rotation.set(0,-30*Math.PI/180,0);
+
 
         // Ferris
-        for(var i=0;i<8;i++){
-          if(this.Ferris.children[i].name=="F01" || this.Ferris.children[i].name=="F03" 
-            || this.Ferris.children[i].name=="F05" || this.Ferris.children[i].name=="F07"){
-              this.Ferris.children[i].children[1].material=mate03
-            } else {
-              this.Ferris.children[i].children[1].material=mate02
-            }
-          this.Ferris.children[i].children[0].material=mate01
-          this.Ferris.children[i].rotation.set(0,0,0)
+        for(var i=0;i<this.Ferris.scene.children.length;i++){
+          if(this.Ferris.scene.children[i].name=="F01"){
+            this.TweenF01.to(this.Ferris.scene.children[i].rotation,1,{z:.7})
+            this.TweenF01.to(this.Ferris.scene.children[i].rotation,2,{z:-.7});
+            this.TweenF01.to(this.Ferris.scene.children[i].rotation,1,{z:0});
+            this.TweenF01.pause();
+            this.Ferris.scene.children[i].children[1].material=mate03
+            this.Ferris.scene.children[i].children[0].material=mate01
+          } else if (this.Ferris.scene.children[i].name=="F02") {
+            this.TweenF02.to(this.Ferris.scene.children[i].rotation,1,{z:.7})
+            this.TweenF02.to(this.Ferris.scene.children[i].rotation,2,{z:-.7});
+            this.TweenF02.to(this.Ferris.scene.children[i].rotation,1,{z:0});
+            this.TweenF02.pause();
+            this.Ferris.scene.children[i].children[1].material=mate02
+            this.Ferris.scene.children[i].children[0].material=mate01
+          } else if (this.Ferris.scene.children[i].name=="F03") {
+            this.TweenF03.to(this.Ferris.scene.children[i].rotation,1,{z:.7})
+            this.TweenF03.to(this.Ferris.scene.children[i].rotation,2,{z:-.7});
+            this.TweenF03.to(this.Ferris.scene.children[i].rotation,1,{z:0});
+            this.TweenF03.pause();
+            this.Ferris.scene.children[i].children[1].material=mate03
+            this.Ferris.scene.children[i].children[0].material=mate01
+          } else if (this.Ferris.scene.children[i].name=="F04") {
+            this.TweenF04.to(this.Ferris.scene.children[i].rotation,1,{z:.7})
+            this.TweenF04.to(this.Ferris.scene.children[i].rotation,2,{z:-.7});
+            this.TweenF04.to(this.Ferris.scene.children[i].rotation,1,{z:0});
+            this.TweenF04.pause();
+            this.Ferris.scene.children[i].children[1].material=mate02
+            this.Ferris.scene.children[i].children[0].material=mate01
+          } else if (this.Ferris.scene.children[i].name=="F05") {
+            this.TweenF05.to(this.Ferris.scene.children[i].rotation,1,{z:.7})
+            this.TweenF05.to(this.Ferris.scene.children[i].rotation,2,{z:-.7});
+            this.TweenF05.to(this.Ferris.scene.children[i].rotation,1,{z:0});
+            this.TweenF05.pause();
+            this.Ferris.scene.children[i].children[1].material=mate03
+            this.Ferris.scene.children[i].children[0].material=mate01
+          } else if (this.Ferris.scene.children[i].name=="F06") {
+            this.TweenF06.to(this.Ferris.scene.children[i].rotation,1,{z:.7})
+            this.TweenF06.to(this.Ferris.scene.children[i].rotation,2,{z:-.7});
+            this.TweenF06.to(this.Ferris.scene.children[i].rotation,1,{z:0});
+            this.TweenF06.pause();
+            this.Ferris.scene.children[i].children[1].material=mate02
+            this.Ferris.scene.children[i].children[0].material=mate01
+          } else if (this.Ferris.scene.children[i].name=="F07") {
+            this.TweenF07.to(this.Ferris.scene.children[i].rotation,1,{z:.7})
+            this.TweenF07.to(this.Ferris.scene.children[i].rotation,2,{z:-.7});
+            this.TweenF07.to(this.Ferris.scene.children[i].rotation,1,{z:0});
+            this.TweenF07.pause();
+            this.Ferris.scene.children[i].children[1].material=mate03
+            this.Ferris.scene.children[i].children[0].material=mate01
+          } else if (this.Ferris.scene.children[i].name=="F08") {
+            this.TweenF08.to(this.Ferris.scene.children[i].rotation,1,{z:.7})
+            this.TweenF08.to(this.Ferris.scene.children[i].rotation,2,{z:-.7});
+            this.TweenF08.to(this.Ferris.scene.children[i].rotation,1,{z:0});
+            this.TweenF08.pause();
+            this.Ferris.scene.children[i].children[1].material=mate02
+            this.Ferris.scene.children[i].children[0].material=mate01
+          } else {
+            this.Ferris.scene.children[i].material=mate01
+          }
         }
 
-        gsap.delayedCall(2,()=>{
-          
-          TweenLite.to(this.Ferris.children[0].rotation,1,{z:1.5});
-          TweenLite.to(this.Ferris.children[0].rotation,2,{z:-1.5,delay:1});
-          TweenLite.to(this.Ferris.children[0].rotation,1,{z:0,delay:3});
-        })
-
-        this.scene.add(this.Ferris);
+        this.ParkObjects.push(this.Ferris.scene);
+        this.scene.add(this.Ferris.scene);
       }
     );
 
@@ -1377,15 +1423,15 @@ export class welcomeService {
       'assets/model/FerrisWheel.glb',
       (gltf) => {
         this.FerrisWheel = gltf.scene;
-        this.FerrisWheel.scale.set(.8, .8, .8);
-        this.FerrisWheel.position.set(.2, -.05, -1);
+
+        this.FerrisWheel.scale.set(.9, .9, .9);
+        this.FerrisWheel.position.set(0, -.05, -1);
         this.FerrisWheel.rotation.set(0,-30*Math.PI/180,0);
         
 
         for(var i=0;i<this.FerrisWheel.children.length;i++){
           if(this.FerrisWheel.children[i].name=="Star01"){
             this.FerrisWheel.children[i].material=mate03
-            TweenLite.to(this.FerrisWheel.children[i].rotation,90,{y:Math.PI*5.5,ease:Power0.easeNone});
           } else if(this.FerrisWheel.children[i].name=="Star02"){
             this.FerrisWheel.children[i].material=mate02
           } else if(this.FerrisWheel.children[i].name=="Light01"){
@@ -1398,14 +1444,12 @@ export class welcomeService {
             let tl = new TimelineLite({repeat:20,repeatDelay:.5,delay:.5});
             tl.set(this.FerrisWheel.children[i].material,{emissive:ColorFFFFFF});
             tl.set(this.FerrisWheel.children[i].material,{emissive:ColorE7E7E7,delay:.5})
-          } else if(this.FerrisWheel.children[i].name=="Cylinder017"){
-            TweenLite.to(this.FerrisWheel.children[i].rotation,26.5,{z:Math.PI,ease:Power0.easeNone});
-            this.FerrisWheel.children[i].material=mate01
           } else {
             this.FerrisWheel.children[i].material=mate01
           }
         }
         
+        this.ParkObjects.push(this.FerrisWheel)
         this.scene.add(this.FerrisWheel);
       }
     );
@@ -1413,30 +1457,28 @@ export class welcomeService {
     this.loader.load(
       'assets/model/Train.glb',
       (gltf) => {
-        this.Train = gltf.scene;
-        this.mixer02 = new THREE.AnimationMixer(this.Train);
-        for(var i=0;i<gltf.animations.length;i++){
-          this.mixer02.clipAction(gltf.animations[i]).play();
-        }
-        this.mixer02.timeScale = .5;
-        this.Train.scale.set(.8, .8, .8);
-        this.Train.position.set(0, 0, 0);
-        // this.Train.rotation.set(0, 30*Math.PI/180, 0);
+        this.Train = gltf;
+        this.mixer02 = new THREE.AnimationMixer(this.Train.scene);
+
+        this.mixer02.timeScale=.25;
+        this.Train.scene.scale.set(.85, .85, .85);
+        this.Train.scene.position.set(0, 0, 0);
 
         // Train
-        for(var i=0;i<4;i++){
-          if(this.Train.children[i].name=="Cylinder030"){
-            this.Train.children[i].material=mate02
+        for(var i=0;i<3;i++){
+          if(this.Train.scene.children[i].name=="Rail"){
+            this.Train.scene.children[i].material=mate02
           } else {
-            this.Train.children[i].children[0].material=mate02
-            this.Train.children[i].children[1].material=mate03
-            this.Train.children[i].children[2].material=mate01
+            this.Train.scene.children[i].children[0].material=mate02
+            this.Train.scene.children[i].children[1].material=mate01
+            this.ParkObjects.push(this.Train.scene.children[i]);
           }
         }
-
-        this.scene.add(this.Train);
+        this.scene.add(this.Train.scene);
       }
     );
+
+
 
     // this.loader.load(
     //   'assets/model/choochooTrain02.glb',
@@ -1470,22 +1512,111 @@ export class welcomeService {
     // );
   }
 
+  private TweenF01 = new TimelineLite();
+  private TweenF02 = new TimelineLite();
+  private TweenF03 = new TimelineLite();
+  private TweenF04 = new TimelineLite();
+  private TweenF05 = new TimelineLite();
+  private TweenF06 = new TimelineLite();
+  private TweenF07 = new TimelineLite();
+  private TweenF08 = new TimelineLite();
+  FirstSceneClickEvent(){
+    this.raycaster.setFromCamera(this.mouse,this.camera);
+    var intersect = this.raycaster.intersectObjects(this.ParkObjects,true)
+    if(intersect.length>0){
+      console.log(intersect[0])
+      switch (intersect[0].object.name) {
+        case "FerrisWheel00"||"FerrisWheel01"||"FerrisWheel02":
+          if(this.FerrisAnimation!=null){
+          } else {
+            for(var i=0;i<this.Ferris.animations.length;i++){
+              this.FerrisAnimation = this.mixer01.clipAction(this.Ferris.animations[i]);
+              this.FerrisAnimation.setLoop(THREE.LoopOnce);
+              this.FerrisAnimation.play().reset();
+            }
+            setTimeout(() => {
+              this.FerrisAnimation=null;
+            }, 20000);
+          }
+        break;
+        case "F01_1":
+          if(!this.TweenF01.isActive()){
+            this.TweenF01.restart();
+          }
+        break;
+        case "F02_1":
+          if(!this.TweenF02.isActive()){
+            this.TweenF02.restart();
+          }
+        break;
+        case "F03_1":
+          if(!this.TweenF03.isActive()){
+            this.TweenF03.restart();
+          }
+        break;
+        case "F04_1":
+          if(!this.TweenF04.isActive()){
+            this.TweenF04.restart();
+          }
+        break;
+        case "F05_1":
+          if(!this.TweenF05.isActive()){
+            this.TweenF05.restart();
+          }
+        break;
+        case "F06_1":
+          if(!this.TweenF06.isActive()){
+            this.TweenF06.restart();
+          }
+        break;
+        case "F07_1":
+          if(!this.TweenF07.isActive()){
+            this.TweenF07.restart();
+          }
+        break;
+        case "F08_1":
+          if(!this.TweenF08.isActive()){
+            this.TweenF08.restart();
+          }
+        break;
+        case "Train01_0"||"Train02_0":
+          if(this.TrainAnimation!=null){
+          } else {
+            for(var i=0;i<this.Train.animations.length;i++){
+              this.TrainAnimation = this.mixer02.clipAction(this.Train.animations[i]);
+              this.TrainAnimation.setLoop(THREE.LoopOnce);
+              this.TrainAnimation.play().reset();
+            }
+            setTimeout(() => {
+              this.TrainAnimation=null;
+            }, 20000);
+          }
+        break;
+      }
+    }
+  }
+
+  TrainSmoke(){
+
+  }
+
+
   private BaseMatcap;
   FirstInit(): void {
-    const cursor = document.querySelector('.cursor');
-    const outer = document.querySelector('.cursor .outer');
-    const dot = document.querySelector('.cursor .dot');
-    document.addEventListener('mousemove',e=>{
-      cursor.setAttribute("style","top:"+e.pageY+"px;left:"+e.pageX+"px;");
-    });
-    document.addEventListener('mousedown',()=>{
-      TweenLite.to(outer,.3,{css:{scale:.75}});
-      TweenLite.to(dot,.3,{css:{scale:1}});
-    });
-    document.addEventListener('mouseup',()=>{
-      TweenLite.to(outer,.3,{css:{scale:1}});
-      TweenLite.to(dot,.3,{css:{scale:.75}});
-    });
+    // const cursor = document.querySelector('.cursor');
+    // const outer = document.querySelector('.cursor .outer');
+    // const dot = document.querySelector('.cursor .dot');
+    // document.addEventListener('mousemove',e=>{
+    //   cursor.setAttribute("style","top:"+e.pageY+"px;left:"+e.pageX+"px;");
+    // });
+    // document.addEventListener('mousedown',()=>{
+    //   TweenLite.to(outer,.3,{css:{scale:.75}});
+    //   TweenLite.to(dot,.3,{css:{scale:1}});
+    // });
+    // document.addEventListener('mouseup',()=>{
+    //   TweenLite.to(outer,.3,{css:{scale:1}});
+    //   TweenLite.to(dot,.3,{css:{scale:.75}});
+    // });
 
 
     this.StringM = new LineMaterial({
@@ -1834,6 +1965,9 @@ export class welcomeService {
     this.canvas.addEventListener("mousemove", (e) => {
       this.renderThreePosition(e.x, e.y);
     });
+    this.canvas.addEventListener("click", () => {
+      this.FirstSceneClickEvent();
+    });
     this.canvas.addEventListener("touchmove", (e) => {
       this.renderThreePosition(e.touches[0].clientX, e.touches[0].clientY);
     });
@@ -1850,6 +1984,7 @@ export class welcomeService {
         this.CursorBegin();
         this.canvas.ontouchmove = () => {
           this.BalloonCursor();
+          this.FirstSceneClickEvent();
         };
     });
     this.canvas.addEventListener("mouseup", (e) => {
@@ -2239,32 +2374,32 @@ export class welcomeService {
 
 
   BalloonSceneRender() {
+
     this.raycaster.setFromCamera(this.mouse,this.camera);
-    var intersect = this.raycaster.intersectObjects(this.Lines,false)
+    var intersect = this.raycaster.intersectObjects(this.ParkObjects,true)
     if(intersect.length>0){
       // intersect[j].object.material=new THREE.MeshBasicMaterial({color:0x000000});
-      this.sphereInter.visible = true;
-      this.sphereInter.position.copy( intersect[ 0 ].point );
+      // this.sphereInter.visible = true;
+      document.body.style.cursor="pointer";
+      // this.sphereInter.position.copy( intersect[ 0 ].point );
     } else {
-      this.sphereInter.visible=false;
+      // this.sphereInter.visible=false;
+      document.body.style.cursor="auto";
     }
 
     this.controls.update();
-    for (var i = 0; i < this.meshes.length; i++) {
-      this.meshes[i].position.set(this.bodies[i].position.x.toFixed(3),this.bodies[i].position.y.toFixed(3),this.bodies[i].position.z.toFixed(3));
-      this.meshes[i].quaternion.copy(this.bodies[i].quaternion);
-    }
+    // for (var i = 0; i < this.meshes.length; i++) {
+    //   this.meshes[i].position.set(this.bodies[i].position.x.toFixed(3),this.bodies[i].position.y.toFixed(3),this.bodies[i].position.z.toFixed(3));
+    //   this.meshes[i].quaternion.copy(this.bodies[i].quaternion);
+    // }
 
-    if (this.LastCursor.y != this.FirstCursor.y && this.LastCursor.x != this.FirstCursor.x && !this.collided) {
-      this.RenderMouseCursor();
-    }
-    this.RenderLetter();
+    // if (this.LastCursor.y != this.FirstCursor.y && this.LastCursor.x != this.FirstCursor.x && !this.collided) {
+    //   this.RenderMouseCursor();
+    // }
+    // this.RenderLetter();
     
     // var pos = new THREE.Vector3()
     // pos.setFromMatrixPosition(this.TrainBalloon.children["0"].children[0].matrixWorld);
-
-
-    
     
     if(this.controls.enableRotate){
       this.debugger.update();
