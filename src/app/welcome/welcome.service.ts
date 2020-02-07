@@ -1190,6 +1190,7 @@ export class welcomeService {
   private Swing;
   private FerrisAnimation;
   private TrainAnimation;
+  private SmokePipe=[];
   ChooChoo() {
     let white = this.textureLoader.load('assets/matcaps/FFFFFF03.png',()=>{
       white.encoding=THREE.sRGBEncoding;
@@ -1428,7 +1429,6 @@ export class welcomeService {
         this.FerrisWheel.position.set(0, -.05, -1);
         this.FerrisWheel.rotation.set(0,-30*Math.PI/180,0);
         
-
         for(var i=0;i<this.FerrisWheel.children.length;i++){
           if(this.FerrisWheel.children[i].name=="Star01"){
             this.FerrisWheel.children[i].material=mate03
@@ -1465,12 +1465,15 @@ export class welcomeService {
         this.Train.scene.position.set(0, 0, 0);
 
         // Train
-        for(var i=0;i<3;i++){
+        for(var i=0;i<this.Train.scene.children.length;i++){
           if(this.Train.scene.children[i].name=="Rail"){
             this.Train.scene.children[i].material=mate02
+          } else if (this.Train.scene.children[i].name=="SmokePipe"){
+            this.Train.scene.children[i].material=mate02
+            this.SmokePipe.push(this.Train.scene.children[i].material);
           } else {
             this.Train.scene.children[i].children[0].material=mate02
-            this.Train.scene.children[i].children[1].material=mate01
+            this.Train.scene.children[i].children[1].material=mate01  
             this.ParkObjects.push(this.Train.scene.children[i]);
           }
         }
@@ -1526,7 +1529,9 @@ export class welcomeService {
     if(intersect.length>0){
       console.log(intersect[0])
       switch (intersect[0].object.name) {
-        case "FerrisWheel00"||"FerrisWheel01"||"FerrisWheel02":
+        case "FerrisWheel00":
+        case "FerrisWheel01":
+        case "FerrisWheel02":
           if(this.FerrisAnimation!=null){
           } else {
             for(var i=0;i<this.Ferris.animations.length;i++){
@@ -1579,7 +1584,8 @@ export class welcomeService {
             this.TweenF08.restart();
           }
         break;
-        case "Train01_0"||"Train02_0":
+        case "Train01_0":
+        case "Train02_0":
           if(this.TrainAnimation!=null){
           } else {
             for(var i=0;i<this.Train.animations.length;i++){
