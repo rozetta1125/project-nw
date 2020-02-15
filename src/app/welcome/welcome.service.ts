@@ -164,7 +164,7 @@ export class welcomeService {
     });
     this.renderer.gammaOutput=true;
     this.renderer.toneMapping = THREE.LinearToneMapping;
-    this.renderer.toneMappingExposure = .95;
+    this.renderer.toneMappingExposure = 1;
     this.textureLoader = new THREE.TextureLoader();
     this.clock = new THREE.Clock();
     this.renderer.setSize(window.innerWidth, window.innerHeight);
@@ -1254,6 +1254,97 @@ export class welcomeService {
       }
     );
 
+    this.loader.load(
+      'assets/model/Carnival.glb',
+      (gltf) => {
+        this.Carnival = gltf.scene;
+        this.Carnival.scale.set(.9, .9, .9);
+        this.Carnival.position.set(0, 0, .5);
+        this.Carnival.rotation.set(0,0,0);
+        // Carnival
+        for(var i=0;i<this.Carnival.children.length;i++){
+          if(this.Carnival.children[i].name=="Carnival02"){
+            this.Carnival.children[i].children[0].material=mate02;
+            this.Carnival.children[i].children[1].material=mate01;
+          } else {
+            this.Carnival.children[i].material=mate01
+          }
+        }
+        this.CarnivalTween.pause();
+        this.CarnivalTween.to(this.Carnival.rotation,40,{ease:Power1.easeInOut,y:this.Carnival.rotation.y-Math.PI*6});
+        this.CarnivalTween.to(this.CarnivalPlane.rotation,40,{ease:Power1.easeInOut,y:this.CarnivalPlane.rotation.y-Math.PI*6},'-=40');
+        this.scene.add(this.Carnival);
+        this.ParkObjects.push(this.Carnival)
+
+
+        // 
+        this.loader.load('assets/model/CarnivalPlane.glb',
+          (gltf)=>{
+            
+            for(var i=0;i<2;i++){
+              if(gltf.scene.children[i].name=="CarnivalPlane00"){
+                PlanePart = gltf.scene.children[i].clone();
+                PlanePart.children["0"].material=mate02;
+                PlanePart.children["1"].material=mate03;
+              } else {
+                gltf.scene.children[""+i+""].material=mate02;
+                Fan = gltf.scene.children[i].clone();
+              }
+            }
+            Fan.position.z = .65;
+            PlanePart.position.z=.65;
+            Plane01.add(Fan);
+            Plane01.add(PlanePart)
+            Plane01.scale.set(.9,.9,.9)
+            Plane01.position.set(0,.5,0);
+            Plane01.rotation.set(0,-4*Math.PI/180,0)
+            Plane01.children[0].name="Plane01W";
+            Plane01.children[1].children[0].name="Plane01";
+            Plane01.children[1].children[1].name="Plane01";
+            this.PlaneTween01.pause();
+            this.PlaneTween01.to(Plane01.children[0].rotation,5,{x:Math.PI*10});
+            this.CarnivalTween.to(Plane01.position,2,{ease:Power1.easeInOut,y:.65,repeat:11,yoyo:true},'-=36');
+            this.CarnivalPlane.add(Plane01)
+    
+            Plane02 = Plane01.clone();
+            Plane02.children[0].name="Plane02W";
+            Plane02.children[1].children[0].name="Plane02";
+            Plane02.children[1].children[1].name="Plane02";
+            Plane02.rotation.set(0,(-90-4)*Math.PI/180,0)
+            this.PlaneTween02.pause();
+            this.PlaneTween02.to(Plane02.children[0].rotation,5,{x:Math.PI*10});
+            this.CarnivalTween.to(Plane02.position,2,{ease:Power1.easeInOut,y:.65,repeat:11,yoyo:true},'-=33');
+            this.CarnivalPlane.add(Plane02)
+    
+            Plane03 = Plane01.clone();
+            Plane03.children[0].name="Plane03W";
+            Plane03.children[1].children[0].name="Plane03";
+            Plane03.children[1].children[1].name="Plane03";
+            Plane03.position.set(0,.5,0);
+            Plane03.rotation.set(0,(-180-4)*Math.PI/180,0)
+            this.PlaneTween03.pause();
+            this.PlaneTween03.to(Plane03.children[0].rotation,5,{x:Math.PI*10});
+            this.CarnivalTween.to(Plane03.position,2,{ease:Power1.easeInOut,y:.65,repeat:11,yoyo:true},'-=34');
+            this.CarnivalPlane.add(Plane03)
+    
+            Plane04 = Plane01.clone();
+            Plane04.children[0].name="Plane04W";
+            Plane04.children[1].children[0].name="Plane04";
+            Plane04.children[1].children[1].name="Plane04";
+            Plane04.position.set(0,.5,0);
+            Plane04.rotation.set(0,(-270-4)*Math.PI/180,0)
+            this.PlaneTween04.pause();
+            this.PlaneTween04.to(Plane04.children[0].rotation,5,{x:Math.PI*10});
+            this.CarnivalTween.to(Plane04.position,2,{ease:Power1.easeInOut,y:.65,repeat:11,yoyo:true},'-=35');
+            this.CarnivalPlane.add(Plane04)
+    
+            this.CarnivalPlane.position.set(0,0, .5)
+            this.ParkObjects.push(this.CarnivalPlane)
+            this.scene.add(this.CarnivalPlane);
+          }
+        );
+      }
+    );
 
     this.CarnivalPlane = new THREE.Object3D();
     let Plane01 = new THREE.Object3D();
@@ -1262,76 +1353,8 @@ export class welcomeService {
     let Plane04 = new THREE.Object3D();
     let Fan = new THREE.Object3D();
     let PlanePart = new THREE.Object3D();
-    this.loader.load('assets/model/CarnivalPlane.glb',
-      (gltf)=>{
-        
-        for(var i=0;i<2;i++){
-          if(gltf.scene.children[i].name=="CarnivalPlane00"){
-            PlanePart = gltf.scene.children[i].clone();
-            PlanePart.children["0"].material=mate02;
-            PlanePart.children["1"].material=mate03;
-          } else {
-            gltf.scene.children[""+i+""].material=mate02;
-            Fan = gltf.scene.children[i].clone();
-          }
-        }
-        Fan.position.z = .6;
-        PlanePart.position.z=.6;
-        Plane01.add(Fan);
-        Plane01.add(PlanePart)
-        Plane01.scale.set(.8,.8,.8)
-        Plane01.position.set(0,.65,0);
-        Plane01.rotation.set(0,-4*Math.PI/180,0)
-        this.CarnivalPlane.add(Plane01)
 
-        Plane02 = Plane01.clone();
-        Plane01.position.set(0,.45,0);
-        Plane02.rotation.set(0,(-90-4)*Math.PI/180,0)
-        this.CarnivalPlane.add(Plane02)
 
-        Plane03 = Plane01.clone();
-        Plane03.position.set(0,.55,0);
-        Plane03.rotation.set(0,(-180-4)*Math.PI/180,0)
-        this.CarnivalPlane.add(Plane03)
-
-        Plane04 = Plane01.clone();
-        Plane04.position.set(0,.6,0);
-        Plane04.rotation.set(0,(-270-4)*Math.PI/180,0)
-        this.CarnivalPlane.add(Plane04)
-
-        this.CarnivalPlane.position.set(0,0, .5)
-        this.ParkObjects.push(this.CarnivalPlane)
-        this.scene.add(this.CarnivalPlane);
-        TweenLite.to(this.CarnivalPlane.rotation,180,{y:-Math.PI*6})
-
-        // TweenLite.to(Plane05.position,1,{y:Plane05.position.y+.2})
-        // TweenLite.to(Plane05.position,2,{y:Plane05.position.y-.2,delay:1})
-      }
-    );
-
-    this.loader.load(
-      'assets/model/Carnival.glb',
-      (gltf) => {
-        this.Carnival = gltf.scene;
-        this.Carnival.scale.set(.8, .8, .8);
-        this.Carnival.position.set(0, 0, .5);
-        this.Carnival.rotation.set(0,8.5*Math.PI/180,0);
-        // TweenLite.to(this.Carnival.rotation,5,{y:Math.PI*2});
-
-        // Carnival
-        for(var i=0;i<this.Carnival.children.length;i++){
-          if(this.Carnival.children[i].name=="Cylinder028"){
-            this.Carnival.children[i].children[0].material=mate02;
-            this.Carnival.children[i].children[1].material=mate01;
-          } else {
-            this.Carnival.children[i].material=mate01
-          }
-        }
-        TweenLite.to(this.Carnival.rotation,180,{y:this.Carnival.rotation.y-Math.PI*6})
-        this.scene.add(this.Carnival);
-        this.ParkObjects.push(this.Carnival)
-      }
-    );
 
     this.loader.load(
       'assets/model/Ferris.glb',
@@ -1349,59 +1372,59 @@ export class welcomeService {
         // Ferris
         for(var i=0;i<this.Ferris.scene.children.length;i++){
           if(this.Ferris.scene.children[i].name=="F01"){
+            this.TweenF01.pause();
             this.TweenF01.to(this.Ferris.scene.children[i].rotation,1,{z:.7})
             this.TweenF01.to(this.Ferris.scene.children[i].rotation,2,{z:-.7});
             this.TweenF01.to(this.Ferris.scene.children[i].rotation,1,{z:0});
-            this.TweenF01.pause();
             this.Ferris.scene.children[i].children[1].material=mate03
             this.Ferris.scene.children[i].children[0].material=mate01
           } else if (this.Ferris.scene.children[i].name=="F02") {
+            this.TweenF02.pause();
             this.TweenF02.to(this.Ferris.scene.children[i].rotation,1,{z:.7})
             this.TweenF02.to(this.Ferris.scene.children[i].rotation,2,{z:-.7});
             this.TweenF02.to(this.Ferris.scene.children[i].rotation,1,{z:0});
-            this.TweenF02.pause();
             this.Ferris.scene.children[i].children[1].material=mate02
             this.Ferris.scene.children[i].children[0].material=mate01
           } else if (this.Ferris.scene.children[i].name=="F03") {
+            this.TweenF03.pause();
             this.TweenF03.to(this.Ferris.scene.children[i].rotation,1,{z:.7})
             this.TweenF03.to(this.Ferris.scene.children[i].rotation,2,{z:-.7});
             this.TweenF03.to(this.Ferris.scene.children[i].rotation,1,{z:0});
-            this.TweenF03.pause();
             this.Ferris.scene.children[i].children[1].material=mate03
             this.Ferris.scene.children[i].children[0].material=mate01
           } else if (this.Ferris.scene.children[i].name=="F04") {
+            this.TweenF04.pause();
             this.TweenF04.to(this.Ferris.scene.children[i].rotation,1,{z:.7})
             this.TweenF04.to(this.Ferris.scene.children[i].rotation,2,{z:-.7});
             this.TweenF04.to(this.Ferris.scene.children[i].rotation,1,{z:0});
-            this.TweenF04.pause();
             this.Ferris.scene.children[i].children[1].material=mate02
             this.Ferris.scene.children[i].children[0].material=mate01
           } else if (this.Ferris.scene.children[i].name=="F05") {
+            this.TweenF05.pause();
             this.TweenF05.to(this.Ferris.scene.children[i].rotation,1,{z:.7})
             this.TweenF05.to(this.Ferris.scene.children[i].rotation,2,{z:-.7});
             this.TweenF05.to(this.Ferris.scene.children[i].rotation,1,{z:0});
-            this.TweenF05.pause();
             this.Ferris.scene.children[i].children[1].material=mate03
             this.Ferris.scene.children[i].children[0].material=mate01
           } else if (this.Ferris.scene.children[i].name=="F06") {
+            this.TweenF06.pause();
             this.TweenF06.to(this.Ferris.scene.children[i].rotation,1,{z:.7})
             this.TweenF06.to(this.Ferris.scene.children[i].rotation,2,{z:-.7});
             this.TweenF06.to(this.Ferris.scene.children[i].rotation,1,{z:0});
-            this.TweenF06.pause();
             this.Ferris.scene.children[i].children[1].material=mate02
             this.Ferris.scene.children[i].children[0].material=mate01
           } else if (this.Ferris.scene.children[i].name=="F07") {
+            this.TweenF07.pause();
             this.TweenF07.to(this.Ferris.scene.children[i].rotation,1,{z:.7})
             this.TweenF07.to(this.Ferris.scene.children[i].rotation,2,{z:-.7});
             this.TweenF07.to(this.Ferris.scene.children[i].rotation,1,{z:0});
-            this.TweenF07.pause();
             this.Ferris.scene.children[i].children[1].material=mate03
             this.Ferris.scene.children[i].children[0].material=mate01
           } else if (this.Ferris.scene.children[i].name=="F08") {
+            this.TweenF08.pause();
             this.TweenF08.to(this.Ferris.scene.children[i].rotation,1,{z:.7})
             this.TweenF08.to(this.Ferris.scene.children[i].rotation,2,{z:-.7});
             this.TweenF08.to(this.Ferris.scene.children[i].rotation,1,{z:0});
-            this.TweenF08.pause();
             this.Ferris.scene.children[i].children[1].material=mate02
             this.Ferris.scene.children[i].children[0].material=mate01
           } else {
@@ -1414,14 +1437,14 @@ export class welcomeService {
       }
     );
 
-    let LightMate = new THREE.MeshLambertMaterial({emissiveIntensity:1,emissive:0xdddddd,color:0xe7e7e7})
-    let LightMate02 = new THREE.MeshLambertMaterial({emissiveIntensity:1,emissive:0xdddddd,color:0xe7e7e7})
+    let LightMate = new THREE.MeshLambertMaterial({emissiveIntensity:1,emissive:0xffffff,color:0xffffff})
+    let LightMate02 = new THREE.MeshLambertMaterial({emissiveIntensity:1,emissive:0xffffff,color:0xffffff})
 
     let ColorFFFFFF = new THREE.Color(0xffffff);
     let ColorE7E7E7 = new THREE.Color(0xdddddd);
 
     this.loader.load(
-      'assets/model/FerrisWheel.glb',
+      'assets/model/FerrisWheel03.glb',
       (gltf) => {
         this.FerrisWheel = gltf.scene;
 
@@ -1431,19 +1454,19 @@ export class welcomeService {
         
         for(var i=0;i<this.FerrisWheel.children.length;i++){
           if(this.FerrisWheel.children[i].name=="Star01"){
-            this.FerrisWheel.children[i].material=mate03
+            this.FerrisWheel.children[i].material=mate02
           } else if(this.FerrisWheel.children[i].name=="Star02"){
             this.FerrisWheel.children[i].material=mate02
-          } else if(this.FerrisWheel.children[i].name=="Light01"){
-            this.FerrisWheel.children[i].material=LightMate
-            let tl = new TimelineLite({repeat:20,repeatDelay:.5});
-            tl.set(this.FerrisWheel.children[i].material,{emissive:ColorFFFFFF});
-            tl.set(this.FerrisWheel.children[i].material,{emissive:ColorE7E7E7,delay:.5})
+          } else if(this.FerrisWheel.children[i].name=="Light001"){
+            this.FerrisWheel.children[i].material=mate01
+            // let tl = new TimelineLite({repeat:20,repeatDelay:.2});
+            // tl.set(this.FerrisWheel.children[i].material,{emissive:ColorFFFFFF});
+            // tl.set(this.FerrisWheel.children[i].material,{emissive:ColorE7E7E7,delay:.2})
           } else if(this.FerrisWheel.children[i].name=="Light02"){
-            this.FerrisWheel.children[i].material=LightMate02;
-            let tl = new TimelineLite({repeat:20,repeatDelay:.5,delay:.5});
-            tl.set(this.FerrisWheel.children[i].material,{emissive:ColorFFFFFF});
-            tl.set(this.FerrisWheel.children[i].material,{emissive:ColorE7E7E7,delay:.5})
+            this.FerrisWheel.children[i].material=mate01;
+            // let tl = new TimelineLite({repeat:20,repeatDelay:.2,delay:.2});
+            // tl.set(this.FerrisWheel.children[i].material,{emissive:ColorFFFFFF});
+            // tl.set(this.FerrisWheel.children[i].material,{emissive:ColorE7E7E7,delay:.2})
           } else {
             this.FerrisWheel.children[i].material=mate01
           }
@@ -1461,7 +1484,6 @@ export class welcomeService {
         this.mixer02 = new THREE.AnimationMixer(this.Train.scene);
 
         this.mixer02.timeScale=.25;
-        this.Train.scene.scale.set(.85, .85, .85);
         this.Train.scene.position.set(0, 0, 0);
 
         // Train
@@ -1470,7 +1492,7 @@ export class welcomeService {
             this.Train.scene.children[i].material=mate02
           } else if (this.Train.scene.children[i].name=="SmokePipe"){
             this.Train.scene.children[i].material=mate02
-            this.SmokePipe.push(this.Train.scene.children[i].material);
+            this.SmokePipe.push(this.Train.scene.children[i]);
           } else {
             this.Train.scene.children[i].children[0].material=mate02
             this.Train.scene.children[i].children[1].material=mate01  
@@ -1481,7 +1503,12 @@ export class welcomeService {
       }
     );
 
-
+    this.Smoke = new THREE.Mesh(new THREE.SphereBufferGeometry(.04,6,4),new THREE.MeshMatcapMaterial({transparent:true,matcap:white,opacity:0}));
+    for(var i=0;i<160;i++){
+      let smokeClone = this.Smoke.clone();
+      this.Smokes.push(smokeClone);
+      this.scene.add(smokeClone);
+    }
 
     // this.loader.load(
     //   'assets/model/choochooTrain02.glb',
@@ -1523,11 +1550,16 @@ export class welcomeService {
   private TweenF06 = new TimelineLite();
   private TweenF07 = new TimelineLite();
   private TweenF08 = new TimelineLite();
+  private CarnivalTween = new TimelineLite();
+  private PlaneTween01 = new TimelineLite();
+  private PlaneTween02 = new TimelineLite();
+  private PlaneTween03 = new TimelineLite();
+  private PlaneTween04 = new TimelineLite();
   FirstSceneClickEvent(){
     this.raycaster.setFromCamera(this.mouse,this.camera);
     var intersect = this.raycaster.intersectObjects(this.ParkObjects,true)
     if(intersect.length>0){
-      console.log(intersect[0])
+      console.log(intersect[0].object.name)
       switch (intersect[0].object.name) {
         case "FerrisWheel00":
         case "FerrisWheel01":
@@ -1544,6 +1576,37 @@ export class welcomeService {
             }, 20000);
           }
         break;
+        case "Plane01":
+        case "Plane01W":
+          if(!this.PlaneTween01.isActive()){
+            this.PlaneTween01.restart();
+          }
+          break;
+        case "Plane02":
+        case "Plane02W":
+          if(!this.PlaneTween02.isActive()){
+            this.PlaneTween02.restart();
+          }
+          break;
+        case "Plane03":
+        case "Plane03W":
+          if(!this.PlaneTween03.isActive()){
+            this.PlaneTween03.restart();
+          }
+          break;
+        case "Plane04":
+        case "Plane04W":
+          if(!this.PlaneTween04.isActive()){
+            this.PlaneTween04.restart();
+          }
+          break;
+        case "Carnival01":
+        case "Carnival02_0":
+        case "Carnival02_1":
+          if(!this.CarnivalTween.isActive()){
+            this.CarnivalTween.restart();
+          }
+          break;
         case "F01_1":
           if(!this.TweenF01.isActive()){
             this.TweenF01.restart();
@@ -1585,7 +1648,9 @@ export class welcomeService {
           }
         break;
         case "Train01_0":
+        case "Train01_1":
         case "Train02_0":
+        case "Train02_1":
           if(this.TrainAnimation!=null){
           } else {
             for(var i=0;i<this.Train.animations.length;i++){
@@ -1593,6 +1658,7 @@ export class welcomeService {
               this.TrainAnimation.setLoop(THREE.LoopOnce);
               this.TrainAnimation.play().reset();
             }
+            this.TrainSmoke();
             setTimeout(() => {
               this.TrainAnimation=null;
             }, 20000);
@@ -1602,8 +1668,33 @@ export class welcomeService {
     }
   }
 
+  private Smoke;
+  private Smokes=[];
+  private SmokeI=0;
   TrainSmoke(){
-
+    if(this.SmokeI==this.Smokes.length){
+      this.SmokeI=0;
+    }
+    // Position
+    TweenLite.fromTo(this.Smokes[this.SmokeI].position,1.6,
+      {x:this.SmokePipe[0].position.x,z:this.SmokePipe[0].position.z,y:this.SmokePipe[0].position.y},
+      {x:this.SmokePipe[0].position.x+(.3-Math.random()*.3),z:this.SmokePipe[0].position.z+(.3-Math.random()*.3),y:this.SmokePipe[0].position.y+Math.random()*.4+.4});
+    // Scale
+    TweenLite.fromTo(this.Smokes[this.SmokeI].scale,1.6,
+      {x:1,z:1,y:1},
+      {x:.1,z:.1,y:.1,ease:Power1.easeIn});
+    // // Opacity
+    TweenLite.fromTo(this.Smokes[this.SmokeI].material,1.6,
+      {opacity:1},
+      {opacity:0});
+    this.SmokeI++;
+    if(this.TrainAnimation==null){
+      console.log("STOPED");
+    } else {
+      setTimeout(() => {
+        this.TrainSmoke();
+      }, 16);
+    }
   }
 
 
@@ -1623,7 +1714,6 @@ export class welcomeService {
     //   TweenLite.to(outer,.3,{css:{scale:1}});
     //   TweenLite.to(dot,.3,{css:{scale:.75}});
     // });
-
 
     this.StringM = new LineMaterial({
       color:0xffffff,
@@ -2317,7 +2407,9 @@ export class welcomeService {
     } 
     if (this.mixer02){
       this.mixer02.update(mixerUpdateDelta);
-    } 
+    }
+
+    
 
     this.now = performance.now();
 
