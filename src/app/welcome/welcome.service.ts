@@ -1192,6 +1192,7 @@ export class welcomeService {
   private TrainAnimation;
   private SwingTween = new TimelineLite();
   private SmokePipe=[];
+  private TrainPosition=[];
   ChooChoo() {
     let white = this.textureLoader.load('assets/matcaps/FFFFFF03.png',()=>{
       white.encoding=THREE.sRGBEncoding;
@@ -1243,23 +1244,23 @@ export class welcomeService {
             gltf.scene.children[""+i+""].children[0].material=mate01;
             gltf.scene.children[""+i+""].children[1].material=mate02;
             gltf.scene.children[""+i+""].children[2].material=mate01;
-            // this.SwingTween.pause();
-            // this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2,{ease:Power1.easeInOut,y:20*Math.PI/180})
-            // this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2,{ease:Power1.easeInOut,y:-20*Math.PI/180})
-            // this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2.2,{ease:Power1.easeInOut,y:30*Math.PI/180})
-            // this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2.2,{ease:Power1.easeInOut,y:-30*Math.PI/180})
-            // this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2.2,{ease:Power1.easeInOut,y:40*Math.PI/180})
-            // this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2.2,{ease:Power1.easeInOut,y:-40*Math.PI/180})
-            // this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2.2,{ease:Power1.easeInOut,y:45*Math.PI/180})
-            // this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2.2,{ease:Power1.easeInOut,y:-45*Math.PI/180})
-            // this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2.2,{ease:Power1.easeInOut,y:50*Math.PI/180})
-            // this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2.2,{ease:Power1.easeInOut,y:-50*Math.PI/180})
-            // this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2.4,{ease:Power1.easeInOut,y:45*Math.PI/180})
-            // this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2.4,{ease:Power1.easeInOut,y:-45*Math.PI/180})
-            // this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2.4,{ease:Power1.easeInOut,y:40*Math.PI/180})
-            // this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2.4,{ease:Power1.easeInOut,y:-40*Math.PI/180})
-            // this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2.2,{ease:Power1.easeInOut,y:30*Math.PI/180})
-            // this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2.2,{ease:Power1.easeInOut,y:-30*Math.PI/180})
+            this.SwingTween.pause();
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2,{ease:Power1.easeInOut,y:20*Math.PI/180})
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2,{ease:Power1.easeInOut,y:-20*Math.PI/180})
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2.2,{ease:Power1.easeInOut,y:30*Math.PI/180})
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2.2,{ease:Power1.easeInOut,y:-30*Math.PI/180})
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2.2,{ease:Power1.easeInOut,y:40*Math.PI/180})
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2.2,{ease:Power1.easeInOut,y:-40*Math.PI/180})
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2.2,{ease:Power1.easeInOut,y:45*Math.PI/180})
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2.2,{ease:Power1.easeInOut,y:-45*Math.PI/180})
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2.2,{ease:Power1.easeInOut,y:50*Math.PI/180})
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2.2,{ease:Power1.easeInOut,y:-50*Math.PI/180})
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2.4,{ease:Power1.easeInOut,y:45*Math.PI/180})
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2.4,{ease:Power1.easeInOut,y:-45*Math.PI/180})
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2.4,{ease:Power1.easeInOut,y:40*Math.PI/180})
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2.4,{ease:Power1.easeInOut,y:-40*Math.PI/180})
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2.2,{ease:Power1.easeInOut,y:30*Math.PI/180})
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2.2,{ease:Power1.easeInOut,y:-30*Math.PI/180})
             this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2,{ease:Power1.easeInOut,y:15*Math.PI/180})
             this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2,{ease:Power1.easeInOut,y:-15*Math.PI/180})
             this.SwingTween.to(gltf.scene.children[""+i+""].rotation,1.8,{ease:Power1.easeInOut,y:12*Math.PI/180})
@@ -1497,21 +1498,25 @@ export class welcomeService {
         this.mixer02.timeScale=.25;
         this.Train.scene.position.set(0, .045, 0);
 
-        // var texture = this.textureLoader.load('assets/shadow/Park02.png');
+        var texture = this.textureLoader.load('assets/shadow/Park02.png');
 
-        // let uniforms = {
-        //   tShadow:{value:texture},
-        //   uShadowColor:{value:new THREE.Color("#000000")},
-        //   uAlpha:{value:1}
-        // }
-        // let material = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms,
-        //   vertexShader:document.getElementById('vertexShader').textContent,
-        //   fragmentShader:document.getElementById('fragmentShader').textContent});
+        let uniforms = {
+          tShadow:{value:texture},
+          uShadowColor:{value:new THREE.Color("#000000")},
+          uAlpha:{value:.2}
+        }
+        let material = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms,
+          vertexShader:document.getElementById('vertexShader').textContent,
+          fragmentShader:document.getElementById('fragmentShader').textContent});
     
-        // let railshadow2 = new THREE.Mesh(new THREE.PlaneGeometry(1,1),material);
-        // railshadow2.rotation.set(-Math.PI/2,0,-Math.PI/2)
-        // railshadow2.position.set(0,2,0);
-        // this.scene.add(railshadow2);
+        let trainShadow1 = new THREE.Mesh(new THREE.PlaneGeometry(1,1),material);
+        trainShadow1.rotation.set(-Math.PI/2,0,-Math.PI/2)
+        this.scene.add(trainShadow1);
+
+        let trainShadow2=trainShadow1.clone();
+        this.scene.add(trainShadow2);
+        this.TrainPosition.push(trainShadow1);
+        this.TrainPosition.push(trainShadow2);
 
         // Train
         for(var i=0;i<this.Train.scene.children.length;i++){
@@ -1521,9 +1526,10 @@ export class welcomeService {
             this.Train.scene.children[i].material=mate02
             this.SmokePipe.push(this.Train.scene.children[i]);
           } else {
-            this.Train.scene.children[i].children[0].material=mate02
-            this.Train.scene.children[i].children[1].material=mate01
+            this.Train.scene.children[i].children[0].material=mate02;
+            this.Train.scene.children[i].children[1].material=mate01;
             this.ParkObjects.push(this.Train.scene.children[i]);
+            this.TrainPosition.push(this.Train.scene.children[i]);
           }
         }
         this.scene.add(this.Train.scene);
@@ -1702,6 +1708,12 @@ export class welcomeService {
     if(this.SmokeI==this.Smokes.length){
       this.SmokeI=0;
     }
+    // Shadow
+    this.TrainPosition[0].position.copy(this.TrainPosition[2].position);
+    this.TrainPosition[1].position.copy(this.TrainPosition[3].position);
+
+    this.TrainPosition[0].rotation.y=this.TrainPosition[2].position.y;
+    this.TrainPosition[1].rotation.y=this.TrainPosition[3].position.y;
     // Position
     TweenLite.fromTo(this.Smokes[this.SmokeI].position,1.6,
       {x:this.SmokePipe[0].position.x,z:this.SmokePipe[0].position.z,y:this.SmokePipe[0].position.y},
