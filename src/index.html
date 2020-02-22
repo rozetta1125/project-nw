@@ -10,5 +10,29 @@
 </head>
 <body>
   <app-root></app-root>
+  <script type="x-shader/x-vertex" id="vertexShader">
+    varying vec2 vUv;
+
+    void main()
+    {
+        vUv = uv;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    }
+  </script>
+  <script type="x-shader/x-vertex" id="fragmentShader">
+    uniform sampler2D tShadow;
+    uniform vec3 uShadowColor;
+    uniform float uAlpha;
+    
+    varying vec2 vUv;
+    
+    void main()
+    {
+        float shadowAlpha = 1.0 - texture2D(tShadow, vUv).r;
+        shadowAlpha *= uAlpha;
+    
+        gl_FragColor = vec4(uShadowColor, shadowAlpha);
+    }    
+  </script>
 </body>
 </html>
