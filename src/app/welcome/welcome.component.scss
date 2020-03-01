@@ -111,3 +111,38 @@ canvas {
         }
     }
 }
+
+
+#nextScene{
+    position: absolute;
+    width:290px;
+    height:60px;
+    bottom:5%;
+    left:0;
+    right:0;
+    margin:0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    .mid{
+        width:190px;
+        height:10px;
+        vertical-align: middle;
+        position: relative;
+        .svg{
+            position: absolute;
+            top:0;
+            right:0;
+            transform: rotate(180deg);
+            width:190px;
+        }
+    }
+    .nextLeft{
+        cursor: pointer;
+        position: relative;
+        left:0;
+        top:0;
+    }
+    .nextRight{
+    }
+}

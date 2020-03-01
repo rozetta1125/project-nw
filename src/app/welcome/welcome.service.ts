@@ -12,6 +12,7 @@ import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter';
 import { Line2 } from 'three/examples/jsm/lines/Line2';
 import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial';
 import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry';
+import { Mesh, MeshBasicMaterial } from 'three';
 
 class LetterProperty {
   Object3D: THREE.Object3D
@@ -154,6 +155,7 @@ export class welcomeService {
   private textureLoader;
 
   private DynamicShadows = [];
+  private goal;
   
   InitThree(elementId: string): void {
     this.canvas = <HTMLCanvasElement>document.getElementById(elementId);
@@ -178,12 +180,12 @@ export class welcomeService {
     // this.camera.position.set(3,2,6);
     // this.camera.position.set(0,1,6);
 
-    this.camera.position.set(0, 2, 7);
+    this.camera.position.set(0, 2, 8);
     // this.camera.position.set(0, 3.5, 7);
 
-    // this.camera.lookAt(0,2,0);
-    this.scene.add(this.camera);
+    // this.camera.lookAt(0,1,-.5);
 
+    this.scene.add(this.camera);
 
     this.raycaster.linePrecision=.01;
 
@@ -193,15 +195,16 @@ export class welcomeService {
     this.dracoLoader.setDecoderPath('assets/draco/');
     this.loader.setDRACOLoader(this.dracoLoader);
 
-    //this.light = new THREE.AmbientLight(0xfafafa);
-    // this.light.position.z = 10;
-    //this.scene.add(this.light);
-    this.controls = new OrbitControls(this.camera, this.canvas);
-    // this.controls.target.set(0,0,-.5);
-    this.controls.target.set(0,0,-4);
-    this.controls.update();
-    this.controls.enableRotate = false;
-    this.gui.add(this.controls,'enableRotate');
+    // this.controls = new OrbitControls(this.camera, this.canvas);
+    // this.controls.target.set(0,1,-.5);
+
+    this.goal = new THREE.Object3D();
+    this.goal.position.set(0,1,-.5);
+    this.camera.lookAt(this.goal.position);
+
+    // this.controls.update();
+    // this.controls.enableRotate = false;
+    // this.gui.add(this.controls,'enableRotate');
 
     // this.controls.minAzimuthAngle=.5;
     // this.controls.maxAzimuthAngle=.5;
@@ -214,240 +217,6 @@ export class welcomeService {
     // this.controls.enableZoom=false;
     // this.controls.enablePan=false;
     // this.controls.rotateSpeed=0.5;
-
-
-    // let hemiLight = new THREE.HemisphereLight(0xffffff, 0xff9396, 0.61);
-    // let hemiLight = new THREE.HemisphereLight(0xffffff, 0xbbbbbb, 0.58);
-
-    // let hemiLight = new THREE.HemisphereLight(0xffffff, 0xdddddd, .5);
-    // this.scene.add(hemiLight)
-
-    // let hemiLight = new THREE.HemisphereLight(0xbbd0ec,0x8694ba, .2);
-    // this.scene.add(hemiLight)
-
-    // let shadow = new THREE.SpotLight(0xffffff,0);
-    // shadow.shadow.mapSize.width=2048;
-    // shadow.shadow.mapSize.height=2048;
-    // shadow.castShadow=true;
-    // shadow.lookAt(0,0,0);
-    // shadow.position.set(0,10,-.25);
-    // shadow.angle=0.35;
-    // shadow.distance=50;
-
-    // this.scene.add(shadow);
-
-    // var shadowGUI={
-    //   intensity:0,
-    //   color:"#ffffff",
-    //   x:0,
-    //   y:10,
-    //   z:-0.25,
-    //   angle:.35,
-    //   distance:50,
-    //   penumbra:0.05,
-    //   decay:2
-    // }
-
-    // var s = this.gui.addFolder("shadow");
-    // s.addColor(shadowGUI,"color")
-    //   .onChange(()=>{
-    //     shadow.color.set(shadowGUI.color);
-    //   });
-    // s.add(shadowGUI,"intensity",0,1)
-    //   .onChange(()=>{
-    //     shadow.intensity=shadowGUI.intensity;
-    //   });
-    //   s.add(shadowGUI,"x",-20,20)
-    //   .onChange(()=>{
-    //     shadow.position.x=shadowGUI.x;
-    //   });
-    //   s.add(shadowGUI,"y",-20,20)
-    //   .onChange(()=>{
-    //     shadow.position.y=shadowGUI.y;
-    //   });
-    //   s.add(shadowGUI,"z",-20,20)
-    //   .onChange(()=>{
-    //     shadow.position.z=shadowGUI.z;
-    //   });
-    //   s.add(shadowGUI,"angle",0,1)
-    //   .onChange(()=>{
-    //     shadow.angle=shadowGUI.angle;
-    //   });
-    //   s.add(shadowGUI,"distance",50,500)
-    //   .onChange(()=>{
-    //     shadow.distance=shadowGUI.distance;
-    //   });
-    //   s.add(shadowGUI,"penumbra",0,1)
-    //   .onChange(()=>{
-    //     shadow.penumbra=shadowGUI.penumbra;
-    //   });
-    //   s.add(shadowGUI,"decay",1,2)
-    //   .onChange(()=>{
-    //     shadow.decay=shadowGUI.decay;
-    //   });
-
-    // var params00 = {
-    //   color: "#ffffff",
-    //   intensity: 0,
-    // }
-    // let AmbientLight = new THREE.AmbientLight(params00.color, params00.intensity);
-    // this.scene.add(AmbientLight);
-    // var l0 = this.gui.addFolder("AmbientLight");
-    // l0.addColor(params00, "color")
-    //   .onChange(() => {
-    //     AmbientLight.color.set(params00.color);
-    //   });
-    // l0.add(params00, "intensity", 0, 1)
-    //   .onChange(() => {
-    //     AmbientLight.intensity = params00.intensity;
-    //   });
-
-    // var params = {
-    //   color: "#ffffff",
-    //   intensity: 0,
-    //   x: 0,
-    //   y: 5,
-    //   z: 0,
-    // }
-
-    // let DirectionalLight = new THREE.DirectionalLight(params.color, params.intensity);
-    // DirectionalLight.position.set(params.x, params.y, params.z);
-    // DirectionalLight.lookAt(0, 0, 0);
-    // DirectionalLight.castShadow=true;
-    // DirectionalLight.shadow.mapSize.width=2048;
-    // DirectionalLight.shadow.mapSize.height=2048;
-    // this.scene.add(DirectionalLight);
-
-    // var l1 = this.gui.addFolder("Directionlight 1");
-    // l1.addColor(params, "color")
-    //   .onChange(() => {
-    //     DirectionalLight.color.set(params.color);
-    //   });
-    // l1.add(params, "intensity", 0, 1)
-    //   .onChange(() => {
-    //     DirectionalLight.intensity = params.intensity;
-    //   });
-    // l1.add(params, "x", -20, 20)
-    //   .onChange(() => {
-    //     DirectionalLight.position.x = params.x;
-    //   });
-    // l1.add(params, "y", -20, 20)
-    //   .onChange(() => {
-    //     DirectionalLight.position.y = params.y;
-    //   });
-    // l1.add(params, "z", -20, 20)
-    //   .onChange(() => {
-    //     DirectionalLight.position.z = params.z;
-    //   });
-
-
-
-    // var params02 = {
-    //   color: "#ffffff",
-    //   intensity: 0,
-    //   x: 2,
-    //   y: 2.5,
-    //   z: 2,
-    // }
-
-    // let DirectionalLight02 = new THREE.DirectionalLight(params02.color, params02.intensity);
-    // DirectionalLight02.position.set(params02.x, params02.y, params02.z);
-    // DirectionalLight02.lookAt(0, 0, 0);
-    // this.scene.add(DirectionalLight02);
-
-    // var l2 = this.gui.addFolder("Directionlight 2");
-    // l2.addColor(params02, "color")
-    //   .onChange(() => {
-    //     DirectionalLight02.color.set(params02.color);
-    //   });
-    // l2.add(params02, "intensity", 0, 1)
-    //   .onChange(() => {
-    //     DirectionalLight02.intensity = params02.intensity;
-    //   });
-    // l2.add(params02, "x", -20, 20)
-    //   .onChange(() => {
-    //     DirectionalLight02.position.x = params02.x;
-    //   });
-    // l2.add(params02, "y", -20, 20)
-    //   .onChange(() => {
-    //     DirectionalLight02.position.y = params02.y;
-    //   });
-    // l2.add(params02, "z", -20, 20)
-    //   .onChange(() => {
-    //     DirectionalLight02.position.z = params02.z;
-    //   });
-
-
-    // var params03 = {
-    //   width:1,
-    //   height:1,
-    //   intensity: 0,
-    //   color: "#ffffff",
-    //   x:0,
-    //   y:0,
-    //   z:2,
-    //   Lx:0,
-    //   Ly:0,
-    //   Lz:0,
-    // }
-
-    // RectAreaLightUniformsLib.init();
-
-    // let rectLight = new THREE.RectAreaLight( params03.color, params03.intensity, params03.width, params03.height );
-    // rectLight.position.set( params03.x, params03.y, params03.z);
-    // rectLight.lookAt( params03.Lx, params03.Ly, params03.Lz);
-    // this.scene.add( rectLight )
-          
-    // var rectLightMesh = new THREE.Mesh( new THREE.PlaneBufferGeometry(), new THREE.MeshBasicMaterial( { side: THREE.BackSide } ) );
-    // rectLightMesh.scale.x = rectLight.width;
-    // rectLightMesh.scale.y = rectLight.height;
-    // rectLight.add( rectLightMesh );
-    // var rectLightMeshBack = new THREE.Mesh( new THREE.PlaneBufferGeometry(), new THREE.MeshBasicMaterial( { color: 0x080808 } ) );
-    // rectLightMesh.add( rectLightMeshBack );
-// 
-    // var rl = this.gui.addFolder("RectLight 2");
-    // rl.addColor(params03, "color")
-    //   .onChange(() => {
-    //     rectLight.color.set(params03.color);
-    //   });
-    // rl.add(params03, "intensity", 0, 1)
-    //   .onChange(() => {
-    //     rectLight.intensity = params03.intensity;
-    //   });
-    // rl.add(params03, "width", 0, 10)
-    //   .onChange(() => {
-    //     rectLight.width = params03.width;
-    //     // rectLightMesh.scale.x = params03.width;
-    //   });
-    // rl.add(params03, "height", 0, 10)
-    //   .onChange(() => {
-    //     rectLight.height = params03.height;
-    //     // rectLightMesh.scale.y = params03.height;
-    //   });
-    // rl.add(params03, "x", -20, 20)
-    //   .onChange(() => {
-    //     rectLight.position.x = params03.x;
-    //   });
-    // rl.add(params03, "y", -20, 20)
-    //   .onChange(() => {
-    //     rectLight.position.y = params03.y;
-    //   });
-    // rl.add(params03, "z", -20, 20)
-    //   .onChange(() => {
-    //     rectLight.position.z = params03.z;
-    //   });
-    // rl.add(params03, "Lx", -20, 20)
-    //   .onChange(() => {
-    //     rectLight.lookAt(params03.x,params03.y,params03.z)
-    //   });
-    // rl.add(params03, "Ly", -20, 20)
-    //   .onChange(() => {
-    //     rectLight.lookAt(params03.x,params03.y,params03.z)
-    //   });
-    // rl.add(params03, "Lz", -20, 20)
-    //   .onChange(() => {
-    //     rectLight.lookAt(params03.x,params03.y,params03.z)
-    //   });
 
     let bgparams = {
       background: "#ffffff",
@@ -468,6 +237,22 @@ export class welcomeService {
       });
   }
 
+  nextSceneFunction(){
+    document.querySelector('#nextScene .nextLeft').addEventListener("mousedown", ()=>{ 
+      var left = document.querySelector('#nextScene .nextLeft');
+      console.log(left.parentElement.offsetLeft)
+      document.addEventListener("mousemove", this.nextLeftMove, false);
+    })
+    document.addEventListener("mouseup", ()=>{
+      console.log('up')
+      document.removeEventListener("mousemove", this.nextLeftMove, false);
+    })
+  }
+
+  nextLeftMove(e){
+    var offsetl = document.querySelector('#nextScene .nextLeft');
+    TweenLite.to('#nextScene .nextLeft',.02,{css:{left:(e.clientX-offsetl.parentElement.offsetLeft)+"px"}})
+  }
 
   private CircleGolf;
   ZeroInit(){
@@ -1188,11 +973,14 @@ export class welcomeService {
   private Carnival;
   private CarnivalPlane;
   private Swing;
+  private SwingS=[];
   private FerrisAnimation;
   private TrainAnimation;
   private SwingTween = new TimelineLite();
   private SmokePipe=[];
   private TrainPosition=[];
+  private FerrisShadow = new THREE.Object3D();
+  private FerrisShadows = [];
   ChooChoo() {
     let white = this.textureLoader.load('assets/matcaps/FFFFFF03.png',()=>{
       white.encoding=THREE.sRGBEncoding;
@@ -1202,12 +990,6 @@ export class welcomeService {
     });
     let pink = this.textureLoader.load('assets/matcaps/E7B9BE03.png',()=>{
       pink.encoding=THREE.sRGBEncoding;
-    });
-    let pink02 = this.textureLoader.load('assets/matcaps/E7CBCB03.png',()=>{
-      pink02.encoding=THREE.sRGBEncoding;
-    });
-    let e7 = this.textureLoader.load('assets/matcaps/FFFFFF03.png',()=>{
-      e7.encoding=THREE.sRGBEncoding;
     });
     // white
     let mate01 = new THREE.MeshMatcapMaterial({
@@ -1227,51 +1009,137 @@ export class welcomeService {
       side:2,
       matcap:pink
     })
-    let mate04 = new THREE.MeshMatcapMaterial({
-      color:0xffffff,
-      side:2,
-      matcap:pink02
-    }) 
+
 
     this.loader.load('assets/model/Swing.glb',
       (gltf)=>{
         this.Swing=gltf.scene;
-        this.Swing.position.set(-.24,.04,-.88)
+        this.Swing.position.set(-.25,.04,-.87)
         this.Swing.scale.set(.9,.9,.9);
         this.Swing.rotation.set(0,25*Math.PI/180,0)
+
+        // Shadow
+        var texture = this.textureLoader.load('assets/shadow/Swing01.png');
+        let uniforms00 = {
+          tShadow:{value:texture},
+          uShadowColor:{value:new THREE.Color("#000000")},
+          uAlpha:{value:.4}
+        }
+        let material00 = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms:uniforms00,depthWrite:false,
+          vertexShader:document.getElementById('vertexShader').textContent,
+          fragmentShader:document.getElementById('fragmentShader').textContent});
+        let shadow01 = new THREE.Mesh(new THREE.PlaneBufferGeometry(3.15,3.15),material00)
+        shadow01.rotation.set(-Math.PI/2,0,25*Math.PI/180)
+        shadow01.position.x=gltf.scene.children[0].position.x-.018
+        shadow01.position.z=gltf.scene.children[0].position.z+.018
+        shadow01.position.y=.064;
+        this.scene.add(shadow01);
+
+
+        var texture = this.textureLoader.load('assets/shadow/Swing02.png');
+        let uniforms = {
+          tShadow:{value:texture},
+          uShadowColor:{value:new THREE.Color("#000000")},
+          uAlpha:{value:.1}
+        }
+        let material = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms,depthWrite:false,
+          vertexShader:document.getElementById('vertexShader').textContent,
+          fragmentShader:document.getElementById('fragmentShader').textContent});
+        let shadow02 = new THREE.Mesh(new THREE.PlaneBufferGeometry(3.15,3.15),material)
+        
+
+        let ShadowTween = new THREE.Object3D();
+        ShadowTween.add(shadow02);
+        ShadowTween.position.x=gltf.scene.children[0].position.x-.018
+        ShadowTween.position.z=gltf.scene.children[0].position.z+.018
+        ShadowTween.position.y=.064;
+        ShadowTween.rotation.set(-Math.PI/2,0,25*Math.PI/180)
+        this.scene.add(ShadowTween);
+        this.SwingS.push(shadow02);
+
         for(var i=0;i<gltf.scene.children.length;i++){
           if(gltf.scene.children[i].name=="Swing01"){
             gltf.scene.children[""+i+""].children[0].material=mate01;
             gltf.scene.children[""+i+""].children[1].material=mate02;
             gltf.scene.children[""+i+""].children[2].material=mate01;
+            this.SwingS.push(gltf.scene.children[""+i+""]);
+
             this.SwingTween.pause();
-            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2,{ease:Power1.easeInOut,y:20*Math.PI/180})
-            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2,{ease:Power1.easeInOut,y:-20*Math.PI/180})
-            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2.2,{ease:Power1.easeInOut,y:30*Math.PI/180})
-            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2.2,{ease:Power1.easeInOut,y:-30*Math.PI/180})
-            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2.2,{ease:Power1.easeInOut,y:40*Math.PI/180})
-            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2.2,{ease:Power1.easeInOut,y:-40*Math.PI/180})
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,1.8,{ease:Power1.easeInOut,y:15*Math.PI/180})
+            // this.SwingTween.to(shadow02.position,1.8,{ease:Power1.easeInOut,x:.2},'-=1.8');
+
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,1.8,{ease:Power1.easeInOut,y:-15*Math.PI/180})
+            // this.SwingTween.to(shadow02.position,1.8,{ease:Power1.easeInOut,x:-.2},'-=1.8');
+
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2,{ease:Power1.easeInOut,y:25*Math.PI/180})
+            // this.SwingTween.to(shadow02.position,2,{ease:Power1.easeInOut,x:.25},'-=2');
+
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2,{ease:Power1.easeInOut,y:-25*Math.PI/180})
+            // this.SwingTween.to(shadow02.position,2,{ease:Power1.easeInOut,x:-.25},'-=2');
+
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2,{ease:Power1.easeInOut,y:35*Math.PI/180})
+            // this.SwingTween.to(shadow02.position,2,{ease:Power1.easeInOut,x:.3},'-=2');
+
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2,{ease:Power1.easeInOut,y:-35*Math.PI/180})
+            // this.SwingTween.to(shadow02.position,2,{ease:Power1.easeInOut,x:-.3},'-=2');
+
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2,{ease:Power1.easeInOut,y:45*Math.PI/180})
+            // this.SwingTween.to(shadow02.position,2,{ease:Power1.easeInOut,x:.35},'-=2');
+
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2,{ease:Power1.easeInOut,y:-45*Math.PI/180})
+            // this.SwingTween.to(shadow02.position,2,{ease:Power1.easeInOut,x:-.35},'-=2');
+
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2.1,{ease:Power1.easeInOut,y:50*Math.PI/180})
+            // this.SwingTween.to(shadow02.position,2.1,{ease:Power1.easeInOut,x:.35},'-=2.1');
+
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2.1,{ease:Power1.easeInOut,y:-50*Math.PI/180})
+            // this.SwingTween.to(shadow02.position,2.1,{ease:Power1.easeInOut,x:-.35},'-=2.1');
+
             this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2.2,{ease:Power1.easeInOut,y:45*Math.PI/180})
+            // this.SwingTween.to(shadow02.position,2.2,{ease:Power1.easeInOut,x:.35},'-=2.2');
+
             this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2.2,{ease:Power1.easeInOut,y:-45*Math.PI/180})
-            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2.2,{ease:Power1.easeInOut,y:50*Math.PI/180})
-            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2.2,{ease:Power1.easeInOut,y:-50*Math.PI/180})
-            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2.4,{ease:Power1.easeInOut,y:45*Math.PI/180})
-            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2.4,{ease:Power1.easeInOut,y:-45*Math.PI/180})
-            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2.4,{ease:Power1.easeInOut,y:40*Math.PI/180})
-            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2.4,{ease:Power1.easeInOut,y:-40*Math.PI/180})
-            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2.2,{ease:Power1.easeInOut,y:30*Math.PI/180})
-            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2.2,{ease:Power1.easeInOut,y:-30*Math.PI/180})
-            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2,{ease:Power1.easeInOut,y:15*Math.PI/180})
-            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2,{ease:Power1.easeInOut,y:-15*Math.PI/180})
-            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,1.8,{ease:Power1.easeInOut,y:12*Math.PI/180})
-            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,1.6,{ease:Power1.easeInOut,y:-8*Math.PI/180})
-            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,1.4,{ease:Power1.easeInOut,y:6*Math.PI/180})
-            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,1.2,{ease:Power1.easeInOut,y:-4*Math.PI/180})
-            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,1,{ease:Power1.easeInOut,y:2*Math.PI/180})
-            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,.8,{ease:Power1.easeInOut,y:-1*Math.PI/180})
-            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,.6,{ease:Power1.easeInOut,y:1*Math.PI/180})
-            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,.4,{ease:Power1.easeInOut,y:-.5*Math.PI/180})
-            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,.3,{ease:Power1.easeInOut,y:0*Math.PI/180})
+            // this.SwingTween.to(shadow02.position,2.2,{ease:Power1.easeInOut,x:-.35},'-=2.2');
+
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2.2,{ease:Power1.easeInOut,y:40*Math.PI/180})
+            // this.SwingTween.to(shadow02.position,2.2,{ease:Power1.easeInOut,x:.3},'-=2.2');
+
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2.2,{ease:Power1.easeInOut,y:-40*Math.PI/180})
+            // this.SwingTween.to(shadow02.position,2.2,{ease:Power1.easeInOut,x:-.3},'-=2.2');
+
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2,{ease:Power1.easeInOut,y:30*Math.PI/180})
+            // this.SwingTween.to(shadow02.position,2,{ease:Power1.easeInOut,x:.25},'-=2');
+
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2,{ease:Power1.easeInOut,y:-30*Math.PI/180})
+            // this.SwingTween.to(shadow02.position,2,{ease:Power1.easeInOut,x:-.25},'-=2');
+
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,1.8,{ease:Power1.easeInOut,y:15*Math.PI/180})
+            // this.SwingTween.to(shadow02.position,1.8,{ease:Power1.easeInOut,x:.2},'-=1.8');
+
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,1.6,{ease:Power1.easeInOut,y:-12*Math.PI/180})
+            // this.SwingTween.to(shadow02.position,1.6,{ease:Power1.easeInOut,x:-.2},'-=1.6');
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,1.4,{ease:Power1.easeInOut,y:12*Math.PI/180})
+            // this.SwingTween.to(shadow02.position,1.4,{ease:Power1.easeInOut,x:.15},'-=1.4');
+
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,1.2,{ease:Power1.easeInOut,y:-8*Math.PI/180})
+            // this.SwingTween.to(shadow02.position,1.2,{ease:Power1.easeInOut,x:-.1},'-=1.2');
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,1,{ease:Power1.easeInOut,y:6*Math.PI/180})
+            // this.SwingTween.to(shadow02.position,1,{ease:Power1.easeInOut,x:.08},'-=1');
+
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,.9,{ease:Power1.easeInOut,y:-4*Math.PI/180})
+            // this.SwingTween.to(shadow02.position,.9,{ease:Power1.easeInOut,x:-.05},'-=.9');
+
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,.8,{ease:Power1.easeInOut,y:2*Math.PI/180})
+            // this.SwingTween.to(shadow02.position,.8,{ease:Power1.easeInOut,x:.04},'-=.8');
+
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,.6,{ease:Power1.easeInOut,y:-1*Math.PI/180})
+            // this.SwingTween.to(shadow02.position,.6,{ease:Power1.easeInOut,x:-.02},'-=.6');
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,.4,{ease:Power1.easeInOut,y:1*Math.PI/180})
+            // this.SwingTween.to(shadow02.position,.4,{ease:Power1.easeInOut,x:.02},'-=.4');
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,.3,{ease:Power1.easeInOut,y:-.5*Math.PI/180})
+            // this.SwingTween.to(shadow02.position,.3,{ease:Power1.easeInOut,x:-.01},'-=.3');
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,.2,{ease:Power1.easeInOut,y:0*Math.PI/180})
+            // this.SwingTween.to(shadow02.position,.2,{ease:Power1.easeInOut,x:0},'-=.2');
           } else if (gltf.scene.children[i].name=="Star02") {
             gltf.scene.children[""+i+""].material=mate02;
           } else {
@@ -1281,6 +1149,7 @@ export class welcomeService {
 
         this.ParkObjects.push(this.Swing);
         this.scene.add(this.Swing)
+        
       }
     );
 
@@ -1289,7 +1158,8 @@ export class welcomeService {
       (gltf) => {
         this.Carnival = gltf.scene;
         this.Carnival.scale.set(.9, .9, .9);
-        this.Carnival.position.set(0, .02, 0.54);
+
+        this.Carnival.position.set(-0.01, .02, 0.54);
         this.Carnival.rotation.set(0,0,0);
         // Carnival
         for(var i=0;i<this.Carnival.children.length;i++){
@@ -1306,8 +1176,67 @@ export class welcomeService {
         this.scene.add(this.Carnival);
         this.ParkObjects.push(this.Carnival)
 
+        let shadow3d = new THREE.Object3D();
+        var texture = this.textureLoader.load('assets/shadow/Carnival02.png');
 
-        // 
+        let uniforms00 = {
+          tShadow:{value:texture},
+          uShadowColor:{value:new THREE.Color("#000000")},
+          uAlpha:{value:.2}
+        }
+        let material00 = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms:uniforms00,depthWrite:false,
+          vertexShader:document.getElementById('vertexShader').textContent,
+          fragmentShader:document.getElementById('fragmentShader').textContent});
+          
+        let shadow00 = new THREE.Mesh(new THREE.PlaneBufferGeometry(1.8,1.8),material00)
+        shadow00.rotation.set(-Math.PI/2,0,0)
+        shadow00.position.set(0,.165,0.54)
+        this.scene.add(shadow00)
+
+        let shadow01=shadow00.clone();
+        shadow01.scale.set(.5,.5,.5);
+        shadow01.position.set(0.105,.201,0.54)
+        shadow01.rotation.set(-Math.PI/2,0,0)
+        this.scene.add(shadow01);
+
+        var texture = this.textureLoader.load('assets/shadow/Carnival01.png');
+        let uniforms = {
+          tShadow:{value:texture},
+          uShadowColor:{value:new THREE.Color("#000000")},
+          uAlpha:{value:.4}
+        }
+        let material = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms,depthWrite:false,
+          vertexShader:document.getElementById('vertexShader').textContent,
+          fragmentShader:document.getElementById('fragmentShader').textContent});
+          
+        let shadow = new THREE.Mesh(new THREE.PlaneBufferGeometry(.63,.63),material)
+        shadow.rotation.set(-Math.PI/2,0,0)
+        shadow.position.set(-0.603,.164,0)
+        shadow3d.add(shadow);
+
+        let shadow02 = shadow.clone();
+        shadow02.position.set(0.603,.164,0)
+        shadow3d.add(shadow02);
+
+        let shadow03 = shadow.clone();
+        shadow03.position.set(0,.164,-0.603)
+        shadow3d.add(shadow03);
+
+        let shadow04 = shadow.clone();
+        shadow04.position.set(0,.164,0.603)
+        shadow3d.add(shadow04);
+
+
+        shadow3d.position.set(-0.01,0,.54);
+        this.scene.add(shadow3d)
+        this.CarnivalTween.to(shadow3d.rotation,40,{ease:Power1.easeInOut,y:shadow3d.rotation.y-Math.PI*6},'-=40')
+        this.CarnivalTween.to(shadow3d.children[0].rotation,40,{ease:Power1.easeInOut,z:shadow3d.rotation.z+Math.PI*6},'-=40')
+        this.CarnivalTween.to(shadow3d.children[1].rotation,40,{ease:Power1.easeInOut,z:shadow3d.rotation.z+Math.PI*6},'-=40')
+        this.CarnivalTween.to(shadow3d.children[2].rotation,40,{ease:Power1.easeInOut,z:shadow3d.rotation.z+Math.PI*6},'-=40')
+        this.CarnivalTween.to(shadow3d.children[3].rotation,40,{ease:Power1.easeInOut,z:shadow3d.rotation.z+Math.PI*6},'-=40')
+
+
+        // Plane
         this.loader.load('assets/model/CarnivalPlane.glb',
           (gltf)=>{
             
@@ -1368,7 +1297,7 @@ export class welcomeService {
             this.CarnivalTween.to(Plane04.position,2,{ease:Power1.easeInOut,y:.65,repeat:11,yoyo:true},'-=35');
             this.CarnivalPlane.add(Plane04)
     
-            this.CarnivalPlane.position.set(0,0, .5)
+            this.CarnivalPlane.position.set(-0.01,0, .54)
             this.ParkObjects.push(this.CarnivalPlane)
             this.scene.add(this.CarnivalPlane);
           }
@@ -1384,101 +1313,57 @@ export class welcomeService {
     let Fan = new THREE.Object3D();
     let PlanePart = new THREE.Object3D();
 
-
-
     this.loader.load(
-      'assets/model/Ferris.glb',
-      (gltf) => {
-        this.Ferris = gltf;
-        this.mixer01 = new THREE.AnimationMixer(this.Ferris.scene);
-        this.mixer01.timeScale = .04;
-
-
-        this.Ferris.scene.scale.set(.9, .9, .9);
-        this.Ferris.scene.position.set(.4, .035, -1.02);
-        this.Ferris.scene.rotation.set(0,-30*Math.PI/180,0);
-
-
-        // Ferris
-        for(var i=0;i<this.Ferris.scene.children.length;i++){
-          if(this.Ferris.scene.children[i].name=="F01"){
-            this.TweenF01.pause();
-            this.TweenF01.to(this.Ferris.scene.children[i].rotation,1,{z:.7})
-            this.TweenF01.to(this.Ferris.scene.children[i].rotation,2,{z:-.7});
-            this.TweenF01.to(this.Ferris.scene.children[i].rotation,1,{z:0});
-            this.Ferris.scene.children[i].children[1].material=mate03
-            this.Ferris.scene.children[i].children[0].material=mate01
-          } else if (this.Ferris.scene.children[i].name=="F02") {
-            this.TweenF02.pause();
-            this.TweenF02.to(this.Ferris.scene.children[i].rotation,1,{z:.7})
-            this.TweenF02.to(this.Ferris.scene.children[i].rotation,2,{z:-.7});
-            this.TweenF02.to(this.Ferris.scene.children[i].rotation,1,{z:0});
-            this.Ferris.scene.children[i].children[1].material=mate02
-            this.Ferris.scene.children[i].children[0].material=mate01
-          } else if (this.Ferris.scene.children[i].name=="F03") {
-            this.TweenF03.pause();
-            this.TweenF03.to(this.Ferris.scene.children[i].rotation,1,{z:.7})
-            this.TweenF03.to(this.Ferris.scene.children[i].rotation,2,{z:-.7});
-            this.TweenF03.to(this.Ferris.scene.children[i].rotation,1,{z:0});
-            this.Ferris.scene.children[i].children[1].material=mate03
-            this.Ferris.scene.children[i].children[0].material=mate01
-          } else if (this.Ferris.scene.children[i].name=="F04") {
-            this.TweenF04.pause();
-            this.TweenF04.to(this.Ferris.scene.children[i].rotation,1,{z:.7})
-            this.TweenF04.to(this.Ferris.scene.children[i].rotation,2,{z:-.7});
-            this.TweenF04.to(this.Ferris.scene.children[i].rotation,1,{z:0});
-            this.Ferris.scene.children[i].children[1].material=mate02
-            this.Ferris.scene.children[i].children[0].material=mate01
-          } else if (this.Ferris.scene.children[i].name=="F05") {
-            this.TweenF05.pause();
-            this.TweenF05.to(this.Ferris.scene.children[i].rotation,1,{z:.7})
-            this.TweenF05.to(this.Ferris.scene.children[i].rotation,2,{z:-.7});
-            this.TweenF05.to(this.Ferris.scene.children[i].rotation,1,{z:0});
-            this.Ferris.scene.children[i].children[1].material=mate03
-            this.Ferris.scene.children[i].children[0].material=mate01
-          } else if (this.Ferris.scene.children[i].name=="F06") {
-            this.TweenF06.pause();
-            this.TweenF06.to(this.Ferris.scene.children[i].rotation,1,{z:.7})
-            this.TweenF06.to(this.Ferris.scene.children[i].rotation,2,{z:-.7});
-            this.TweenF06.to(this.Ferris.scene.children[i].rotation,1,{z:0});
-            this.Ferris.scene.children[i].children[1].material=mate02
-            this.Ferris.scene.children[i].children[0].material=mate01
-          } else if (this.Ferris.scene.children[i].name=="F07") {
-            this.TweenF07.pause();
-            this.TweenF07.to(this.Ferris.scene.children[i].rotation,1,{z:.7})
-            this.TweenF07.to(this.Ferris.scene.children[i].rotation,2,{z:-.7});
-            this.TweenF07.to(this.Ferris.scene.children[i].rotation,1,{z:0});
-            this.Ferris.scene.children[i].children[1].material=mate03
-            this.Ferris.scene.children[i].children[0].material=mate01
-          } else if (this.Ferris.scene.children[i].name=="F08") {
-            this.TweenF08.pause();
-            this.TweenF08.to(this.Ferris.scene.children[i].rotation,1,{z:.7})
-            this.TweenF08.to(this.Ferris.scene.children[i].rotation,2,{z:-.7});
-            this.TweenF08.to(this.Ferris.scene.children[i].rotation,1,{z:0});
-            this.Ferris.scene.children[i].children[1].material=mate02
-            this.Ferris.scene.children[i].children[0].material=mate01
-          } else {
-            this.Ferris.scene.children[i].material=mate01
-          }
-        }
-
-        this.ParkObjects.push(this.Ferris.scene);
-        this.scene.add(this.Ferris.scene);
-      }
-    );
-
-    this.loader.load(
-      'assets/model/FerrisWheel01.glb',
+      'assets/model/FerrisWheel.glb',
       (gltf) => {
         this.FerrisWheel = gltf.scene;
 
         this.FerrisWheel.scale.set(.9, .9, .9);
         this.FerrisWheel.position.set(.4, .035, -1.02);
         this.FerrisWheel.rotation.set(0,-30*Math.PI/180,0);
+
+        var texture = this.textureLoader.load('assets/shadow/Ferris01.png');
+        let uniforms00 = {
+          tShadow:{value:texture},
+          uShadowColor:{value:new THREE.Color("#000000")},
+          uAlpha:{value:.3}
+        }
+        let material00 = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms:uniforms00,depthWrite:false,
+          vertexShader:document.getElementById('vertexShader').textContent,
+          fragmentShader:document.getElementById('fragmentShader').textContent});
+        let shadow01 = new THREE.Mesh(new THREE.PlaneBufferGeometry(3.15,3.15),material00)
+        shadow01.rotation.set(-Math.PI/2,0,-30*Math.PI/180)
+
+        shadow01.position.y=.064;
+        this.scene.add(shadow01);
+
+
+        var texture = this.textureLoader.load('assets/shadow/Ferris02.png');
+        let uniforms = {
+          tShadow:{value:texture},
+          uShadowColor:{value:new THREE.Color("#000000")},
+          uAlpha:{value:.2}
+        }
+        let material = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms,depthWrite:false,
+          vertexShader:document.getElementById('vertexShader').textContent,
+          fragmentShader:document.getElementById('fragmentShader').textContent});
+        let shadow = new THREE.Mesh(new THREE.PlaneBufferGeometry(1.8,1.8),material)
+        shadow.rotation.set(-Math.PI/2,0,0)
+        shadow.position.y=.064;
+        
+        this.FerrisShadow.add(shadow);
+        this.FerrisShadows.push(shadow);
+        this.scene.add(this.FerrisShadow);
+        
+        this.FerrisShadow.rotation.set(0,-30*Math.PI/180,0);
         
         for(var i=0;i<this.FerrisWheel.children.length;i++){
           if(this.FerrisWheel.children[i].name=="Star"){
             this.FerrisWheel.children[i].material=mate02
+          } else if(this.FerrisWheel.children[i].name=="FerrisWheel00") {
+            this.FerrisWheel.children[i].material=mate01
+            shadow01.position.x=gltf.scene.children[i].position.x-.003
+            shadow01.position.z=gltf.scene.children[i].position.z+.08
           } else {
             this.FerrisWheel.children[i].material=mate01
           }
@@ -1486,6 +1371,95 @@ export class welcomeService {
         
         this.ParkObjects.push(this.FerrisWheel)
         this.scene.add(this.FerrisWheel);
+
+
+        // 8 Ferris
+        this.loader.load(
+          'assets/model/Ferris.glb',
+          (gltf) => {
+            this.Ferris = gltf;
+            this.mixer01 = new THREE.AnimationMixer(this.Ferris.scene);
+            this.mixer01.timeScale = .04;
+    
+    
+            this.Ferris.scene.scale.set(.9, .9, .9);
+            this.Ferris.scene.position.set(.4, .035, -1.02);
+            this.Ferris.scene.rotation.set(0,-30*Math.PI/180,0);
+    
+    
+            // Ferris
+            for(var i=0;i<this.Ferris.scene.children.length;i++){
+              if(this.Ferris.scene.children[i].name=="F01"){
+                this.TweenF01.pause();
+                this.TweenF01.to(this.Ferris.scene.children[i].rotation,1,{z:.7})
+                this.TweenF01.to(this.Ferris.scene.children[i].rotation,2,{z:-.7});
+                this.TweenF01.to(this.Ferris.scene.children[i].rotation,1,{z:0});
+                this.Ferris.scene.children[i].children[1].material=mate03
+                this.Ferris.scene.children[i].children[0].material=mate01
+              } else if (this.Ferris.scene.children[i].name=="F02") {
+                this.TweenF02.pause();
+                this.TweenF02.to(this.Ferris.scene.children[i].rotation,1,{z:.7})
+                this.TweenF02.to(this.Ferris.scene.children[i].rotation,2,{z:-.7});
+                this.TweenF02.to(this.Ferris.scene.children[i].rotation,1,{z:0});
+                this.Ferris.scene.children[i].children[1].material=mate02
+                this.Ferris.scene.children[i].children[0].material=mate01
+              } else if (this.Ferris.scene.children[i].name=="F03") {
+                this.TweenF03.pause();
+                this.TweenF03.to(this.Ferris.scene.children[i].rotation,1,{z:.7})
+                this.TweenF03.to(this.Ferris.scene.children[i].rotation,2,{z:-.7});
+                this.TweenF03.to(this.Ferris.scene.children[i].rotation,1,{z:0});
+                this.Ferris.scene.children[i].children[1].material=mate03
+                this.Ferris.scene.children[i].children[0].material=mate01
+              } else if (this.Ferris.scene.children[i].name=="F04") {
+                this.TweenF04.pause();
+                this.TweenF04.to(this.Ferris.scene.children[i].rotation,1,{z:.7})
+                this.TweenF04.to(this.Ferris.scene.children[i].rotation,2,{z:-.7});
+                this.TweenF04.to(this.Ferris.scene.children[i].rotation,1,{z:0});
+                this.Ferris.scene.children[i].children[1].material=mate02
+                this.Ferris.scene.children[i].children[0].material=mate01
+              } else if (this.Ferris.scene.children[i].name=="F05") {
+                this.TweenF05.pause();
+                this.TweenF05.to(this.Ferris.scene.children[i].rotation,1,{z:.7})
+                this.TweenF05.to(this.Ferris.scene.children[i].rotation,2,{z:-.7});
+                this.TweenF05.to(this.Ferris.scene.children[i].rotation,1,{z:0});
+                this.Ferris.scene.children[i].children[1].material=mate03
+                this.Ferris.scene.children[i].children[0].material=mate01
+              } else if (this.Ferris.scene.children[i].name=="F06") {
+                this.TweenF06.pause();
+                this.TweenF06.to(this.Ferris.scene.children[i].rotation,1,{z:.7})
+                this.TweenF06.to(this.Ferris.scene.children[i].rotation,2,{z:-.7});
+                this.TweenF06.to(this.Ferris.scene.children[i].rotation,1,{z:0});
+                this.Ferris.scene.children[i].children[1].material=mate02
+                this.Ferris.scene.children[i].children[0].material=mate01
+              } else if (this.Ferris.scene.children[i].name=="F07") {
+                this.TweenF07.pause();
+                this.TweenF07.to(this.Ferris.scene.children[i].rotation,1,{z:.7})
+                this.TweenF07.to(this.Ferris.scene.children[i].rotation,2,{z:-.7});
+                this.TweenF07.to(this.Ferris.scene.children[i].rotation,1,{z:0});
+                this.Ferris.scene.children[i].children[1].material=mate03
+                this.Ferris.scene.children[i].children[0].material=mate01
+              } else if (this.Ferris.scene.children[i].name=="F08") {
+                this.TweenF08.pause();
+                this.TweenF08.to(this.Ferris.scene.children[i].rotation,1,{z:.7})
+                this.TweenF08.to(this.Ferris.scene.children[i].rotation,2,{z:-.7});
+                this.TweenF08.to(this.Ferris.scene.children[i].rotation,1,{z:0});
+                this.Ferris.scene.children[i].children[1].material=mate02
+                this.Ferris.scene.children[i].children[0].material=mate01
+              } else {
+                this.Ferris.scene.children[i].material=mate01
+              }
+              if(this.Ferris.scene.children[i].position.y<.65){
+                this.FerrisShadows[0].position.x=this.Ferris.scene.children[i].position.x-.4
+                this.FerrisShadows[0].position.z=this.Ferris.scene.children[i].position.z-.9
+                this.FerrisShadows[0].material.uniforms.uAlpha.value=
+                  (.65-this.Ferris.scene.children[i].position.y)*4;
+              }
+            }
+    
+            this.ParkObjects.push(this.Ferris.scene);
+            this.scene.add(this.Ferris.scene);
+          }
+        );
       }
     );
 
@@ -1494,6 +1468,7 @@ export class welcomeService {
       (gltf) => {
         this.Train = gltf;
         this.mixer02 = new THREE.AnimationMixer(this.Train.scene);
+
 
         this.mixer02.timeScale=.25;
         this.Train.scene.position.set(0, .045, 0);
@@ -1505,19 +1480,26 @@ export class welcomeService {
           uShadowColor:{value:new THREE.Color("#000000")},
           uAlpha:{value:.2}
         }
-        let material = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms,
+        let material = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms,depthWrite:false,
           vertexShader:document.getElementById('vertexShader').textContent,
           fragmentShader:document.getElementById('fragmentShader').textContent});
     
-        let trainShadow1 = new THREE.Mesh(new THREE.PlaneGeometry(1,1),material);
-        trainShadow1.rotation.set(-Math.PI/2,0,-Math.PI/2)
-        this.scene.add(trainShadow1);
+        let trainShadow = new THREE.Mesh(new THREE.PlaneBufferGeometry(1.2,1.2),material);
+        trainShadow.rotation.set(-Math.PI/2,0.01,-Math.PI/2)
+        trainShadow.position.set(.3,0.01,-.45);
+        let TrainShadow3d01 = new THREE.Object3D();
+        TrainShadow3d01.add(trainShadow);
 
-        let trainShadow2=trainShadow1.clone();
-        this.scene.add(trainShadow2);
-        this.TrainPosition.push(trainShadow1);
-        this.TrainPosition.push(trainShadow2);
+        this.scene.add(TrainShadow3d01);
 
+        let TrainShadow3d02=TrainShadow3d01.clone();
+        this.scene.add(TrainShadow3d02);
+        this.TrainPosition.push(TrainShadow3d01);
+
+
+        this.TrainPosition.push(TrainShadow3d02);
+
+        var u=0;
         // Train
         for(var i=0;i<this.Train.scene.children.length;i++){
           if(this.Train.scene.children[i].name=="Rail"){
@@ -1528,8 +1510,11 @@ export class welcomeService {
           } else {
             this.Train.scene.children[i].children[0].material=mate02;
             this.Train.scene.children[i].children[1].material=mate01;
+            this.TrainPosition[u].position.x=this.Train.scene.children[i].position.x;
+            this.TrainPosition[u].position.z=this.Train.scene.children[i].position.z;
             this.ParkObjects.push(this.Train.scene.children[i]);
             this.TrainPosition.push(this.Train.scene.children[i]);
+            u++;
           }
         }
         this.scene.add(this.Train.scene);
@@ -1542,37 +1527,39 @@ export class welcomeService {
       this.Smokes.push(smokeClone);
       this.scene.add(smokeClone);
     }
+  }
 
-    // this.loader.load(
-    //   'assets/model/choochooTrain02.glb',
-    //   (gltf) => {
-    //     this.TrainBalloon = gltf.scene;
-    //     this.mixer = new THREE.AnimationMixer(this.TrainBalloon);
-    //     this.mixer.clipAction(gltf.animations[0]).play();
-    //     this.mixer.timeScale = 0.25;
-    //     this.TrainBalloon.scale.set(.265, .265, .265);
-    //     this.TrainBalloon.position.set(0, .027, 0);
-    //     this.TrainBalloon.children["0"].children[0].material=railMate
-    //     this.TrainBalloon.children["0"].children[1].material=mate03
-    //     this.TrainBalloon.children["0"].children[2].material=mate01
-    //     this.TrainBalloon.children["0"].children[3].material=mate02
-    //     train.add(this.TrainBalloon);
-    //     // this.TrainBalloon = new THREE.Mesh(new THREE.BoxBufferGeometry(.1,.1,.1),new THREE.MeshBasicMaterial({transparent:true,opacity:0.2}))
-    //     // train.add(this.TrainBalloon)
-    //     this.scene.add(train);
-    //     console.log(gltf)
-    //   }
-    // );
-    // this.loader.load(
-    //   'assets/model/choochooRail02.glb',
-    //   (gltf) => {
-    //     let rail = gltf.scene;
-    //     rail.scale.set(.07, .07, .07);
-    //     rail.position.set(0, .027, 0);
-    //     rail.children["0"].material=railMate;
-    //     this.scene.add(rail);
-    //   }
-    // );
+  SwingShadow(){
+    if(!this.SwingTween.isActive()){
+      console.log("Swing Stopped");
+    } else {
+      this.SwingS[0].position.x=this.SwingS[1].rotation.y/1.5;
+      setTimeout(() => {
+        this.SwingShadow();
+      }, 16);
+    }
+
+  }
+
+  FerrisWheelShadow(){
+    for(var i=0;i<this.Ferris.scene.children.length;i++){
+      if(this.Ferris.scene.children[i].position.y<.65){
+        this.FerrisShadows[0].position.x=this.Ferris.scene.children[i].position.x-.4
+        this.FerrisShadows[0].material.uniforms.uAlpha.value=
+          (.65-this.Ferris.scene.children[i].position.y)*4;
+        break;
+      } else {
+        this.FerrisShadows[0].material.uniforms.uAlpha.value=0;
+      }
+    }
+
+    if(this.FerrisAnimation==null){
+      console.log("Ferris STOPED");
+    } else {
+      setTimeout(() => {
+        this.FerrisWheelShadow();
+      }, 16);
+    }
   }
 
   private TweenF01 = new TimelineLite();
@@ -1604,11 +1591,22 @@ export class welcomeService {
               this.FerrisAnimation.setLoop(THREE.LoopOnce);
               this.FerrisAnimation.play().reset();
             }
-            setTimeout(() => {
+            this.FerrisWheelShadow();
+            gsap.delayedCall(25,() => {
               this.FerrisAnimation=null;
-            }, 20000);
+            });
           }
         break;
+        case "Swing01_0":
+        case "Swing01_1":
+        case "Swing01_2":
+        case "Swing02":
+        case "Swing03":
+          if(!this.SwingTween.isActive()){
+            this.SwingTween.restart();
+            this.SwingShadow();
+          }
+          break;
         case "Plane01":
         case "Plane01W":
           if(!this.PlaneTween01.isActive()){
@@ -1692,9 +1690,9 @@ export class welcomeService {
               this.TrainAnimation.play().reset();
             }
             this.TrainSmoke();
-            setTimeout(() => {
+            gsap.delayedCall(20,() => {
               this.TrainAnimation=null;
-            }, 20000);
+            });
           }
         break;
       }
@@ -1709,11 +1707,12 @@ export class welcomeService {
       this.SmokeI=0;
     }
     // Shadow
-    this.TrainPosition[0].position.copy(this.TrainPosition[2].position);
-    this.TrainPosition[1].position.copy(this.TrainPosition[3].position);
+    TweenLite.to(this.TrainPosition[0].position,.1,{x:this.TrainPosition[2].position.x,z:this.TrainPosition[2].position.z,delay:.1})
+    TweenLite.to(this.TrainPosition[1].position,.1,{x:this.TrainPosition[3].position.x,z:this.TrainPosition[3].position.z,delay:.1})
 
-    this.TrainPosition[0].rotation.y=this.TrainPosition[2].position.y;
-    this.TrainPosition[1].rotation.y=this.TrainPosition[3].position.y;
+
+    this.TrainPosition[0].rotation.y=this.TrainPosition[2].rotation.y;
+    this.TrainPosition[1].rotation.y=this.TrainPosition[3].rotation.y;
     // Position
     TweenLite.fromTo(this.Smokes[this.SmokeI].position,1.6,
       {x:this.SmokePipe[0].position.x,z:this.SmokePipe[0].position.z,y:this.SmokePipe[0].position.y},
@@ -1739,6 +1738,8 @@ export class welcomeService {
 
   private BaseMatcap;
   FirstInit(): void {
+
+    this.nextSceneFunction();
     // const cursor = document.querySelector('.cursor');
     // const outer = document.querySelector('.cursor .outer');
     // const dot = document.querySelector('.cursor .dot');
@@ -2159,7 +2160,7 @@ export class welcomeService {
       uShadowColor:{value:new THREE.Color("#000000")},
       uAlpha:{value:.2}
     }
-    let material = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms,
+    let material = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms,depthWrite:false,
       vertexShader:document.getElementById('vertexShader').textContent,
       fragmentShader:document.getElementById('fragmentShader').textContent})
 
@@ -2167,7 +2168,7 @@ export class welcomeService {
     let railshadow = new THREE.Mesh(new THREE.PlaneGeometry(12,12),material);
     railshadow.rotation.set(-Math.PI/2,0,-Math.PI/2)
     railshadow.position.set(0,0,0);
-    console.log(railshadow)
+
     this.scene.add(railshadow);
   }
 
@@ -2439,35 +2440,62 @@ export class welcomeService {
     window.addEventListener('resize', () => {
       this.resize();
     });
+
+    document.addEventListener('visibilitychange', ()=>{
+      if(document.hidden){
+        this.elapsedTime=(typeof performance === 'undefined' ? Date : performance).now();
+      } else {
+        this.elapsedTime=(typeof performance === 'undefined' ? Date : performance).now()-this.elapsedTime;
+      }
+    })
   }
 
+
+  private oldTime=0;
+  private elapsedTime=0;
+  private diff
+
+  Runanimation(){
+    var newTime=(typeof performance === 'undefined' ? Date : performance).now();
+    if(this.elapsedTime!=0){
+      this.diff = ((newTime-this.oldTime-this.elapsedTime)/1000);
+      this.elapsedTime=0;
+    } else {
+      this.diff = (newTime-this.oldTime)/1000;
+    }
+    this.oldTime=newTime;
+
+    
+    if (this.mixer01){
+      this.mixer01.update(this.diff);
+    } 
+    if (this.mixer02){
+      this.mixer02.update(this.diff);
+    }
+  }
+
+  private test=0;
   render() {
     requestAnimationFrame(() => {
       this.render();
     });
+    // this.camera.lookAt(this.goal.position);
+    // console.log(this.camera.position)
 
-    var mixerUpdateDelta=this.clock.getDelta();
+    this.Runanimation();
 
-    if (this.mixer01){
-      this.mixer01.update(mixerUpdateDelta);
-    } 
-    if (this.mixer02){
-      this.mixer02.update(mixerUpdateDelta);
-    }
+    // this.now = performance.now();
 
-    
 
-    this.now = performance.now();
+    // if (this.times.length > 0 && this.times[0] <= this.now - 1000) {
+    //   this.times.shift();
+    // }
 
-    if (this.times.length > 0 && this.times[0] <= this.now - 1000) {
-      this.times.shift();
-    }
+    // this.times.push(this.now);
+    // this.fps = this.times.length;
 
-    this.times.push(this.now);
-    this.fps = this.times.length;
-
-    this.world.step(1 / this.fps);
-    this.world02.step(1 / this.fps);
+    // this.world.step(1 / this.fps);
+    // this.world02.step(1 / this.fps);
 
     this.BalloonSceneRender();
     // this.MiniGolfRender();
@@ -2531,7 +2559,8 @@ export class welcomeService {
       document.body.style.cursor="auto";
     }
 
-    this.controls.update();
+    // this.controls.update();
+
     // for (var i = 0; i < this.meshes.length; i++) {
     //   this.meshes[i].position.set(this.bodies[i].position.x.toFixed(3),this.bodies[i].position.y.toFixed(3),this.bodies[i].position.z.toFixed(3));
     //   this.meshes[i].quaternion.copy(this.bodies[i].quaternion);
@@ -2545,10 +2574,10 @@ export class welcomeService {
     // var pos = new THREE.Vector3()
     // pos.setFromMatrixPosition(this.TrainBalloon.children["0"].children[0].matrixWorld);
     
-    if(this.controls.enableRotate){
-      this.debugger.update();
-      this.debugger02.update();
-    }
+    // if(this.controls.enableRotate){
+    //   this.debugger.update();
+    //   this.debugger02.update();
+    // }
   }
 
   private debugger;
