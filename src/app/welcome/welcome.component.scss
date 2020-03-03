@@ -134,12 +134,13 @@ canvas {
             top:0;
             right:0;
             transform: rotate(180deg);
-            width:190px;
+            width:200px;
         }
     }
     .nextLeft{
         cursor: pointer;
         position: relative;
+        z-index: 2;
         left:0;
         top:0;
     }

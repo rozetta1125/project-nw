@@ -12,7 +12,7 @@ import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter';
 import { Line2 } from 'three/examples/jsm/lines/Line2';
 import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial';
 import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry';
-import { Mesh, MeshBasicMaterial } from 'three';
+
 
 class LetterProperty {
   Object3D: THREE.Object3D
@@ -155,14 +155,14 @@ export class welcomeService {
   private textureLoader;
 
   private DynamicShadows = [];
-  private goal;
+  private ScenePhase:number;
   
   InitThree(elementId: string): void {
     this.canvas = <HTMLCanvasElement>document.getElementById(elementId);
     this.renderer = new THREE.WebGLRenderer({
       canvas: this.canvas,
       alpha: true,    // transparent background
-      antialias: true // smooth edges
+      // antialias: true // smooth edges
     });
     this.renderer.gammaOutput=true;
     this.renderer.toneMapping = THREE.LinearToneMapping;
@@ -198,9 +198,7 @@ export class welcomeService {
     // this.controls = new OrbitControls(this.camera, this.canvas);
     // this.controls.target.set(0,1,-.5);
 
-    this.goal = new THREE.Object3D();
-    this.goal.position.set(0,1,-.5);
-    this.camera.lookAt(this.goal.position);
+    this.camera.lookAt(new THREE.Vector3(0,1,-.5));
 
     // this.controls.update();
     // this.controls.enableRotate = false;
@@ -237,28 +235,1028 @@ export class welcomeService {
       });
   }
 
-  nextSceneFunction(){
-    document.querySelector('#nextScene .nextLeft').addEventListener("mousedown", ()=>{ 
-      var left = document.querySelector('#nextScene .nextLeft');
-      console.log(left.parentElement.offsetLeft)
-      document.addEventListener("mousemove", this.nextLeftMove, false);
+  
+  private Train;
+  private FerrisWheel;
+  private Ferris;
+  private Carnival;
+  private CarnivalPlane;
+  private Swing;
+  private SwingS=[];
+  private FerrisAnimation;
+  private TrainAnimation;
+  private SwingTween = new TimelineLite();
+  private SmokePipe=[];
+  private TrainPosition=[];
+  private FerrisShadow = new THREE.Object3D();
+  private FerrisShadows = [];
+  CreateParkObject() {
+    let white = this.textureLoader.load('assets/matcaps/FFFFFF03.png',()=>{
+      white.encoding=THREE.sRGBEncoding;
+    });
+    let blue = this.textureLoader.load('assets/matcaps/A4BCEC03.png',()=>{
+      blue.encoding=THREE.sRGBEncoding;
+    });
+    let pink = this.textureLoader.load('assets/matcaps/E7B9BE03.png',()=>{
+      pink.encoding=THREE.sRGBEncoding;
+    });
+    // white
+    let mate01 = new THREE.MeshMatcapMaterial({
+      color:0xffffff,
+      side:2,
+      matcap:white
     })
+    // blue
+    let mate02 = new THREE.MeshMatcapMaterial({
+      color:0xffffff,
+      side:2,
+      matcap:blue
+    })
+    // pink
+    let mate03 = new THREE.MeshMatcapMaterial({
+      color:0xffffff,
+      side:2,
+      matcap:pink
+    })
+
+
+    this.loader.load('assets/model/Swing.glb',
+      (gltf)=>{
+        this.Swing=gltf.scene;
+        this.Swing.position.set(-.25,.04,-.87)
+        this.Swing.scale.set(.9,.9,.9);
+        this.Swing.rotation.set(0,25*Math.PI/180,0)
+
+        // Shadow
+        var texture = this.textureLoader.load('assets/shadow/Swing01.png');
+        let uniforms00 = {
+          tShadow:{value:texture},
+          uShadowColor:{value:new THREE.Color("#000000")},
+          uAlpha:{value:.4}
+        }
+        let material00 = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms:uniforms00,depthWrite:false,
+          vertexShader:document.getElementById('vertexShader').textContent,
+          fragmentShader:document.getElementById('fragmentShader').textContent});
+        let shadow01 = new THREE.Mesh(new THREE.PlaneBufferGeometry(3.15,3.15),material00)
+        shadow01.rotation.set(-Math.PI/2,0,25*Math.PI/180)
+        shadow01.position.x=gltf.scene.children[0].position.x-.018
+        shadow01.position.z=gltf.scene.children[0].position.z+.018
+        shadow01.position.y=.064;
+        this.scene.add(shadow01);
+
+
+        var texture = this.textureLoader.load('assets/shadow/Swing02.png');
+        let uniforms = {
+          tShadow:{value:texture},
+          uShadowColor:{value:new THREE.Color("#000000")},
+          uAlpha:{value:.1}
+        }
+        let material = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms,depthWrite:false,
+          vertexShader:document.getElementById('vertexShader').textContent,
+          fragmentShader:document.getElementById('fragmentShader').textContent});
+        let shadow02 = new THREE.Mesh(new THREE.PlaneBufferGeometry(3.15,3.15),material)
+        
+
+        let ShadowTween = new THREE.Object3D();
+        ShadowTween.add(shadow02);
+        ShadowTween.position.x=gltf.scene.children[0].position.x-.018
+        ShadowTween.position.z=gltf.scene.children[0].position.z+.018
+        ShadowTween.position.y=.064;
+        ShadowTween.rotation.set(-Math.PI/2,0,25*Math.PI/180)
+        this.scene.add(ShadowTween);
+        this.SwingS.push(shadow02);
+
+        for(var i=0;i<gltf.scene.children.length;i++){
+          if(gltf.scene.children[i].name=="Swing01"){
+            gltf.scene.children[""+i+""].children[0].material=mate01;
+            gltf.scene.children[""+i+""].children[1].material=mate02;
+            gltf.scene.children[""+i+""].children[2].material=mate01;
+            this.SwingS.push(gltf.scene.children[""+i+""]);
+
+            this.SwingTween.pause();
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,1.8,{ease:Power1.easeInOut,y:15*Math.PI/180})
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,1.8,{ease:Power1.easeInOut,y:-15*Math.PI/180})
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2,{ease:Power1.easeInOut,y:25*Math.PI/180})
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2,{ease:Power1.easeInOut,y:-25*Math.PI/180})
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2,{ease:Power1.easeInOut,y:35*Math.PI/180})
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2,{ease:Power1.easeInOut,y:-35*Math.PI/180})
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2,{ease:Power1.easeInOut,y:45*Math.PI/180})
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2,{ease:Power1.easeInOut,y:-45*Math.PI/180})
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2.1,{ease:Power1.easeInOut,y:50*Math.PI/180})
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2.1,{ease:Power1.easeInOut,y:-50*Math.PI/180})
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2.2,{ease:Power1.easeInOut,y:45*Math.PI/180})
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2.2,{ease:Power1.easeInOut,y:-45*Math.PI/180})
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2.2,{ease:Power1.easeInOut,y:40*Math.PI/180})
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2.2,{ease:Power1.easeInOut,y:-40*Math.PI/180})
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2,{ease:Power1.easeInOut,y:30*Math.PI/180})
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2,{ease:Power1.easeInOut,y:-30*Math.PI/180})
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,1.8,{ease:Power1.easeInOut,y:15*Math.PI/180})
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,1.6,{ease:Power1.easeInOut,y:-12*Math.PI/180})
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,1.4,{ease:Power1.easeInOut,y:12*Math.PI/180})
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,1.2,{ease:Power1.easeInOut,y:-8*Math.PI/180})
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,1,{ease:Power1.easeInOut,y:6*Math.PI/180})
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,.9,{ease:Power1.easeInOut,y:-4*Math.PI/180})
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,.8,{ease:Power1.easeInOut,y:2*Math.PI/180})
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,.6,{ease:Power1.easeInOut,y:-1*Math.PI/180})
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,.4,{ease:Power1.easeInOut,y:1*Math.PI/180})
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,.3,{ease:Power1.easeInOut,y:-.5*Math.PI/180})
+            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,.2,{ease:Power1.easeInOut,y:0*Math.PI/180})
+          } else if (gltf.scene.children[i].name=="Star02") {
+            gltf.scene.children[""+i+""].material=mate02;
+          } else {
+            gltf.scene.children[""+i+""].material=mate01;
+          }
+        }
+
+        this.ParkObjects.push(this.Swing);
+        this.scene.add(this.Swing)
+        
+      }
+    );
+
+    this.loader.load(
+      'assets/model/Carnival.glb',
+      (gltf) => {
+        this.Carnival = gltf.scene;
+        this.Carnival.scale.set(.9, .9, .9);
+
+        this.Carnival.position.set(-0.01, .02, 0.54);
+        this.Carnival.rotation.set(0,0,0);
+        // Carnival
+        for(var i=0;i<this.Carnival.children.length;i++){
+          if(this.Carnival.children[i].name=="Carnival02"){
+            this.Carnival.children[i].children[0].material=mate02;
+            this.Carnival.children[i].children[1].material=mate01;
+          } else {
+            this.Carnival.children[i].material=mate01
+          }
+        }
+        this.CarnivalTween.pause();
+        this.CarnivalTween.to(this.Carnival.rotation,40,{ease:Power1.easeInOut,y:this.Carnival.rotation.y-Math.PI*6});
+        this.CarnivalTween.to(this.CarnivalPlane.rotation,40,{ease:Power1.easeInOut,y:this.CarnivalPlane.rotation.y-Math.PI*6},'-=40');
+        this.scene.add(this.Carnival);
+        this.ParkObjects.push(this.Carnival)
+
+        let shadow3d = new THREE.Object3D();
+        var texture = this.textureLoader.load('assets/shadow/Carnival02.png');
+
+        let uniforms00 = {
+          tShadow:{value:texture},
+          uShadowColor:{value:new THREE.Color("#000000")},
+          uAlpha:{value:.2}
+        }
+        let material00 = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms:uniforms00,depthWrite:false,
+          vertexShader:document.getElementById('vertexShader').textContent,
+          fragmentShader:document.getElementById('fragmentShader').textContent});
+          
+        let shadow00 = new THREE.Mesh(new THREE.PlaneBufferGeometry(1.8,1.8),material00)
+        shadow00.rotation.set(-Math.PI/2,0,0)
+        shadow00.position.set(0,.165,0.54)
+        this.scene.add(shadow00)
+
+        let shadow01=shadow00.clone();
+        shadow01.scale.set(.5,.5,.5);
+        shadow01.position.set(0.105,.201,0.54)
+        shadow01.rotation.set(-Math.PI/2,0,0)
+        this.scene.add(shadow01);
+
+        var texture = this.textureLoader.load('assets/shadow/Carnival01.png');
+        let uniforms = {
+          tShadow:{value:texture},
+          uShadowColor:{value:new THREE.Color("#000000")},
+          uAlpha:{value:.4}
+        }
+        let material = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms,depthWrite:false,
+          vertexShader:document.getElementById('vertexShader').textContent,
+          fragmentShader:document.getElementById('fragmentShader').textContent});
+          
+        let shadow = new THREE.Mesh(new THREE.PlaneBufferGeometry(.63,.63),material)
+        shadow.rotation.set(-Math.PI/2,0,0)
+        shadow.position.set(-0.603,.164,0)
+        shadow3d.add(shadow);
+
+        let shadow02 = shadow.clone();
+        shadow02.position.set(0.603,.164,0)
+        shadow3d.add(shadow02);
+
+        let shadow03 = shadow.clone();
+        shadow03.position.set(0,.164,-0.603)
+        shadow3d.add(shadow03);
+
+        let shadow04 = shadow.clone();
+        shadow04.position.set(0,.164,0.603)
+        shadow3d.add(shadow04);
+
+
+        shadow3d.position.set(-0.01,0,.54);
+        this.scene.add(shadow3d)
+        this.CarnivalTween.to(shadow3d.rotation,40,{ease:Power1.easeInOut,y:shadow3d.rotation.y-Math.PI*6},'-=40')
+        this.CarnivalTween.to(shadow3d.children[0].rotation,40,{ease:Power1.easeInOut,z:shadow3d.rotation.z+Math.PI*6},'-=40')
+        this.CarnivalTween.to(shadow3d.children[1].rotation,40,{ease:Power1.easeInOut,z:shadow3d.rotation.z+Math.PI*6},'-=40')
+        this.CarnivalTween.to(shadow3d.children[2].rotation,40,{ease:Power1.easeInOut,z:shadow3d.rotation.z+Math.PI*6},'-=40')
+        this.CarnivalTween.to(shadow3d.children[3].rotation,40,{ease:Power1.easeInOut,z:shadow3d.rotation.z+Math.PI*6},'-=40')
+
+
+        // Plane
+        this.loader.load('assets/model/CarnivalPlane.glb',
+          (gltf)=>{
+            
+            for(var i=0;i<2;i++){
+              if(gltf.scene.children[i].name=="CarnivalPlane00"){
+                PlanePart = gltf.scene.children[i].clone();
+                PlanePart.children["0"].material=mate02;
+                PlanePart.children["1"].material=mate03;
+              } else {
+                gltf.scene.children[""+i+""].material=mate02;
+                Fan = gltf.scene.children[i].clone();
+              }
+            }
+            Fan.position.z = .65;
+            PlanePart.position.z=.65;
+            Plane01.add(Fan);
+            Plane01.add(PlanePart)
+            Plane01.scale.set(.9,.9,.9)
+            Plane01.position.set(0,.5,0);
+            Plane01.rotation.set(0,-4*Math.PI/180,0)
+            Plane01.children[0].name="Plane01W";
+            Plane01.children[1].children[0].name="Plane01";
+            Plane01.children[1].children[1].name="Plane01";
+            this.PlaneTween01.pause();
+            this.PlaneTween01.to(Plane01.children[0].rotation,5,{x:Math.PI*10});
+            this.CarnivalTween.to(Plane01.position,2,{ease:Power1.easeInOut,y:.65,repeat:11,yoyo:true},'-=36');
+            this.CarnivalPlane.add(Plane01)
+    
+            Plane02 = Plane01.clone();
+            Plane02.children[0].name="Plane02W";
+            Plane02.children[1].children[0].name="Plane02";
+            Plane02.children[1].children[1].name="Plane02";
+            Plane02.rotation.set(0,(-90-4)*Math.PI/180,0)
+            this.PlaneTween02.pause();
+            this.PlaneTween02.to(Plane02.children[0].rotation,5,{x:Math.PI*10});
+            this.CarnivalTween.to(Plane02.position,2,{ease:Power1.easeInOut,y:.65,repeat:11,yoyo:true},'-=33');
+            this.CarnivalPlane.add(Plane02)
+    
+            Plane03 = Plane01.clone();
+            Plane03.children[0].name="Plane03W";
+            Plane03.children[1].children[0].name="Plane03";
+            Plane03.children[1].children[1].name="Plane03";
+            Plane03.position.set(0,.5,0);
+            Plane03.rotation.set(0,(-180-4)*Math.PI/180,0)
+            this.PlaneTween03.pause();
+            this.PlaneTween03.to(Plane03.children[0].rotation,5,{x:Math.PI*10});
+            this.CarnivalTween.to(Plane03.position,2,{ease:Power1.easeInOut,y:.65,repeat:11,yoyo:true},'-=34');
+            this.CarnivalPlane.add(Plane03)
+    
+            Plane04 = Plane01.clone();
+            Plane04.children[0].name="Plane04W";
+            Plane04.children[1].children[0].name="Plane04";
+            Plane04.children[1].children[1].name="Plane04";
+            Plane04.position.set(0,.5,0);
+            Plane04.rotation.set(0,(-270-4)*Math.PI/180,0)
+            this.PlaneTween04.pause();
+            this.PlaneTween04.to(Plane04.children[0].rotation,5,{x:Math.PI*10});
+            this.CarnivalTween.to(Plane04.position,2,{ease:Power1.easeInOut,y:.65,repeat:11,yoyo:true},'-=35');
+            this.CarnivalPlane.add(Plane04)
+    
+            this.CarnivalPlane.position.set(-0.01,0, .54)
+            this.ParkObjects.push(this.CarnivalPlane)
+            this.scene.add(this.CarnivalPlane);
+          }
+        );
+      }
+    );
+
+    this.CarnivalPlane = new THREE.Object3D();
+    let Plane01 = new THREE.Object3D();
+    let Plane02 = new THREE.Object3D();
+    let Plane03 = new THREE.Object3D();
+    let Plane04 = new THREE.Object3D();
+    let Fan = new THREE.Object3D();
+    let PlanePart = new THREE.Object3D();
+
+    this.loader.load(
+      'assets/model/FerrisWheel.glb',
+      (gltf) => {
+        this.FerrisWheel = gltf.scene;
+
+        this.FerrisWheel.scale.set(.9, .9, .9);
+        this.FerrisWheel.position.set(.4, .035, -1.02);
+        this.FerrisWheel.rotation.set(0,-30*Math.PI/180,0);
+
+        var texture = this.textureLoader.load('assets/shadow/Ferris01.png');
+        let uniforms00 = {
+          tShadow:{value:texture},
+          uShadowColor:{value:new THREE.Color("#000000")},
+          uAlpha:{value:.3}
+        }
+        let material00 = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms:uniforms00,depthWrite:false,
+          vertexShader:document.getElementById('vertexShader').textContent,
+          fragmentShader:document.getElementById('fragmentShader').textContent});
+        let shadow01 = new THREE.Mesh(new THREE.PlaneBufferGeometry(3.15,3.15),material00)
+        shadow01.rotation.set(-Math.PI/2,0,-30*Math.PI/180)
+
+        shadow01.position.y=.064;
+        this.scene.add(shadow01);
+
+
+        var texture = this.textureLoader.load('assets/shadow/Ferris02.png');
+        let uniforms = {
+          tShadow:{value:texture},
+          uShadowColor:{value:new THREE.Color("#000000")},
+          uAlpha:{value:.2}
+        }
+        let material = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms,depthWrite:false,
+          vertexShader:document.getElementById('vertexShader').textContent,
+          fragmentShader:document.getElementById('fragmentShader').textContent});
+        let shadow = new THREE.Mesh(new THREE.PlaneBufferGeometry(1.8,1.8),material)
+        shadow.rotation.set(-Math.PI/2,0,0)
+        shadow.position.y=.064;
+        
+        this.FerrisShadow.add(shadow);
+        this.FerrisShadows.push(shadow);
+        this.scene.add(this.FerrisShadow);
+        
+        this.FerrisShadow.rotation.set(0,-30*Math.PI/180,0);
+        
+        for(var i=0;i<this.FerrisWheel.children.length;i++){
+          if(this.FerrisWheel.children[i].name=="Star"){
+            this.FerrisWheel.children[i].material=mate02
+          } else if(this.FerrisWheel.children[i].name=="FerrisWheel00") {
+            this.FerrisWheel.children[i].material=mate01
+            shadow01.position.x=gltf.scene.children[i].position.x-.003
+            shadow01.position.z=gltf.scene.children[i].position.z+.08
+          } else {
+            this.FerrisWheel.children[i].material=mate01
+          }
+        }
+        
+        this.ParkObjects.push(this.FerrisWheel)
+        this.scene.add(this.FerrisWheel);
+
+
+        // 8 Ferris
+        this.loader.load(
+          'assets/model/Ferris.glb',
+          (gltf) => {
+            this.Ferris = gltf;
+            this.mixer01 = new THREE.AnimationMixer(this.Ferris.scene);
+            this.mixer01.timeScale = .04;
+    
+    
+            this.Ferris.scene.scale.set(.9, .9, .9);
+            this.Ferris.scene.position.set(.4, .035, -1.02);
+            this.Ferris.scene.rotation.set(0,-30*Math.PI/180,0);
+    
+    
+            // Ferris
+            for(var i=0;i<this.Ferris.scene.children.length;i++){
+              if(this.Ferris.scene.children[i].name=="F01"){
+                this.TweenF01.pause();
+                this.TweenF01.to(this.Ferris.scene.children[i].rotation,1,{z:.7})
+                this.TweenF01.to(this.Ferris.scene.children[i].rotation,2,{z:-.7});
+                this.TweenF01.to(this.Ferris.scene.children[i].rotation,1,{z:0});
+                this.Ferris.scene.children[i].children[1].material=mate03
+                this.Ferris.scene.children[i].children[0].material=mate01
+              } else if (this.Ferris.scene.children[i].name=="F02") {
+                this.TweenF02.pause();
+                this.TweenF02.to(this.Ferris.scene.children[i].rotation,1,{z:.7})
+                this.TweenF02.to(this.Ferris.scene.children[i].rotation,2,{z:-.7});
+                this.TweenF02.to(this.Ferris.scene.children[i].rotation,1,{z:0});
+                this.Ferris.scene.children[i].children[1].material=mate02
+                this.Ferris.scene.children[i].children[0].material=mate01
+              } else if (this.Ferris.scene.children[i].name=="F03") {
+                this.TweenF03.pause();
+                this.TweenF03.to(this.Ferris.scene.children[i].rotation,1,{z:.7})
+                this.TweenF03.to(this.Ferris.scene.children[i].rotation,2,{z:-.7});
+                this.TweenF03.to(this.Ferris.scene.children[i].rotation,1,{z:0});
+                this.Ferris.scene.children[i].children[1].material=mate03
+                this.Ferris.scene.children[i].children[0].material=mate01
+              } else if (this.Ferris.scene.children[i].name=="F04") {
+                this.TweenF04.pause();
+                this.TweenF04.to(this.Ferris.scene.children[i].rotation,1,{z:.7})
+                this.TweenF04.to(this.Ferris.scene.children[i].rotation,2,{z:-.7});
+                this.TweenF04.to(this.Ferris.scene.children[i].rotation,1,{z:0});
+                this.Ferris.scene.children[i].children[1].material=mate02
+                this.Ferris.scene.children[i].children[0].material=mate01
+              } else if (this.Ferris.scene.children[i].name=="F05") {
+                this.TweenF05.pause();
+                this.TweenF05.to(this.Ferris.scene.children[i].rotation,1,{z:.7})
+                this.TweenF05.to(this.Ferris.scene.children[i].rotation,2,{z:-.7});
+                this.TweenF05.to(this.Ferris.scene.children[i].rotation,1,{z:0});
+                this.Ferris.scene.children[i].children[1].material=mate03
+                this.Ferris.scene.children[i].children[0].material=mate01
+              } else if (this.Ferris.scene.children[i].name=="F06") {
+                this.TweenF06.pause();
+                this.TweenF06.to(this.Ferris.scene.children[i].rotation,1,{z:.7})
+                this.TweenF06.to(this.Ferris.scene.children[i].rotation,2,{z:-.7});
+                this.TweenF06.to(this.Ferris.scene.children[i].rotation,1,{z:0});
+                this.Ferris.scene.children[i].children[1].material=mate02
+                this.Ferris.scene.children[i].children[0].material=mate01
+              } else if (this.Ferris.scene.children[i].name=="F07") {
+                this.TweenF07.pause();
+                this.TweenF07.to(this.Ferris.scene.children[i].rotation,1,{z:.7})
+                this.TweenF07.to(this.Ferris.scene.children[i].rotation,2,{z:-.7});
+                this.TweenF07.to(this.Ferris.scene.children[i].rotation,1,{z:0});
+                this.Ferris.scene.children[i].children[1].material=mate03
+                this.Ferris.scene.children[i].children[0].material=mate01
+              } else if (this.Ferris.scene.children[i].name=="F08") {
+                this.TweenF08.pause();
+                this.TweenF08.to(this.Ferris.scene.children[i].rotation,1,{z:.7})
+                this.TweenF08.to(this.Ferris.scene.children[i].rotation,2,{z:-.7});
+                this.TweenF08.to(this.Ferris.scene.children[i].rotation,1,{z:0});
+                this.Ferris.scene.children[i].children[1].material=mate02
+                this.Ferris.scene.children[i].children[0].material=mate01
+              } else {
+                this.Ferris.scene.children[i].material=mate01
+              }
+              if(this.Ferris.scene.children[i].position.y<.65){
+                this.FerrisShadows[0].position.x=this.Ferris.scene.children[i].position.x-.4
+                this.FerrisShadows[0].position.z=this.Ferris.scene.children[i].position.z-.9
+                this.FerrisShadows[0].material.uniforms.uAlpha.value=
+                  (.65-this.Ferris.scene.children[i].position.y)*4;
+              }
+            }
+    
+            this.ParkObjects.push(this.Ferris.scene);
+            this.scene.add(this.Ferris.scene);
+          }
+        );
+      }
+    );
+
+    this.loader.load(
+      'assets/model/Train.glb',
+      (gltf) => {
+        this.Train = gltf;
+        this.mixer02 = new THREE.AnimationMixer(this.Train.scene);
+
+
+        this.mixer02.timeScale=.25;
+        this.Train.scene.position.set(0, .045, 0);
+
+        var texture = this.textureLoader.load('assets/shadow/Park02.png');
+
+        let uniforms = {
+          tShadow:{value:texture},
+          uShadowColor:{value:new THREE.Color("#000000")},
+          uAlpha:{value:.2}
+        }
+        let material = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms,depthWrite:false,
+          vertexShader:document.getElementById('vertexShader').textContent,
+          fragmentShader:document.getElementById('fragmentShader').textContent});
+    
+        let trainShadow = new THREE.Mesh(new THREE.PlaneBufferGeometry(1.2,1.2),material);
+        trainShadow.rotation.set(-Math.PI/2,0.01,-Math.PI/2)
+        trainShadow.position.set(.3,0.01,-.45);
+        let TrainShadow3d01 = new THREE.Object3D();
+        TrainShadow3d01.add(trainShadow);
+
+        this.scene.add(TrainShadow3d01);
+
+        let TrainShadow3d02=TrainShadow3d01.clone();
+        this.scene.add(TrainShadow3d02);
+        this.TrainPosition.push(TrainShadow3d01);
+
+
+        this.TrainPosition.push(TrainShadow3d02);
+
+        var u=0;
+        // Train
+        for(var i=0;i<this.Train.scene.children.length;i++){
+          if(this.Train.scene.children[i].name=="Rail"){
+            this.Train.scene.children[i].material=mate02
+          } else if (this.Train.scene.children[i].name=="SmokePipe"){
+            this.Train.scene.children[i].material=mate02
+            this.SmokePipe.push(this.Train.scene.children[i]);
+          } else {
+            this.Train.scene.children[i].children[0].material=mate02;
+            this.Train.scene.children[i].children[1].material=mate01;
+            this.TrainPosition[u].position.x=this.Train.scene.children[i].position.x;
+            this.TrainPosition[u].position.z=this.Train.scene.children[i].position.z;
+            this.ParkObjects.push(this.Train.scene.children[i]);
+            this.TrainPosition.push(this.Train.scene.children[i]);
+            u++;
+          }
+        }
+        this.scene.add(this.Train.scene);
+      }
+    );
+
+    this.Smoke = new THREE.Mesh(new THREE.SphereBufferGeometry(.04,6,4),new THREE.MeshMatcapMaterial({transparent:true,matcap:white,opacity:0}));
+    for(var i=0;i<160;i++){
+      let smokeClone = this.Smoke.clone();
+      this.Smokes.push(smokeClone);
+      this.scene.add(smokeClone);
+    }
+  }
+
+  SwingShadow(){
+    if(!this.SwingTween.isActive()){
+
+    } else {
+      this.SwingS[0].position.x=this.SwingS[1].rotation.y/1.5;
+      setTimeout(() => {
+        this.SwingShadow();
+      }, 16);
+    }
+
+  }
+
+  FerrisWheelShadow(){
+    for(var i=0;i<this.Ferris.scene.children.length;i++){
+      if(this.Ferris.scene.children[i].position.y<.65){
+        this.FerrisShadows[0].position.x=this.Ferris.scene.children[i].position.x-.4
+        this.FerrisShadows[0].material.uniforms.uAlpha.value=
+          (.65-this.Ferris.scene.children[i].position.y)*4;
+        break;
+      } else {
+        this.FerrisShadows[0].material.uniforms.uAlpha.value=0;
+      }
+    }
+
+    if(this.FerrisAnimation==null){
+
+    } else {
+      setTimeout(() => {
+        this.FerrisWheelShadow();
+      }, 16);
+    }
+  }
+
+  private TweenF01 = new TimelineLite();
+  private TweenF02 = new TimelineLite();
+  private TweenF03 = new TimelineLite();
+  private TweenF04 = new TimelineLite();
+  private TweenF05 = new TimelineLite();
+  private TweenF06 = new TimelineLite();
+  private TweenF07 = new TimelineLite();
+  private TweenF08 = new TimelineLite();
+  private CarnivalTween = new TimelineLite();
+  private PlaneTween01 = new TimelineLite();
+  private PlaneTween02 = new TimelineLite();
+  private PlaneTween03 = new TimelineLite();
+  private PlaneTween04 = new TimelineLite();
+  FirstSceneClickEvent(){
+    this.raycaster.setFromCamera(this.mouse,this.camera);
+    var intersect = this.raycaster.intersectObjects(this.ParkObjects,true)
+    if(intersect.length>0){
+      console.log(intersect[0].object.name)
+      switch (intersect[0].object.name) {
+        case "FerrisWheel00":
+        case "FerrisWheel01":
+        case "FerrisWheel02":
+          if(this.FerrisAnimation!=null){
+          } else {
+            for(var i=0;i<this.Ferris.animations.length;i++){
+              this.FerrisAnimation = this.mixer01.clipAction(this.Ferris.animations[i]);
+              this.FerrisAnimation.setLoop(THREE.LoopOnce);
+              this.FerrisAnimation.play().reset();
+            }
+            this.FerrisWheelShadow();
+            gsap.delayedCall(25,() => {
+              this.FerrisAnimation=null;
+            });
+          }
+        break;
+        case "Swing01_0":
+        case "Swing01_1":
+        case "Swing01_2":
+        case "Swing02":
+        case "Swing03":
+          if(!this.SwingTween.isActive()){
+            this.SwingTween.restart();
+            this.SwingShadow();
+          }
+          break;
+        case "Plane01":
+        case "Plane01W":
+          if(!this.PlaneTween01.isActive()){
+            this.PlaneTween01.restart();
+          }
+          break;
+        case "Plane02":
+        case "Plane02W":
+          if(!this.PlaneTween02.isActive()){
+            this.PlaneTween02.restart();
+          }
+          break;
+        case "Plane03":
+        case "Plane03W":
+          if(!this.PlaneTween03.isActive()){
+            this.PlaneTween03.restart();
+          }
+          break;
+        case "Plane04":
+        case "Plane04W":
+          if(!this.PlaneTween04.isActive()){
+            this.PlaneTween04.restart();
+          }
+          break;
+        case "Carnival01":
+        case "Carnival02_0":
+        case "Carnival02_1":
+          if(!this.CarnivalTween.isActive()){
+            this.CarnivalTween.restart();
+          }
+          break;
+        case "F01_1":
+          if(!this.TweenF01.isActive()){
+            this.TweenF01.restart();
+          }
+        break;
+        case "F02_1":
+          if(!this.TweenF02.isActive()){
+            this.TweenF02.restart();
+          }
+        break;
+        case "F03_1":
+          if(!this.TweenF03.isActive()){
+            this.TweenF03.restart();
+          }
+        break;
+        case "F04_1":
+          if(!this.TweenF04.isActive()){
+            this.TweenF04.restart();
+          }
+        break;
+        case "F05_1":
+          if(!this.TweenF05.isActive()){
+            this.TweenF05.restart();
+          }
+        break;
+        case "F06_1":
+          if(!this.TweenF06.isActive()){
+            this.TweenF06.restart();
+          }
+        break;
+        case "F07_1":
+          if(!this.TweenF07.isActive()){
+            this.TweenF07.restart();
+          }
+        break;
+        case "F08_1":
+          if(!this.TweenF08.isActive()){
+            this.TweenF08.restart();
+          }
+        break;
+        case "Train01_0":
+        case "Train01_1":
+        case "Train02_0":
+        case "Train02_1":
+          if(this.TrainAnimation!=null){
+          } else {
+            for(var i=0;i<this.Train.animations.length;i++){
+              this.TrainAnimation = this.mixer02.clipAction(this.Train.animations[i]);
+              this.TrainAnimation.setLoop(THREE.LoopOnce);
+              this.TrainAnimation.play().reset();
+            }
+            this.TrainSmoke();
+            gsap.delayedCall(20,() => {
+              this.TrainAnimation=null;
+            });
+          }
+        break;
+      }
+    }
+  }
+
+  private Smoke;
+  private Smokes=[];
+  private SmokeI=0;
+  TrainSmoke(){
+    if(this.SmokeI==this.Smokes.length){
+      this.SmokeI=0;
+    }
+    // Shadow
+    TweenLite.to(this.TrainPosition[0].position,.1,{x:this.TrainPosition[2].position.x,z:this.TrainPosition[2].position.z,delay:.1})
+    TweenLite.to(this.TrainPosition[1].position,.1,{x:this.TrainPosition[3].position.x,z:this.TrainPosition[3].position.z,delay:.1})
+
+
+    this.TrainPosition[0].rotation.y=this.TrainPosition[2].rotation.y;
+    this.TrainPosition[1].rotation.y=this.TrainPosition[3].rotation.y;
+    // Position
+    TweenLite.fromTo(this.Smokes[this.SmokeI].position,1.6,
+      {x:this.SmokePipe[0].position.x,z:this.SmokePipe[0].position.z,y:this.SmokePipe[0].position.y},
+      {x:this.SmokePipe[0].position.x+(.3-Math.random()*.3),z:this.SmokePipe[0].position.z+(.3-Math.random()*.3),y:this.SmokePipe[0].position.y+Math.random()*.4+.4});
+    // Scale
+    TweenLite.fromTo(this.Smokes[this.SmokeI].scale,1.6,
+      {x:1,z:1,y:1},
+      {x:.1,z:.1,y:.1,ease:Power1.easeIn});
+    // // Opacity
+    TweenLite.fromTo(this.Smokes[this.SmokeI].material,1.6,
+      {opacity:1},
+      {opacity:0});
+    this.SmokeI++;
+    if(this.TrainAnimation==null){
+      console.log("STOPED");
+    } else {
+      setTimeout(() => {
+        this.TrainSmoke();
+      }, 16);
+    }
+  }
+
+
+  private BaseMatcap;
+  FirstInit(): void {
+
+    this.ScenePhase=1;
+
+    this.StringM = new LineMaterial({
+      color:0xffffff,
+      linewidth:.0007,
+    })
+
+    this.AddEvent();
+
+    this.nextSceneFunction();
+    this.CreateParkObject();
+    this.ParkStaticShadow();
+
+    // const cursor = document.querySelector('.cursor');
+    // const outer = document.querySelector('.cursor .outer');
+    // const dot = document.querySelector('.cursor .dot');
+    // document.addEventListener('mousemove',e=>{
+    //   cursor.setAttribute("style","top:"+e.pageY+"px;left:"+e.pageX+"px;");
+    // });
+    // document.addEventListener('mousedown',()=>{
+    //   TweenLite.to(outer,.3,{css:{scale:.75}});
+    //   TweenLite.to(dot,.3,{css:{scale:1}});
+    // });
+    // document.addEventListener('mouseup',()=>{
+    //   TweenLite.to(outer,.3,{css:{scale:1}});
+    //   TweenLite.to(dot,.3,{css:{scale:.75}});
+    // });
+
+
+    this.canvas.addEventListener("mousemove", (e) => {
+      this.renderThreePosition(e.x, e.y);
+    });
+    this.canvas.addEventListener("click", () => {
+      this.FirstSceneClickEvent();
+    });
+    // this.canvas.addEventListener("touchmove", (e) => {
+    //   this.renderThreePosition(e.touches[0].clientX, e.touches[0].clientY);
+    // });
+    // this.canvas.addEventListener("mousedown", (e) => {
+    //   if (e.which == 1) {
+    //     this.CursorBegin();
+    //     this.canvas.onmousemove = () => {
+    //       this.BalloonCursor();
+    //     };
+    //   }
+    // });
+    // this.canvas.addEventListener("touchstart", (e) => {
+    //   this.renderThreePosition(e.touches[0].clientX, e.touches[0].clientY);
+    //     this.CursorBegin();
+    //     this.canvas.ontouchmove = () => {
+    //       this.BalloonCursor();
+    //       this.FirstSceneClickEvent();
+    //     };
+    // });
+    // this.canvas.addEventListener("mouseup", (e) => {
+    //   if (e.which == 1) {
+    //     this.canvas.onmousemove = null;
+    //     if (this.collided) {
+    //       this.FirstCursor.copy(this.LastCursor);
+    //     } else {
+    //       TweenLite.to(this.FirstCursor, .5, {
+    //         x: this.LastCursor.x,
+    //         y: this.LastCursor.y, z: this.LastCursor.z
+    //       })
+    //       this.CheckLetterIntersect()
+    //     }
+    //   }
+    // });
+    // this.canvas.addEventListener("touchend", (e) => {
+    //   // this.renderThreePosition(e.touches[0].clientX, e.touches[0].clientY);
+    //     this.canvas.ontouchmove = null;
+    //     if (this.collided) {
+    //       this.FirstCursor.copy(this.LastCursor);
+    //     } else {
+    //       TweenLite.to(this.FirstCursor, .5, {
+    //         x: this.LastCursor.x,
+    //         y: this.LastCursor.y, z: this.LastCursor.z
+    //       })
+    //       this.CheckLetterIntersect()
+    //     }
+    // });
+  }
+
+  ParkStaticShadow(){
+    var texture = this.textureLoader.load('assets/shadow/Park01.png');
+
+    let uniforms = {
+      tShadow:{value:texture},
+      uShadowColor:{value:new THREE.Color("#000000")},
+      uAlpha:{value:.2}
+    }
+    let material = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms,depthWrite:false,
+      vertexShader:document.getElementById('vertexShader').textContent,
+      fragmentShader:document.getElementById('fragmentShader').textContent})
+
+      
+    let railshadow = new THREE.Mesh(new THREE.PlaneGeometry(12,12),material);
+    railshadow.rotation.set(-Math.PI/2,0,-Math.PI/2)
+    railshadow.position.set(0,0,0);
+
+    this.scene.add(railshadow);
+  }
+
+  private firstClientX:number=0;
+  private onNextLeft:boolean=false;
+  nextSceneFunction(){
+    document.querySelector('#nextScene .nextLeft').addEventListener("mousedown", this.nextLeftDown, false);
     document.addEventListener("mouseup", ()=>{
-      console.log('up')
-      document.removeEventListener("mousemove", this.nextLeftMove, false);
+      if(this.onNextLeft){
+        document.removeEventListener("mousemove", this.nextLeftMove, false);
+        this.firstClientX=0;
+        this.nextCancel();
+        this.onNextLeft=false;
+      }
     })
   }
 
-  nextLeftMove(e){
-    var offsetl = document.querySelector('#nextScene .nextLeft');
-    TweenLite.to('#nextScene .nextLeft',.02,{css:{left:(e.clientX-offsetl.parentElement.offsetLeft)+"px"}})
+  nextLeftDown = (e) => {
+    document.addEventListener("mousemove", this.nextLeftMove);
+    this.firstClientX=e.clientX;
+    this.onNextLeft = true;
   }
+
+  private prevLeft:number = 0;
+  private TranslateXed:number = 0;
+  nextLeftMove = (e) => {
+    var num = e.clientX-this.firstClientX > 0 ? e.clientX-this.firstClientX : 0;
+    if(num>0){
+      var offsetr = document.querySelector('#nextScene .nextRight') as HTMLElement;
+      if(num>(offsetr.offsetLeft-40)){
+        // console.log('overlay')
+      }
+      TweenLite.set('#nextScene .nextLeft',{css:{left:num+"px"}});
+      TweenLite.set('#nextScene .mid .svg',{css:{width:(200-num)+"px"}});
+      var Tx = (num-this.prevLeft)*.004;
+      this.camera.translateX(Tx);
+      this.TranslateXed+=Tx;
+      this.prevLeft=num;
+    }
+  }
+
+  private cameraFrameBoolean:boolean=false;
+  nextCancel(){
+    TweenLite.to('#nextScene .nextLeft',.3,{ease:Power1.easeOut,css:{left:0+"px"}});
+    TweenLite.to('#nextScene .mid .svg',.3,{ease:Power1.easeOut,css:{width:200+"px"}});
+    
+    var val = this.TranslateXed/45;
+    this.cameraFrameCancel(val);
+
+    this.prevLeft=0;
+    this.cameraFrameBoolean=true;
+
+    gsap.delayedCall(.3,()=>{
+      this.cameraFrameBoolean=false;
+    })
+
+  }
+
+  cameraFrameCancel(value){
+    setTimeout(() => {
+      if(this.cameraFrameBoolean){
+        this.cameraFrameCancel(value);
+      }
+    }, 6);
+    
+    if(this.TranslateXed-value<0){
+      this.camera.translateX(-this.TranslateXed);
+      this.TranslateXed=0;
+    } else {
+      this.TranslateXed-=value;
+      this.camera.translateX(-value);
+    }
+  }
+
+  nextSucceed(){
+    
+  }
+
+  cameraFrameSucceed(){
+    setTimeout(() => {
+      if(this.cameraFrameBoolean){
+        this.cameraFrameSucceed();
+      }
+    }, 6);
+  }
+
+  AddEvent(): void {
+    window.addEventListener('DOMContentLoaded', () => {
+      this.render();
+    });
+
+    window.addEventListener('resize', () => {
+      this.resize();
+    });
+
+    document.addEventListener('visibilitychange', ()=>{
+      if(document.hidden){
+        this.elapsedTime=(typeof performance === 'undefined' ? Date : performance).now();
+      } else {
+        this.elapsedTime=(typeof performance === 'undefined' ? Date : performance).now()-this.elapsedTime;
+      }
+    })
+  }
+
+
+  renderThreePosition(x, y) {
+    this.vec.set(
+      (x / window.innerWidth) * 2 - 1,
+      -(y / window.innerHeight) * 2 + 1,
+      0.5);
+
+    this.mouse.set(this.vec.x,this.vec.y);
+
+    this.vec.unproject(this.camera);
+    this.vec.sub(this.camera.position).normalize();
+    
+    var distance = - this.camera.position.z / this.vec.z;
+
+    this.pos.copy(this.camera.position).add(this.vec.multiplyScalar(distance));
+    // this.raycaster.setFromCamera(this.mouse, this.camera);
+
+    // this.plane.setFromNormalAndCoplanarPoint(this.camera.getWorldDirection(this.plane.normal), this.pos);
+
+    // var rect = this.canvas.getBoundingClientRect();
+
+    // this.mouse.x = ((x - rect.left) / rect.width) * 2 - 1;
+    // this.mouse.y = -((y - rect.top) / rect.height) * 2 + 1;
+
+    // this.raycaster.setFromCamera(this.mouse, this.camera);
+
+    // if (this.raycaster.ray.intersectPlane(this.plane, this.intersection)) {
+    //   this.pos.copy(this.intersection.sub(this.offset));
+    // }
+  }
+
+  FirstSceneRender() {
+    this.raycaster.setFromCamera(this.mouse,this.camera);
+    var intersect = this.raycaster.intersectObjects(this.ParkObjects,true)
+    if(intersect.length>0){
+      document.body.style.cursor="pointer";
+    } else {
+      document.body.style.cursor="auto";
+    }
+  }
+
+  private oldTime=0;
+  private elapsedTime=0;
+  private diff
+
+  Runanimation(){
+    var newTime=(typeof performance === 'undefined' ? Date : performance).now();
+    if(this.elapsedTime!=0){
+      this.diff = ((newTime-this.oldTime-this.elapsedTime)/1000);
+      this.elapsedTime=0;
+    } else {
+      this.diff = (newTime-this.oldTime)/1000;
+    }
+    this.oldTime=newTime;
+
+    
+    if (this.mixer01){
+      this.mixer01.update(this.diff);
+    } 
+    if (this.mixer02){
+      this.mixer02.update(this.diff);
+    }
+  }
+
+  render() {
+    requestAnimationFrame(() => {
+      this.render();
+    });
+
+    this.Runanimation();
+
+    // this.now = performance.now();
+
+
+    // if (this.times.length > 0 && this.times[0] <= this.now - 1000) {
+    //   this.times.shift();
+    // }
+
+    // this.times.push(this.now);
+    // this.fps = this.times.length;
+
+    // this.world.step(1 / this.fps);
+
+    this.FirstSceneRender();
+    // this.MiniGolfRender();
+
+    this.renderer.render(this.scene, this.camera);
+  }
+
 
   private CircleGolf;
-  ZeroInit(){
-    this.AddEvent();
+  SecondInit(){
     this.InitGolfCannon();
-    this.ThreePlane();
     this.GolfPlane();
     this.GoldStage();
     setTimeout(() => {
@@ -317,8 +1315,6 @@ export class welcomeService {
   InitGolfCannon(){
     this.world02 = new CANNON.World();
     this.world02.gravity.set(0, 0, 0);
-
-    this.debugger02 = new CannonDebugRenderer(this.scene, this.world02);
 
     this.GolfCMaterial = new CANNON.Material("GolfCMaterial");
     this.GolfStageMaterial = new CANNON.Material("GolfStageMaterial");
@@ -560,7 +1556,6 @@ export class welcomeService {
 
 
   CannonStage(){
-
     // setTimeout(() => {
     //   for(var i=0;i<this.positionarray[0].children.length;i++){
     //     console.log(this.positionarray[0].children[i])
@@ -967,1210 +1962,6 @@ export class welcomeService {
     // this.camera.lookAt(this.GolfC.position.x,this.GolfC.position.y,this.GolfC.position.z)
   }
 
-  private Train;
-  private FerrisWheel;
-  private Ferris;
-  private Carnival;
-  private CarnivalPlane;
-  private Swing;
-  private SwingS=[];
-  private FerrisAnimation;
-  private TrainAnimation;
-  private SwingTween = new TimelineLite();
-  private SmokePipe=[];
-  private TrainPosition=[];
-  private FerrisShadow = new THREE.Object3D();
-  private FerrisShadows = [];
-  ChooChoo() {
-    let white = this.textureLoader.load('assets/matcaps/FFFFFF03.png',()=>{
-      white.encoding=THREE.sRGBEncoding;
-    });
-    let blue = this.textureLoader.load('assets/matcaps/A4BCEC03.png',()=>{
-      blue.encoding=THREE.sRGBEncoding;
-    });
-    let pink = this.textureLoader.load('assets/matcaps/E7B9BE03.png',()=>{
-      pink.encoding=THREE.sRGBEncoding;
-    });
-    // white
-    let mate01 = new THREE.MeshMatcapMaterial({
-      color:0xffffff,
-      side:2,
-      matcap:white
-    })
-    // blue
-    let mate02 = new THREE.MeshMatcapMaterial({
-      color:0xffffff,
-      side:2,
-      matcap:blue
-    })
-    // pink
-    let mate03 = new THREE.MeshMatcapMaterial({
-      color:0xffffff,
-      side:2,
-      matcap:pink
-    })
-
-
-    this.loader.load('assets/model/Swing.glb',
-      (gltf)=>{
-        this.Swing=gltf.scene;
-        this.Swing.position.set(-.25,.04,-.87)
-        this.Swing.scale.set(.9,.9,.9);
-        this.Swing.rotation.set(0,25*Math.PI/180,0)
-
-        // Shadow
-        var texture = this.textureLoader.load('assets/shadow/Swing01.png');
-        let uniforms00 = {
-          tShadow:{value:texture},
-          uShadowColor:{value:new THREE.Color("#000000")},
-          uAlpha:{value:.4}
-        }
-        let material00 = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms:uniforms00,depthWrite:false,
-          vertexShader:document.getElementById('vertexShader').textContent,
-          fragmentShader:document.getElementById('fragmentShader').textContent});
-        let shadow01 = new THREE.Mesh(new THREE.PlaneBufferGeometry(3.15,3.15),material00)
-        shadow01.rotation.set(-Math.PI/2,0,25*Math.PI/180)
-        shadow01.position.x=gltf.scene.children[0].position.x-.018
-        shadow01.position.z=gltf.scene.children[0].position.z+.018
-        shadow01.position.y=.064;
-        this.scene.add(shadow01);
-
-
-        var texture = this.textureLoader.load('assets/shadow/Swing02.png');
-        let uniforms = {
-          tShadow:{value:texture},
-          uShadowColor:{value:new THREE.Color("#000000")},
-          uAlpha:{value:.1}
-        }
-        let material = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms,depthWrite:false,
-          vertexShader:document.getElementById('vertexShader').textContent,
-          fragmentShader:document.getElementById('fragmentShader').textContent});
-        let shadow02 = new THREE.Mesh(new THREE.PlaneBufferGeometry(3.15,3.15),material)
-        
-
-        let ShadowTween = new THREE.Object3D();
-        ShadowTween.add(shadow02);
-        ShadowTween.position.x=gltf.scene.children[0].position.x-.018
-        ShadowTween.position.z=gltf.scene.children[0].position.z+.018
-        ShadowTween.position.y=.064;
-        ShadowTween.rotation.set(-Math.PI/2,0,25*Math.PI/180)
-        this.scene.add(ShadowTween);
-        this.SwingS.push(shadow02);
-
-        for(var i=0;i<gltf.scene.children.length;i++){
-          if(gltf.scene.children[i].name=="Swing01"){
-            gltf.scene.children[""+i+""].children[0].material=mate01;
-            gltf.scene.children[""+i+""].children[1].material=mate02;
-            gltf.scene.children[""+i+""].children[2].material=mate01;
-            this.SwingS.push(gltf.scene.children[""+i+""]);
-
-            this.SwingTween.pause();
-            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,1.8,{ease:Power1.easeInOut,y:15*Math.PI/180})
-            // this.SwingTween.to(shadow02.position,1.8,{ease:Power1.easeInOut,x:.2},'-=1.8');
-
-            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,1.8,{ease:Power1.easeInOut,y:-15*Math.PI/180})
-            // this.SwingTween.to(shadow02.position,1.8,{ease:Power1.easeInOut,x:-.2},'-=1.8');
-
-            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2,{ease:Power1.easeInOut,y:25*Math.PI/180})
-            // this.SwingTween.to(shadow02.position,2,{ease:Power1.easeInOut,x:.25},'-=2');
-
-            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2,{ease:Power1.easeInOut,y:-25*Math.PI/180})
-            // this.SwingTween.to(shadow02.position,2,{ease:Power1.easeInOut,x:-.25},'-=2');
-
-            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2,{ease:Power1.easeInOut,y:35*Math.PI/180})
-            // this.SwingTween.to(shadow02.position,2,{ease:Power1.easeInOut,x:.3},'-=2');
-
-            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2,{ease:Power1.easeInOut,y:-35*Math.PI/180})
-            // this.SwingTween.to(shadow02.position,2,{ease:Power1.easeInOut,x:-.3},'-=2');
-
-            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2,{ease:Power1.easeInOut,y:45*Math.PI/180})
-            // this.SwingTween.to(shadow02.position,2,{ease:Power1.easeInOut,x:.35},'-=2');
-
-            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2,{ease:Power1.easeInOut,y:-45*Math.PI/180})
-            // this.SwingTween.to(shadow02.position,2,{ease:Power1.easeInOut,x:-.35},'-=2');
-
-            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2.1,{ease:Power1.easeInOut,y:50*Math.PI/180})
-            // this.SwingTween.to(shadow02.position,2.1,{ease:Power1.easeInOut,x:.35},'-=2.1');
-
-            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2.1,{ease:Power1.easeInOut,y:-50*Math.PI/180})
-            // this.SwingTween.to(shadow02.position,2.1,{ease:Power1.easeInOut,x:-.35},'-=2.1');
-
-            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2.2,{ease:Power1.easeInOut,y:45*Math.PI/180})
-            // this.SwingTween.to(shadow02.position,2.2,{ease:Power1.easeInOut,x:.35},'-=2.2');
-
-            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2.2,{ease:Power1.easeInOut,y:-45*Math.PI/180})
-            // this.SwingTween.to(shadow02.position,2.2,{ease:Power1.easeInOut,x:-.35},'-=2.2');
-
-            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2.2,{ease:Power1.easeInOut,y:40*Math.PI/180})
-            // this.SwingTween.to(shadow02.position,2.2,{ease:Power1.easeInOut,x:.3},'-=2.2');
-
-            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2.2,{ease:Power1.easeInOut,y:-40*Math.PI/180})
-            // this.SwingTween.to(shadow02.position,2.2,{ease:Power1.easeInOut,x:-.3},'-=2.2');
-
-            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2,{ease:Power1.easeInOut,y:30*Math.PI/180})
-            // this.SwingTween.to(shadow02.position,2,{ease:Power1.easeInOut,x:.25},'-=2');
-
-            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,2,{ease:Power1.easeInOut,y:-30*Math.PI/180})
-            // this.SwingTween.to(shadow02.position,2,{ease:Power1.easeInOut,x:-.25},'-=2');
-
-            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,1.8,{ease:Power1.easeInOut,y:15*Math.PI/180})
-            // this.SwingTween.to(shadow02.position,1.8,{ease:Power1.easeInOut,x:.2},'-=1.8');
-
-            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,1.6,{ease:Power1.easeInOut,y:-12*Math.PI/180})
-            // this.SwingTween.to(shadow02.position,1.6,{ease:Power1.easeInOut,x:-.2},'-=1.6');
-            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,1.4,{ease:Power1.easeInOut,y:12*Math.PI/180})
-            // this.SwingTween.to(shadow02.position,1.4,{ease:Power1.easeInOut,x:.15},'-=1.4');
-
-            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,1.2,{ease:Power1.easeInOut,y:-8*Math.PI/180})
-            // this.SwingTween.to(shadow02.position,1.2,{ease:Power1.easeInOut,x:-.1},'-=1.2');
-            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,1,{ease:Power1.easeInOut,y:6*Math.PI/180})
-            // this.SwingTween.to(shadow02.position,1,{ease:Power1.easeInOut,x:.08},'-=1');
-
-            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,.9,{ease:Power1.easeInOut,y:-4*Math.PI/180})
-            // this.SwingTween.to(shadow02.position,.9,{ease:Power1.easeInOut,x:-.05},'-=.9');
-
-            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,.8,{ease:Power1.easeInOut,y:2*Math.PI/180})
-            // this.SwingTween.to(shadow02.position,.8,{ease:Power1.easeInOut,x:.04},'-=.8');
-
-            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,.6,{ease:Power1.easeInOut,y:-1*Math.PI/180})
-            // this.SwingTween.to(shadow02.position,.6,{ease:Power1.easeInOut,x:-.02},'-=.6');
-            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,.4,{ease:Power1.easeInOut,y:1*Math.PI/180})
-            // this.SwingTween.to(shadow02.position,.4,{ease:Power1.easeInOut,x:.02},'-=.4');
-            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,.3,{ease:Power1.easeInOut,y:-.5*Math.PI/180})
-            // this.SwingTween.to(shadow02.position,.3,{ease:Power1.easeInOut,x:-.01},'-=.3');
-            this.SwingTween.to(gltf.scene.children[""+i+""].rotation,.2,{ease:Power1.easeInOut,y:0*Math.PI/180})
-            // this.SwingTween.to(shadow02.position,.2,{ease:Power1.easeInOut,x:0},'-=.2');
-          } else if (gltf.scene.children[i].name=="Star02") {
-            gltf.scene.children[""+i+""].material=mate02;
-          } else {
-            gltf.scene.children[""+i+""].material=mate01;
-          }
-        }
-
-        this.ParkObjects.push(this.Swing);
-        this.scene.add(this.Swing)
-        
-      }
-    );
-
-    this.loader.load(
-      'assets/model/Carnival.glb',
-      (gltf) => {
-        this.Carnival = gltf.scene;
-        this.Carnival.scale.set(.9, .9, .9);
-
-        this.Carnival.position.set(-0.01, .02, 0.54);
-        this.Carnival.rotation.set(0,0,0);
-        // Carnival
-        for(var i=0;i<this.Carnival.children.length;i++){
-          if(this.Carnival.children[i].name=="Carnival02"){
-            this.Carnival.children[i].children[0].material=mate02;
-            this.Carnival.children[i].children[1].material=mate01;
-          } else {
-            this.Carnival.children[i].material=mate01
-          }
-        }
-        this.CarnivalTween.pause();
-        this.CarnivalTween.to(this.Carnival.rotation,40,{ease:Power1.easeInOut,y:this.Carnival.rotation.y-Math.PI*6});
-        this.CarnivalTween.to(this.CarnivalPlane.rotation,40,{ease:Power1.easeInOut,y:this.CarnivalPlane.rotation.y-Math.PI*6},'-=40');
-        this.scene.add(this.Carnival);
-        this.ParkObjects.push(this.Carnival)
-
-        let shadow3d = new THREE.Object3D();
-        var texture = this.textureLoader.load('assets/shadow/Carnival02.png');
-
-        let uniforms00 = {
-          tShadow:{value:texture},
-          uShadowColor:{value:new THREE.Color("#000000")},
-          uAlpha:{value:.2}
-        }
-        let material00 = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms:uniforms00,depthWrite:false,
-          vertexShader:document.getElementById('vertexShader').textContent,
-          fragmentShader:document.getElementById('fragmentShader').textContent});
-          
-        let shadow00 = new THREE.Mesh(new THREE.PlaneBufferGeometry(1.8,1.8),material00)
-        shadow00.rotation.set(-Math.PI/2,0,0)
-        shadow00.position.set(0,.165,0.54)
-        this.scene.add(shadow00)
-
-        let shadow01=shadow00.clone();
-        shadow01.scale.set(.5,.5,.5);
-        shadow01.position.set(0.105,.201,0.54)
-        shadow01.rotation.set(-Math.PI/2,0,0)
-        this.scene.add(shadow01);
-
-        var texture = this.textureLoader.load('assets/shadow/Carnival01.png');
-        let uniforms = {
-          tShadow:{value:texture},
-          uShadowColor:{value:new THREE.Color("#000000")},
-          uAlpha:{value:.4}
-        }
-        let material = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms,depthWrite:false,
-          vertexShader:document.getElementById('vertexShader').textContent,
-          fragmentShader:document.getElementById('fragmentShader').textContent});
-          
-        let shadow = new THREE.Mesh(new THREE.PlaneBufferGeometry(.63,.63),material)
-        shadow.rotation.set(-Math.PI/2,0,0)
-        shadow.position.set(-0.603,.164,0)
-        shadow3d.add(shadow);
-
-        let shadow02 = shadow.clone();
-        shadow02.position.set(0.603,.164,0)
-        shadow3d.add(shadow02);
-
-        let shadow03 = shadow.clone();
-        shadow03.position.set(0,.164,-0.603)
-        shadow3d.add(shadow03);
-
-        let shadow04 = shadow.clone();
-        shadow04.position.set(0,.164,0.603)
-        shadow3d.add(shadow04);
-
-
-        shadow3d.position.set(-0.01,0,.54);
-        this.scene.add(shadow3d)
-        this.CarnivalTween.to(shadow3d.rotation,40,{ease:Power1.easeInOut,y:shadow3d.rotation.y-Math.PI*6},'-=40')
-        this.CarnivalTween.to(shadow3d.children[0].rotation,40,{ease:Power1.easeInOut,z:shadow3d.rotation.z+Math.PI*6},'-=40')
-        this.CarnivalTween.to(shadow3d.children[1].rotation,40,{ease:Power1.easeInOut,z:shadow3d.rotation.z+Math.PI*6},'-=40')
-        this.CarnivalTween.to(shadow3d.children[2].rotation,40,{ease:Power1.easeInOut,z:shadow3d.rotation.z+Math.PI*6},'-=40')
-        this.CarnivalTween.to(shadow3d.children[3].rotation,40,{ease:Power1.easeInOut,z:shadow3d.rotation.z+Math.PI*6},'-=40')
-
-
-        // Plane
-        this.loader.load('assets/model/CarnivalPlane.glb',
-          (gltf)=>{
-            
-            for(var i=0;i<2;i++){
-              if(gltf.scene.children[i].name=="CarnivalPlane00"){
-                PlanePart = gltf.scene.children[i].clone();
-                PlanePart.children["0"].material=mate02;
-                PlanePart.children["1"].material=mate03;
-              } else {
-                gltf.scene.children[""+i+""].material=mate02;
-                Fan = gltf.scene.children[i].clone();
-              }
-            }
-            Fan.position.z = .65;
-            PlanePart.position.z=.65;
-            Plane01.add(Fan);
-            Plane01.add(PlanePart)
-            Plane01.scale.set(.9,.9,.9)
-            Plane01.position.set(0,.5,0);
-            Plane01.rotation.set(0,-4*Math.PI/180,0)
-            Plane01.children[0].name="Plane01W";
-            Plane01.children[1].children[0].name="Plane01";
-            Plane01.children[1].children[1].name="Plane01";
-            this.PlaneTween01.pause();
-            this.PlaneTween01.to(Plane01.children[0].rotation,5,{x:Math.PI*10});
-            this.CarnivalTween.to(Plane01.position,2,{ease:Power1.easeInOut,y:.65,repeat:11,yoyo:true},'-=36');
-            this.CarnivalPlane.add(Plane01)
-    
-            Plane02 = Plane01.clone();
-            Plane02.children[0].name="Plane02W";
-            Plane02.children[1].children[0].name="Plane02";
-            Plane02.children[1].children[1].name="Plane02";
-            Plane02.rotation.set(0,(-90-4)*Math.PI/180,0)
-            this.PlaneTween02.pause();
-            this.PlaneTween02.to(Plane02.children[0].rotation,5,{x:Math.PI*10});
-            this.CarnivalTween.to(Plane02.position,2,{ease:Power1.easeInOut,y:.65,repeat:11,yoyo:true},'-=33');
-            this.CarnivalPlane.add(Plane02)
-    
-            Plane03 = Plane01.clone();
-            Plane03.children[0].name="Plane03W";
-            Plane03.children[1].children[0].name="Plane03";
-            Plane03.children[1].children[1].name="Plane03";
-            Plane03.position.set(0,.5,0);
-            Plane03.rotation.set(0,(-180-4)*Math.PI/180,0)
-            this.PlaneTween03.pause();
-            this.PlaneTween03.to(Plane03.children[0].rotation,5,{x:Math.PI*10});
-            this.CarnivalTween.to(Plane03.position,2,{ease:Power1.easeInOut,y:.65,repeat:11,yoyo:true},'-=34');
-            this.CarnivalPlane.add(Plane03)
-    
-            Plane04 = Plane01.clone();
-            Plane04.children[0].name="Plane04W";
-            Plane04.children[1].children[0].name="Plane04";
-            Plane04.children[1].children[1].name="Plane04";
-            Plane04.position.set(0,.5,0);
-            Plane04.rotation.set(0,(-270-4)*Math.PI/180,0)
-            this.PlaneTween04.pause();
-            this.PlaneTween04.to(Plane04.children[0].rotation,5,{x:Math.PI*10});
-            this.CarnivalTween.to(Plane04.position,2,{ease:Power1.easeInOut,y:.65,repeat:11,yoyo:true},'-=35');
-            this.CarnivalPlane.add(Plane04)
-    
-            this.CarnivalPlane.position.set(-0.01,0, .54)
-            this.ParkObjects.push(this.CarnivalPlane)
-            this.scene.add(this.CarnivalPlane);
-          }
-        );
-      }
-    );
-
-    this.CarnivalPlane = new THREE.Object3D();
-    let Plane01 = new THREE.Object3D();
-    let Plane02 = new THREE.Object3D();
-    let Plane03 = new THREE.Object3D();
-    let Plane04 = new THREE.Object3D();
-    let Fan = new THREE.Object3D();
-    let PlanePart = new THREE.Object3D();
-
-    this.loader.load(
-      'assets/model/FerrisWheel.glb',
-      (gltf) => {
-        this.FerrisWheel = gltf.scene;
-
-        this.FerrisWheel.scale.set(.9, .9, .9);
-        this.FerrisWheel.position.set(.4, .035, -1.02);
-        this.FerrisWheel.rotation.set(0,-30*Math.PI/180,0);
-
-        var texture = this.textureLoader.load('assets/shadow/Ferris01.png');
-        let uniforms00 = {
-          tShadow:{value:texture},
-          uShadowColor:{value:new THREE.Color("#000000")},
-          uAlpha:{value:.3}
-        }
-        let material00 = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms:uniforms00,depthWrite:false,
-          vertexShader:document.getElementById('vertexShader').textContent,
-          fragmentShader:document.getElementById('fragmentShader').textContent});
-        let shadow01 = new THREE.Mesh(new THREE.PlaneBufferGeometry(3.15,3.15),material00)
-        shadow01.rotation.set(-Math.PI/2,0,-30*Math.PI/180)
-
-        shadow01.position.y=.064;
-        this.scene.add(shadow01);
-
-
-        var texture = this.textureLoader.load('assets/shadow/Ferris02.png');
-        let uniforms = {
-          tShadow:{value:texture},
-          uShadowColor:{value:new THREE.Color("#000000")},
-          uAlpha:{value:.2}
-        }
-        let material = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms,depthWrite:false,
-          vertexShader:document.getElementById('vertexShader').textContent,
-          fragmentShader:document.getElementById('fragmentShader').textContent});
-        let shadow = new THREE.Mesh(new THREE.PlaneBufferGeometry(1.8,1.8),material)
-        shadow.rotation.set(-Math.PI/2,0,0)
-        shadow.position.y=.064;
-        
-        this.FerrisShadow.add(shadow);
-        this.FerrisShadows.push(shadow);
-        this.scene.add(this.FerrisShadow);
-        
-        this.FerrisShadow.rotation.set(0,-30*Math.PI/180,0);
-        
-        for(var i=0;i<this.FerrisWheel.children.length;i++){
-          if(this.FerrisWheel.children[i].name=="Star"){
-            this.FerrisWheel.children[i].material=mate02
-          } else if(this.FerrisWheel.children[i].name=="FerrisWheel00") {
-            this.FerrisWheel.children[i].material=mate01
-            shadow01.position.x=gltf.scene.children[i].position.x-.003
-            shadow01.position.z=gltf.scene.children[i].position.z+.08
-          } else {
-            this.FerrisWheel.children[i].material=mate01
-          }
-        }
-        
-        this.ParkObjects.push(this.FerrisWheel)
-        this.scene.add(this.FerrisWheel);
-
-
-        // 8 Ferris
-        this.loader.load(
-          'assets/model/Ferris.glb',
-          (gltf) => {
-            this.Ferris = gltf;
-            this.mixer01 = new THREE.AnimationMixer(this.Ferris.scene);
-            this.mixer01.timeScale = .04;
-    
-    
-            this.Ferris.scene.scale.set(.9, .9, .9);
-            this.Ferris.scene.position.set(.4, .035, -1.02);
-            this.Ferris.scene.rotation.set(0,-30*Math.PI/180,0);
-    
-    
-            // Ferris
-            for(var i=0;i<this.Ferris.scene.children.length;i++){
-              if(this.Ferris.scene.children[i].name=="F01"){
-                this.TweenF01.pause();
-                this.TweenF01.to(this.Ferris.scene.children[i].rotation,1,{z:.7})
-                this.TweenF01.to(this.Ferris.scene.children[i].rotation,2,{z:-.7});
-                this.TweenF01.to(this.Ferris.scene.children[i].rotation,1,{z:0});
-                this.Ferris.scene.children[i].children[1].material=mate03
-                this.Ferris.scene.children[i].children[0].material=mate01
-              } else if (this.Ferris.scene.children[i].name=="F02") {
-                this.TweenF02.pause();
-                this.TweenF02.to(this.Ferris.scene.children[i].rotation,1,{z:.7})
-                this.TweenF02.to(this.Ferris.scene.children[i].rotation,2,{z:-.7});
-                this.TweenF02.to(this.Ferris.scene.children[i].rotation,1,{z:0});
-                this.Ferris.scene.children[i].children[1].material=mate02
-                this.Ferris.scene.children[i].children[0].material=mate01
-              } else if (this.Ferris.scene.children[i].name=="F03") {
-                this.TweenF03.pause();
-                this.TweenF03.to(this.Ferris.scene.children[i].rotation,1,{z:.7})
-                this.TweenF03.to(this.Ferris.scene.children[i].rotation,2,{z:-.7});
-                this.TweenF03.to(this.Ferris.scene.children[i].rotation,1,{z:0});
-                this.Ferris.scene.children[i].children[1].material=mate03
-                this.Ferris.scene.children[i].children[0].material=mate01
-              } else if (this.Ferris.scene.children[i].name=="F04") {
-                this.TweenF04.pause();
-                this.TweenF04.to(this.Ferris.scene.children[i].rotation,1,{z:.7})
-                this.TweenF04.to(this.Ferris.scene.children[i].rotation,2,{z:-.7});
-                this.TweenF04.to(this.Ferris.scene.children[i].rotation,1,{z:0});
-                this.Ferris.scene.children[i].children[1].material=mate02
-                this.Ferris.scene.children[i].children[0].material=mate01
-              } else if (this.Ferris.scene.children[i].name=="F05") {
-                this.TweenF05.pause();
-                this.TweenF05.to(this.Ferris.scene.children[i].rotation,1,{z:.7})
-                this.TweenF05.to(this.Ferris.scene.children[i].rotation,2,{z:-.7});
-                this.TweenF05.to(this.Ferris.scene.children[i].rotation,1,{z:0});
-                this.Ferris.scene.children[i].children[1].material=mate03
-                this.Ferris.scene.children[i].children[0].material=mate01
-              } else if (this.Ferris.scene.children[i].name=="F06") {
-                this.TweenF06.pause();
-                this.TweenF06.to(this.Ferris.scene.children[i].rotation,1,{z:.7})
-                this.TweenF06.to(this.Ferris.scene.children[i].rotation,2,{z:-.7});
-                this.TweenF06.to(this.Ferris.scene.children[i].rotation,1,{z:0});
-                this.Ferris.scene.children[i].children[1].material=mate02
-                this.Ferris.scene.children[i].children[0].material=mate01
-              } else if (this.Ferris.scene.children[i].name=="F07") {
-                this.TweenF07.pause();
-                this.TweenF07.to(this.Ferris.scene.children[i].rotation,1,{z:.7})
-                this.TweenF07.to(this.Ferris.scene.children[i].rotation,2,{z:-.7});
-                this.TweenF07.to(this.Ferris.scene.children[i].rotation,1,{z:0});
-                this.Ferris.scene.children[i].children[1].material=mate03
-                this.Ferris.scene.children[i].children[0].material=mate01
-              } else if (this.Ferris.scene.children[i].name=="F08") {
-                this.TweenF08.pause();
-                this.TweenF08.to(this.Ferris.scene.children[i].rotation,1,{z:.7})
-                this.TweenF08.to(this.Ferris.scene.children[i].rotation,2,{z:-.7});
-                this.TweenF08.to(this.Ferris.scene.children[i].rotation,1,{z:0});
-                this.Ferris.scene.children[i].children[1].material=mate02
-                this.Ferris.scene.children[i].children[0].material=mate01
-              } else {
-                this.Ferris.scene.children[i].material=mate01
-              }
-              if(this.Ferris.scene.children[i].position.y<.65){
-                this.FerrisShadows[0].position.x=this.Ferris.scene.children[i].position.x-.4
-                this.FerrisShadows[0].position.z=this.Ferris.scene.children[i].position.z-.9
-                this.FerrisShadows[0].material.uniforms.uAlpha.value=
-                  (.65-this.Ferris.scene.children[i].position.y)*4;
-              }
-            }
-    
-            this.ParkObjects.push(this.Ferris.scene);
-            this.scene.add(this.Ferris.scene);
-          }
-        );
-      }
-    );
-
-    this.loader.load(
-      'assets/model/Train.glb',
-      (gltf) => {
-        this.Train = gltf;
-        this.mixer02 = new THREE.AnimationMixer(this.Train.scene);
-
-
-        this.mixer02.timeScale=.25;
-        this.Train.scene.position.set(0, .045, 0);
-
-        var texture = this.textureLoader.load('assets/shadow/Park02.png');
-
-        let uniforms = {
-          tShadow:{value:texture},
-          uShadowColor:{value:new THREE.Color("#000000")},
-          uAlpha:{value:.2}
-        }
-        let material = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms,depthWrite:false,
-          vertexShader:document.getElementById('vertexShader').textContent,
-          fragmentShader:document.getElementById('fragmentShader').textContent});
-    
-        let trainShadow = new THREE.Mesh(new THREE.PlaneBufferGeometry(1.2,1.2),material);
-        trainShadow.rotation.set(-Math.PI/2,0.01,-Math.PI/2)
-        trainShadow.position.set(.3,0.01,-.45);
-        let TrainShadow3d01 = new THREE.Object3D();
-        TrainShadow3d01.add(trainShadow);
-
-        this.scene.add(TrainShadow3d01);
-
-        let TrainShadow3d02=TrainShadow3d01.clone();
-        this.scene.add(TrainShadow3d02);
-        this.TrainPosition.push(TrainShadow3d01);
-
-
-        this.TrainPosition.push(TrainShadow3d02);
-
-        var u=0;
-        // Train
-        for(var i=0;i<this.Train.scene.children.length;i++){
-          if(this.Train.scene.children[i].name=="Rail"){
-            this.Train.scene.children[i].material=mate02
-          } else if (this.Train.scene.children[i].name=="SmokePipe"){
-            this.Train.scene.children[i].material=mate02
-            this.SmokePipe.push(this.Train.scene.children[i]);
-          } else {
-            this.Train.scene.children[i].children[0].material=mate02;
-            this.Train.scene.children[i].children[1].material=mate01;
-            this.TrainPosition[u].position.x=this.Train.scene.children[i].position.x;
-            this.TrainPosition[u].position.z=this.Train.scene.children[i].position.z;
-            this.ParkObjects.push(this.Train.scene.children[i]);
-            this.TrainPosition.push(this.Train.scene.children[i]);
-            u++;
-          }
-        }
-        this.scene.add(this.Train.scene);
-      }
-    );
-
-    this.Smoke = new THREE.Mesh(new THREE.SphereBufferGeometry(.04,6,4),new THREE.MeshMatcapMaterial({transparent:true,matcap:white,opacity:0}));
-    for(var i=0;i<160;i++){
-      let smokeClone = this.Smoke.clone();
-      this.Smokes.push(smokeClone);
-      this.scene.add(smokeClone);
-    }
-  }
-
-  SwingShadow(){
-    if(!this.SwingTween.isActive()){
-      console.log("Swing Stopped");
-    } else {
-      this.SwingS[0].position.x=this.SwingS[1].rotation.y/1.5;
-      setTimeout(() => {
-        this.SwingShadow();
-      }, 16);
-    }
-
-  }
-
-  FerrisWheelShadow(){
-    for(var i=0;i<this.Ferris.scene.children.length;i++){
-      if(this.Ferris.scene.children[i].position.y<.65){
-        this.FerrisShadows[0].position.x=this.Ferris.scene.children[i].position.x-.4
-        this.FerrisShadows[0].material.uniforms.uAlpha.value=
-          (.65-this.Ferris.scene.children[i].position.y)*4;
-        break;
-      } else {
-        this.FerrisShadows[0].material.uniforms.uAlpha.value=0;
-      }
-    }
-
-    if(this.FerrisAnimation==null){
-      console.log("Ferris STOPED");
-    } else {
-      setTimeout(() => {
-        this.FerrisWheelShadow();
-      }, 16);
-    }
-  }
-
-  private TweenF01 = new TimelineLite();
-  private TweenF02 = new TimelineLite();
-  private TweenF03 = new TimelineLite();
-  private TweenF04 = new TimelineLite();
-  private TweenF05 = new TimelineLite();
-  private TweenF06 = new TimelineLite();
-  private TweenF07 = new TimelineLite();
-  private TweenF08 = new TimelineLite();
-  private CarnivalTween = new TimelineLite();
-  private PlaneTween01 = new TimelineLite();
-  private PlaneTween02 = new TimelineLite();
-  private PlaneTween03 = new TimelineLite();
-  private PlaneTween04 = new TimelineLite();
-  FirstSceneClickEvent(){
-    this.raycaster.setFromCamera(this.mouse,this.camera);
-    var intersect = this.raycaster.intersectObjects(this.ParkObjects,true)
-    if(intersect.length>0){
-      console.log(intersect[0].object.name)
-      switch (intersect[0].object.name) {
-        case "FerrisWheel00":
-        case "FerrisWheel01":
-        case "FerrisWheel02":
-          if(this.FerrisAnimation!=null){
-          } else {
-            for(var i=0;i<this.Ferris.animations.length;i++){
-              this.FerrisAnimation = this.mixer01.clipAction(this.Ferris.animations[i]);
-              this.FerrisAnimation.setLoop(THREE.LoopOnce);
-              this.FerrisAnimation.play().reset();
-            }
-            this.FerrisWheelShadow();
-            gsap.delayedCall(25,() => {
-              this.FerrisAnimation=null;
-            });
-          }
-        break;
-        case "Swing01_0":
-        case "Swing01_1":
-        case "Swing01_2":
-        case "Swing02":
-        case "Swing03":
-          if(!this.SwingTween.isActive()){
-            this.SwingTween.restart();
-            this.SwingShadow();
-          }
-          break;
-        case "Plane01":
-        case "Plane01W":
-          if(!this.PlaneTween01.isActive()){
-            this.PlaneTween01.restart();
-          }
-          break;
-        case "Plane02":
-        case "Plane02W":
-          if(!this.PlaneTween02.isActive()){
-            this.PlaneTween02.restart();
-          }
-          break;
-        case "Plane03":
-        case "Plane03W":
-          if(!this.PlaneTween03.isActive()){
-            this.PlaneTween03.restart();
-          }
-          break;
-        case "Plane04":
-        case "Plane04W":
-          if(!this.PlaneTween04.isActive()){
-            this.PlaneTween04.restart();
-          }
-          break;
-        case "Carnival01":
-        case "Carnival02_0":
-        case "Carnival02_1":
-          if(!this.CarnivalTween.isActive()){
-            this.CarnivalTween.restart();
-          }
-          break;
-        case "F01_1":
-          if(!this.TweenF01.isActive()){
-            this.TweenF01.restart();
-          }
-        break;
-        case "F02_1":
-          if(!this.TweenF02.isActive()){
-            this.TweenF02.restart();
-          }
-        break;
-        case "F03_1":
-          if(!this.TweenF03.isActive()){
-            this.TweenF03.restart();
-          }
-        break;
-        case "F04_1":
-          if(!this.TweenF04.isActive()){
-            this.TweenF04.restart();
-          }
-        break;
-        case "F05_1":
-          if(!this.TweenF05.isActive()){
-            this.TweenF05.restart();
-          }
-        break;
-        case "F06_1":
-          if(!this.TweenF06.isActive()){
-            this.TweenF06.restart();
-          }
-        break;
-        case "F07_1":
-          if(!this.TweenF07.isActive()){
-            this.TweenF07.restart();
-          }
-        break;
-        case "F08_1":
-          if(!this.TweenF08.isActive()){
-            this.TweenF08.restart();
-          }
-        break;
-        case "Train01_0":
-        case "Train01_1":
-        case "Train02_0":
-        case "Train02_1":
-          if(this.TrainAnimation!=null){
-          } else {
-            for(var i=0;i<this.Train.animations.length;i++){
-              this.TrainAnimation = this.mixer02.clipAction(this.Train.animations[i]);
-              this.TrainAnimation.setLoop(THREE.LoopOnce);
-              this.TrainAnimation.play().reset();
-            }
-            this.TrainSmoke();
-            gsap.delayedCall(20,() => {
-              this.TrainAnimation=null;
-            });
-          }
-        break;
-      }
-    }
-  }
-
-  private Smoke;
-  private Smokes=[];
-  private SmokeI=0;
-  TrainSmoke(){
-    if(this.SmokeI==this.Smokes.length){
-      this.SmokeI=0;
-    }
-    // Shadow
-    TweenLite.to(this.TrainPosition[0].position,.1,{x:this.TrainPosition[2].position.x,z:this.TrainPosition[2].position.z,delay:.1})
-    TweenLite.to(this.TrainPosition[1].position,.1,{x:this.TrainPosition[3].position.x,z:this.TrainPosition[3].position.z,delay:.1})
-
-
-    this.TrainPosition[0].rotation.y=this.TrainPosition[2].rotation.y;
-    this.TrainPosition[1].rotation.y=this.TrainPosition[3].rotation.y;
-    // Position
-    TweenLite.fromTo(this.Smokes[this.SmokeI].position,1.6,
-      {x:this.SmokePipe[0].position.x,z:this.SmokePipe[0].position.z,y:this.SmokePipe[0].position.y},
-      {x:this.SmokePipe[0].position.x+(.3-Math.random()*.3),z:this.SmokePipe[0].position.z+(.3-Math.random()*.3),y:this.SmokePipe[0].position.y+Math.random()*.4+.4});
-    // Scale
-    TweenLite.fromTo(this.Smokes[this.SmokeI].scale,1.6,
-      {x:1,z:1,y:1},
-      {x:.1,z:.1,y:.1,ease:Power1.easeIn});
-    // // Opacity
-    TweenLite.fromTo(this.Smokes[this.SmokeI].material,1.6,
-      {opacity:1},
-      {opacity:0});
-    this.SmokeI++;
-    if(this.TrainAnimation==null){
-      console.log("STOPED");
-    } else {
-      setTimeout(() => {
-        this.TrainSmoke();
-      }, 16);
-    }
-  }
-
-
-  private BaseMatcap;
-  FirstInit(): void {
-
-    this.nextSceneFunction();
-    // const cursor = document.querySelector('.cursor');
-    // const outer = document.querySelector('.cursor .outer');
-    // const dot = document.querySelector('.cursor .dot');
-    // document.addEventListener('mousemove',e=>{
-    //   cursor.setAttribute("style","top:"+e.pageY+"px;left:"+e.pageX+"px;");
-    // });
-    // document.addEventListener('mousedown',()=>{
-    //   TweenLite.to(outer,.3,{css:{scale:.75}});
-    //   TweenLite.to(dot,.3,{css:{scale:1}});
-    // });
-    // document.addEventListener('mouseup',()=>{
-    //   TweenLite.to(outer,.3,{css:{scale:1}});
-    //   TweenLite.to(dot,.3,{css:{scale:.75}});
-    // });
-
-    this.StringM = new LineMaterial({
-      color:0xffffff,
-      linewidth:.0007,
-    })
-
-    this.AddEvent();
-    this.InitBalloonCannon();
-    this.ThreePlane();
-    this.CannonPlane();
-    this.CreateBalloonCursor();
-    
-    var params = {
-      roughness: 0,
-      metalness: 0,
-      color: "#ffffff",
-      emissive: "#e65a5a",
-    }
-
-    // this.BaseMatcap = this.textureLoader.load('assets/matcaps/FFFFFF.png',()=>{
-    //   this.BaseMatcap.encoding=THREE.sRGBEncoding;
-    // });
-
-    // var letterMC = this.textureLoader.load('assets/matcaps/FFFFFF.png',()=>{
-    //   letterMC.encoding=THREE.sRGBEncoding;
-    // });
-
-    // let bgparams = {
-    //   background: "#ffffff",
-    // };
-
-
-
-    // let boxBG = new THREE.MeshMatcapMaterial({color:0xffffff,matcap:letterMC,})
-
-    // var bg = this.gui.addFolder("Background Box");
-    // bg.addColor(bgparams, "background")
-    //   .onChange(() => {
-    //     boxBG.color.set(bgparams.background);
-    // });
-
-    this.ChooChoo();
-
-    // let box = new THREE.Mesh(new THREE.BoxBufferGeometry(40,10,10),boxBG);
-    // this.scene.add(box);
-    // box.position.set(0,5,0);
-
-    // this.BalloonM = new THREE.MeshMatcapMaterial({
-    //   color:0xFFA6A0,
-    //   matcap:this.BaseMatcap
-    // })
-
-    // var PlaneMaterial03 = new THREE.MeshMatcapMaterial({color:0x8bca78,matcap:this.BaseMatcap})
-
-    // let StringPlane = new THREE.Object3D();
-    // let planeTop = new THREE.Mesh(new THREE.PlaneBufferGeometry(60,10),boxBG);
-    // planeTop.position.set(0,0,-10);
-    // planeTop.rotation.x=-Math.PI/2
-    // StringPlane.add(planeTop)
-
-    // let planeLeft = new THREE.Mesh(new THREE.PlaneBufferGeometry(10,15),boxBG);
-    // planeLeft.position.set(-10,0,0);
-    // planeLeft.rotation.x=-Math.PI/2
-    // StringPlane.add(planeLeft)
-
-    // let planeRight = new THREE.Mesh(new THREE.PlaneBufferGeometry(10,15),boxBG);
-    // planeRight.position.set(10,0,0);
-    // planeRight.rotation.x=-Math.PI/2
-    // StringPlane.add(planeRight)
-    
-    // this.loader.load(
-    //   'assets/model/StringPlane02.glb',
-    //   (gltf) => {
-    //     let ThreeStage = gltf.scene;
-    //     ThreeStage.position.set(0,0,0);
-    //     ThreeStage.rotation.set(0,0,0);
-    //     ThreeStage.scale.set(2.9,3,2.2);
-    //     ThreeStage.children["0"].material=boxBG;
-    //     StringPlane.add(ThreeStage);
-    //     this.scene.add(StringPlane);
-    //   }
-    // );
-
-
-    let Object3D = new THREE.Object3D();
-    // let tl = new TimelineLite();
-    // tl.to()
-
-    TweenLite.to(Object3D.position,1.5,{delay:3.5,y:-3})
-    TweenLite.to(Object3D.position,1.5,{delay:5,y:0-0.0006})
-
-
-
-    // let StringPlaneTop;
-    // this.loader.load(
-    //   'assets/model/StringPlaneTop.glb',
-    //   (gltf) => {
-    //     StringPlaneTop = gltf.scene;
-    //     StringPlaneTop.position.set(0,0-0.0006+.0,0);
-    //     StringPlaneTop.rotation.set(0,0,0);
-    //     StringPlaneTop.scale.set(2.9,1,2.2);
-    //     StringPlaneTop.children["0"].material=boxBG;
-    //     Object3D.add(StringPlaneTop)
-    //     this.scene.add(Object3D);
-    //   }
-    // );
-
-    // this.loader.load(
-    //   'assets/model/GolfStage05.glb',
-    //   (gltf) => {
-    //     let ThreeStage = gltf.scene;
-    //     this.positionarray.push(ThreeStage);
-    //     ThreeStage.position.set(8.5,-0.1,-.5);
-    //     ThreeStage.rotation.set(0,0,0);
-    //     ThreeStage.children["0"].children[0].material=PlaneMaterial02;
-    //     ThreeStage.children["0"].children[1].material=PlaneMaterial;
-        
-    //     Object3D.add(ThreeStage);
-
-    //     let add={
-    //       hide:false
-    //     }
-    //     this.gui.add(add,'hide')
-    //       .onChange(()=>{
-    //         this.scene.remove(ThreeStage);
-    //       })
-    //     let add02={
-    //       add:false
-    //     }
-    //     this.gui.add(add02,'add')
-    //       .onChange(()=>{
-    //         this.scene.add(ThreeStage);
-    //       })
-    //   }
-    // );
-
-
-
-    let CTR = new THREE.Object3D();
-    let CTRMater = new THREE.MeshBasicMaterial({transparent:true,opacity:0})
-
-    let the = new THREE.Mesh(new THREE.BoxBufferGeometry(.1,.1,.1),CTRMater);
-    the.position.set(0,.1,.15);
-    CTR.add(the);
-
-    let U = new THREE.Mesh(new THREE.BoxBufferGeometry(.1,.1,.1),CTRMater);
-    U.position.set(0,.5,0);
-    CTR.add(U);
-
-    let U1 = new THREE.Mesh(new THREE.BoxBufferGeometry(.1,.1,.1),CTRMater);
-    U1.position.set(-.15,.8,0);
-    CTR.add(U1);
-
-    let U2 = new THREE.Mesh(new THREE.BoxBufferGeometry(.1,.1,.1),CTRMater);
-    U2.position.set(.15,.8,0);
-    CTR.add(U2);
-
-    let C = new THREE.Mesh(new THREE.BoxBufferGeometry(.1,.1,.1),CTRMater);
-    C.position.set(-.55,.5,0);
-    CTR.add(C);
-
-    let T = new THREE.Mesh(new THREE.BoxBufferGeometry(.1,.1,.1),CTRMater);
-    T.position.set(.55,.5,0);
-    CTR.add(T);
-
-    let ST = new THREE.Mesh(new THREE.BoxBufferGeometry(.1,.1,.1),CTRMater);
-    ST.position.set(0,-.28,0);
-    CTR.add(ST);
-
-    let ST1 = new THREE.Mesh(new THREE.BoxBufferGeometry(.1,.1,.1),CTRMater);
-    ST1.position.set(-1.1,0,0);
-    CTR.add(ST1);
-
-    let ST2 = new THREE.Mesh(new THREE.BoxBufferGeometry(.1,.1,.1),CTRMater);
-    ST2.position.set(1.1,0,0);
-    CTR.add(ST2);
-    
-    CTR.rotation.set(0,15*Math.PI/180,0);
-    CTR.position.set(-3,2.5,-2.5)
-    this.scene.add(CTR);
-
-    let BalloonPos = new THREE.Object3D();
-
-       
-    let B0 = new THREE.Mesh(new THREE.BoxBufferGeometry(.1,.1,.1),CTRMater);
-    BalloonPos.add(B0);
-   
-    let B1 = new THREE.Mesh(new THREE.BoxBufferGeometry(.1,.1,.1),CTRMater);
-    B1.position.set(0.2,-.35,.2);
-    BalloonPos.add(B1)
-
-    let B2 = new THREE.Mesh(new THREE.BoxBufferGeometry(.1,.1,.1),CTRMater);
-    B2.position.set(-0.2,-.25,.2);
-    BalloonPos.add(B2);
-
-    let B3 = new THREE.Mesh(new THREE.BoxBufferGeometry(.1,.1,.1),CTRMater);
-    B3.position.set(0.2,-.05,0);
-    BalloonPos.add(B3);
-   
-    let B4 = new THREE.Mesh(new THREE.BoxBufferGeometry(.1,.1,.1),CTRMater);
-    B4.position.set(-0.2,0,0);
-    BalloonPos.add(B4)
-
-    let B5 = new THREE.Mesh(new THREE.BoxBufferGeometry(.1,.1,.1),CTRMater);
-    B5.position.set(-0.2,.25,-.2);
-    BalloonPos.add(B5);
-
-    let B6 = new THREE.Mesh(new THREE.BoxBufferGeometry(.1,.1,.1),CTRMater);
-    B6.position.set(0.2,.25,-.2);
-    BalloonPos.add(B6);
-
-    // let B7 = new THREE.Mesh(new THREE.BoxBufferGeometry(.1,.1,.1),CTRMater);
-    // B7.position.set(0.2,.25,-.4);
-    // BalloonPos.add(B7);
-
-    // let B8 = new THREE.Mesh(new THREE.BoxBufferGeometry(.1,.1,.1),CTRMater);
-    // B8.position.set(-0.2,.3,-.4);
-    // BalloonPos.add(B8);
-
-    // BalloonPos.rotation.set(0,15*Math.PI/180,0);
-    BalloonPos.position.set(1.8,1.2,0)
-    this.scene.add(BalloonPos);
-    var balloonBH = 0.2;
-
-
-    var position = new THREE.Vector3();
-    var position01 = new THREE.Vector3();
-    var position02 = new THREE.Vector3();
-    // TweenLite.delayedCall(1,()=>{
-    //   position.setFromMatrixPosition(C.matrixWorld);
-    //   this.CreateSingleLineLetter('C',
-    //     .27, .275, .07,
-    //     -0.39,-0.36,0,
-    //     position.x,position.y,position.z,
-    //     0,0.285,0,
-    //     CTR.rotation.y,0);
-
-    //   position.setFromMatrixPosition(T.matrixWorld);
-    //   this.CreateSingleLineLetter('T',
-    //     .245, .27, .07,
-    //     -0.33,-0.36,0,
-    //     position.x,position.y,position.z,
-    //     0,0.28,0,
-    //     CTR.rotation.y,0);
-
-    //   position.setFromMatrixPosition(the.matrixWorld);
-    //   this.CreateSingleLineLetter('the',
-    //     .275, .185, .05,
-    //     -0.31,-0.235,0,
-    //     position.x,position.y,position.z,
-    //     0,0.2,0,
-    //     CTR.rotation.y,0);
-
-    //   position.setFromMatrixPosition(U.matrixWorld);
-    //   position01.setFromMatrixPosition(U1.matrixWorld);
-    //   position02.setFromMatrixPosition(U2.matrixWorld);
-    //   this.CreateDoubleLineLetter('U',
-    //     .25, .275, .07,
-    //     -0.406,-0.355,0,
-    //     position.x,position.y,position.z,
-    //     U1.position.x-U.position.x,U1.position.y-U.position.y,U1.position.z,
-    //     position01.x,position01.y,position01.z,
-    //     U2.position.x-U.position.x,U2.position.y-U.position.y,U2.position.z,
-    //     position02.x,position02.y,position02.z,
-    //     CTR.rotation.y,0);
-
-
-    //   position.setFromMatrixPosition(ST.matrixWorld);
-    //   position01.setFromMatrixPosition(ST1.matrixWorld);
-    //   position02.setFromMatrixPosition(ST2.matrixWorld);
-    //   this.CreateDoubleLineLetter('STRING',
-    //     1.3, .27, .05,
-    //     -1.88,-0.34,0,
-    //     position.x,position.y,position.z,
-    //     ST1.position.x-ST.position.x,ST1.position.y-ST.position.y,ST1.position.z,
-    //     position01.x,position01.y,position01.z,
-    //     ST2.position.x-ST.position.x,ST2.position.y-ST.position.y,ST2.position.z,
-    //     position02.x,position02.y,position02.z,
-    //     CTR.rotation.y,0);
-
-
-    //   // this.CreateHAB('HAB',.2,.2,.2,-.022,-.65,-.61,0,.8,0,0.21,-0.022,0,0,0);
-
-    //   position.setFromMatrixPosition(B0.matrixWorld);
-    //   this.CreateBalloon('balloon',
-    //     position.x,position.y,position.z,
-    //     position.x,balloonBH,position.z,
-    //     0,0,0);
-
-    //   position.setFromMatrixPosition(B1.matrixWorld);
-    //   this.CreateBalloon('balloon',
-    //     position.x,position.y,position.z,
-    //     position.x,balloonBH,position.z,
-    //     0,0,0);
-
-    //   position.setFromMatrixPosition(B2.matrixWorld);
-    //   this.CreateBalloon('balloon',
-    //     position.x,position.y,position.z,
-    //     position.x,balloonBH,position.z,
-    //     0,0,0);
-
-    //   position.setFromMatrixPosition(B3.matrixWorld);
-    //   this.CreateBalloon('balloon',
-    //     position.x,position.y,position.z,
-    //     position.x,balloonBH,position.z,
-    //     0,0,0);
-
-    //   position.setFromMatrixPosition(B4.matrixWorld);
-    //   this.CreateBalloon('balloon',
-    //     position.x,position.y,position.z,
-    //     position.x,balloonBH,position.z,
-    //     0,0,0);
-
-    //   position.setFromMatrixPosition(B5.matrixWorld);
-    //   this.CreateBalloon('balloon',
-    //     position.x,position.y,position.z,
-    //     position.x,balloonBH,position.z,
-    //     0,0,0);
-
-    //   position.setFromMatrixPosition(B6.matrixWorld);
-    //   this.CreateBalloon('balloon',
-    //     position.x,position.y,position.z,
-    //     position.x,balloonBH,position.z,
-    //     0,0,0);
-
-    //   // position.setFromMatrixPosition(B7.matrixWorld);
-    //   // this.CreateBalloon('balloon',
-    //   //   position.x,position.y,position.z,
-    //   //   position.x,1,position.z,
-    //   //   0,0,0);
-      
-    //   //  position.setFromMatrixPosition(B8.matrixWorld);
-    //   // this.CreateBalloon('balloon',
-    //   //   position.x,position.y,position.z,
-    //   //   position.x,1,position.z,
-    //   //   0,0,0);
-
-    this.ParkStaticShadow();
-
-    // });
-  
-    // this.createTestString();
-    // this.CreateBalloonStuff();
-
-    this.canvas.addEventListener("mousemove", (e) => {
-      this.renderThreePosition(e.x, e.y);
-    });
-    this.canvas.addEventListener("click", () => {
-      this.FirstSceneClickEvent();
-    });
-    this.canvas.addEventListener("touchmove", (e) => {
-      this.renderThreePosition(e.touches[0].clientX, e.touches[0].clientY);
-    });
-    this.canvas.addEventListener("mousedown", (e) => {
-      if (e.which == 1) {
-        this.CursorBegin();
-        this.canvas.onmousemove = () => {
-          this.BalloonCursor();
-        };
-      }
-    });
-    this.canvas.addEventListener("touchstart", (e) => {
-      this.renderThreePosition(e.touches[0].clientX, e.touches[0].clientY);
-        this.CursorBegin();
-        this.canvas.ontouchmove = () => {
-          this.BalloonCursor();
-          this.FirstSceneClickEvent();
-        };
-    });
-    this.canvas.addEventListener("mouseup", (e) => {
-      if (e.which == 1) {
-        this.canvas.onmousemove = null;
-        if (this.collided) {
-          this.FirstCursor.copy(this.LastCursor);
-        } else {
-          TweenLite.to(this.FirstCursor, .5, {
-            x: this.LastCursor.x,
-            y: this.LastCursor.y, z: this.LastCursor.z
-          })
-          this.CheckLetterIntersect()
-        }
-      }
-    });
-    this.canvas.addEventListener("touchend", (e) => {
-      // this.renderThreePosition(e.touches[0].clientX, e.touches[0].clientY);
-        this.canvas.ontouchmove = null;
-        if (this.collided) {
-          this.FirstCursor.copy(this.LastCursor);
-        } else {
-          TweenLite.to(this.FirstCursor, .5, {
-            x: this.LastCursor.x,
-            y: this.LastCursor.y, z: this.LastCursor.z
-          })
-          this.CheckLetterIntersect()
-        }
-    });
-  }
-
-  ParkStaticShadow(){
-    var texture = this.textureLoader.load('assets/shadow/Park01.png');
-
-    let uniforms = {
-      tShadow:{value:texture},
-      uShadowColor:{value:new THREE.Color("#000000")},
-      uAlpha:{value:.2}
-    }
-    let material = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms,depthWrite:false,
-      vertexShader:document.getElementById('vertexShader').textContent,
-      fragmentShader:document.getElementById('fragmentShader').textContent})
-
-      
-    let railshadow = new THREE.Mesh(new THREE.PlaneGeometry(12,12),material);
-    railshadow.rotation.set(-Math.PI/2,0,-Math.PI/2)
-    railshadow.position.set(0,0,0);
-
-    this.scene.add(railshadow);
-  }
 
   createTestString(){
     let Center = new THREE.Object3D();
@@ -2424,84 +2215,6 @@ export class welcomeService {
     this.CursorString.geometry=this.CursorCurve;
   }
 
-  AddEvent(): void {
-    window.addEventListener('DOMContentLoaded', () => {
-      this.render();
-      // setTimeout(() => {
-      //   for (var i = 0; i < this.LetterArray.length; i++) {
-      //     TweenLite.to(this.LetterArray[i].letterArray[0].position, .8, {y: -1.7,ease:Power1.easeOut });
-      //     TweenLite.to(this.LetterArray[i].SetPoint.position, .8, {y: -1.7,ease:Power1.easeOut });
-      //     TweenLite.to(this.LetterArray[i].letterArray[0].position, 4, {delay:.8,y:-1.9,ease:Elastic.easeOut.config(1, 0.15)});
-      //     TweenLite.to(this.LetterArray[i].SetPoint.position, 4, {delay:.8,y:-1.9,ease:Elastic.easeOut.config(1, 0.15)});
-      //   }
-      // }, 500);
-    });
-
-    window.addEventListener('resize', () => {
-      this.resize();
-    });
-
-    document.addEventListener('visibilitychange', ()=>{
-      if(document.hidden){
-        this.elapsedTime=(typeof performance === 'undefined' ? Date : performance).now();
-      } else {
-        this.elapsedTime=(typeof performance === 'undefined' ? Date : performance).now()-this.elapsedTime;
-      }
-    })
-  }
-
-
-  private oldTime=0;
-  private elapsedTime=0;
-  private diff
-
-  Runanimation(){
-    var newTime=(typeof performance === 'undefined' ? Date : performance).now();
-    if(this.elapsedTime!=0){
-      this.diff = ((newTime-this.oldTime-this.elapsedTime)/1000);
-      this.elapsedTime=0;
-    } else {
-      this.diff = (newTime-this.oldTime)/1000;
-    }
-    this.oldTime=newTime;
-
-    
-    if (this.mixer01){
-      this.mixer01.update(this.diff);
-    } 
-    if (this.mixer02){
-      this.mixer02.update(this.diff);
-    }
-  }
-
-  private test=0;
-  render() {
-    requestAnimationFrame(() => {
-      this.render();
-    });
-    // this.camera.lookAt(this.goal.position);
-    // console.log(this.camera.position)
-
-    this.Runanimation();
-
-    // this.now = performance.now();
-
-
-    // if (this.times.length > 0 && this.times[0] <= this.now - 1000) {
-    //   this.times.shift();
-    // }
-
-    // this.times.push(this.now);
-    // this.fps = this.times.length;
-
-    // this.world.step(1 / this.fps);
-    // this.world02.step(1 / this.fps);
-
-    this.BalloonSceneRender();
-    // this.MiniGolfRender();
-
-    this.renderer.render(this.scene, this.camera);
-  }
 
   private CursorMoveObject: CANNON.Body;
   CreateCursorMoveObject() {
@@ -2511,89 +2224,17 @@ export class welcomeService {
     this.world.addBody(this.CursorMoveObject);
   }
 
-  
-  renderThreePosition(x, y) {
-    this.vec.set(
-      (x / window.innerWidth) * 2 - 1,
-      -(y / window.innerHeight) * 2 + 1,
-      0.5);
-
-    this.mouse.set(this.vec.x,this.vec.y);
-
-    this.vec.unproject(this.camera);
-    this.vec.sub(this.camera.position).normalize();
-    
-    var distance = - this.camera.position.z / this.vec.z;
-
-    this.pos.copy(this.camera.position).add(this.vec.multiplyScalar(distance));
-    // this.raycaster.setFromCamera(this.mouse, this.camera);
-
-    // this.plane.setFromNormalAndCoplanarPoint(this.camera.getWorldDirection(this.plane.normal), this.pos);
-
-    // var rect = this.canvas.getBoundingClientRect();
-
-    // this.mouse.x = ((x - rect.left) / rect.width) * 2 - 1;
-    // this.mouse.y = -((y - rect.top) / rect.height) * 2 + 1;
-
-    // this.raycaster.setFromCamera(this.mouse, this.camera);
-
-    // if (this.raycaster.ray.intersectPlane(this.plane, this.intersection)) {
-    //   this.pos.copy(this.intersection.sub(this.offset));
-    // }
-    // this.world.gravity.x=this.mouse.x/10;
-    // this.world02.gravity.x=this.mouse.x/10;
-  }
-
-
-  BalloonSceneRender() {
-
-    this.raycaster.setFromCamera(this.mouse,this.camera);
-    var intersect = this.raycaster.intersectObjects(this.ParkObjects,true)
-    if(intersect.length>0){
-      // intersect[j].object.material=new THREE.MeshBasicMaterial({color:0x000000});
-      // this.sphereInter.visible = true;
-      document.body.style.cursor="pointer";
-      // this.sphereInter.position.copy( intersect[ 0 ].point );
-    } else {
-      // this.sphereInter.visible=false;
-      document.body.style.cursor="auto";
-    }
-
-    // this.controls.update();
-
-    // for (var i = 0; i < this.meshes.length; i++) {
-    //   this.meshes[i].position.set(this.bodies[i].position.x.toFixed(3),this.bodies[i].position.y.toFixed(3),this.bodies[i].position.z.toFixed(3));
-    //   this.meshes[i].quaternion.copy(this.bodies[i].quaternion);
-    // }
-
-    // if (this.LastCursor.y != this.FirstCursor.y && this.LastCursor.x != this.FirstCursor.x && !this.collided) {
-    //   this.RenderMouseCursor();
-    // }
-    // this.RenderLetter();
-    
-    // var pos = new THREE.Vector3()
-    // pos.setFromMatrixPosition(this.TrainBalloon.children["0"].children[0].matrixWorld);
-    
-    // if(this.controls.enableRotate){
-    //   this.debugger.update();
-    //   this.debugger02.update();
-    // }
-  }
 
   private debugger;
-  private debugger02;
   private LetterMaterial:CANNON.Material;
   private PlaneMaterial:CANNON.Material;
   private BalloonMaterial:CANNON.Material;
-  InitBalloonCannon(): void {
+  InitCannon(): void {
     this.world = new CANNON.World();
     this.world.gravity.set(0, 0, 0);
-    this.world02 = new CANNON.World();
-    this.world02.gravity.set(0, 0, 0);
 
     gsap.delayedCall(1,()=>{
       this.world.gravity.set(0, -7, 0);
-      // this.world02.gravity.set(0, 3, 0);
     })
     
     this.LetterMaterial = new CANNON.Material("LetterMaterial");
@@ -2615,7 +2256,6 @@ export class welcomeService {
 
 
     this.debugger = new CannonDebugRenderer(this.scene, this.world);
-    this.debugger02 = new CannonDebugRenderer(this.scene, this.world02);
     
   }
 
@@ -3567,39 +3207,6 @@ export class welcomeService {
 
   LastScene(): void {
     
-  }
-
-
-
-  
-  ThreePlane() {
-    var planeGeometry = new THREE.PlaneGeometry(15, 15);
-    planeGeometry.rotateX(- Math.PI / 2);
-
-    // var planeMaterial = new THREE.ShadowMaterial({ transparent: true });
-    // planeMaterial.opacity = 0.1;
-
-    // var texture = this.textureLoader.load('assets/textures/Floor.jpg');
-
-    // texture.wrapS = THREE.RepeatWrapping;
-    // texture.wrapT = THREE.RepeatWrapping;
-    // texture.repeat.x = 15;
-    // texture.repeat.y = 15;
-
-    // var planeMa02 = new THREE.MeshLambertMaterial({map:texture,})
-
-    // var planeMaterial = new THREE.MeshMatcapMaterial({
-    //   color:0x95E79B,
-    //   // matcap:this.BaseMatcap
-    // })
-    var planeMaterial = new THREE.MeshBasicMaterial({
-      color:0x95E79B,
-      // matcap:this.BaseMatcap
-    })
-    var plane = new THREE.Mesh(planeGeometry, planeMaterial);
-    plane.position.set(0, 0, 0);
-    plane.receiveShadow = true;
-    // this.scene.add(plane);
   }
 
   SecondScene(): void {
