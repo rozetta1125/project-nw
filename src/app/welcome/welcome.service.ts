@@ -123,6 +123,7 @@ export class welcomeService {
 
   // GUI
   private gui = new dat.GUI();
+  
 
   // Balloon Cursor
   private StringM;
@@ -156,6 +157,10 @@ export class welcomeService {
 
   private DynamicShadows = [];
   private ScenePhase:number;
+
+  private Goal = new THREE.Vector3();
+  private EasedGoal = new THREE.Vector3();
+  private GoalAngle = new THREE.Vector3();
   
   InitThree(elementId: string): void {
     this.canvas = <HTMLCanvasElement>document.getElementById(elementId);
@@ -180,7 +185,7 @@ export class welcomeService {
     // this.camera.position.set(3,2,6);
     // this.camera.position.set(0,1,6);
 
-    this.camera.position.set(0, 2, 8);
+    // this.camera.position.set(0, 2, 8);
     // this.camera.position.set(0, 3.5, 7);
 
     // this.camera.lookAt(0,1,-.5);
@@ -195,14 +200,23 @@ export class welcomeService {
     this.dracoLoader.setDecoderPath('assets/draco/');
     this.loader.setDRACOLoader(this.dracoLoader);
 
-    // this.controls = new OrbitControls(this.camera, this.canvas);
-    // this.controls.target.set(0,1,-.5);
+    this.controls = new OrbitControls(this.camera, this.canvas);
+    
 
-    this.camera.lookAt(new THREE.Vector3(0,1,-.5));
+    // this.GoalAngle.set(0,1,7.5);
+    this.GoalAngle.set(0,5,6);
+    this.camera.position.copy(this.GoalAngle);
+    // this.camera.lookAt(new THREE.Vector3(0,0,0));
+
+    // this.Goal.set(0,1,0)
+    // this.EasedGoal.copy(this.Goal);
 
     // this.controls.update();
-    // this.controls.enableRotate = false;
-    // this.gui.add(this.controls,'enableRotate');
+    this.controls.enableRotate = false;
+    this.gui.add(this.controls,'enableRotate');
+    this.controls.target.set(0,.5,0);
+    this.controls.update();
+
 
     // this.controls.minAzimuthAngle=.5;
     // this.controls.maxAzimuthAngle=.5;
@@ -969,32 +983,34 @@ export class welcomeService {
 
     this.AddEvent();
 
-    this.nextSceneFunction();
-    this.CreateParkObject();
-    this.ParkStaticShadow();
+    // this.nextStageFunction();
+    // this.CreateParkObject();
+    // this.ParkStaticShadow();
 
-    // const cursor = document.querySelector('.cursor');
-    // const outer = document.querySelector('.cursor .outer');
-    // const dot = document.querySelector('.cursor .dot');
-    // document.addEventListener('mousemove',e=>{
-    //   cursor.setAttribute("style","top:"+e.pageY+"px;left:"+e.pageX+"px;");
-    // });
-    // document.addEventListener('mousedown',()=>{
-    //   TweenLite.to(outer,.3,{css:{scale:.75}});
-    //   TweenLite.to(dot,.3,{css:{scale:1}});
-    // });
-    // document.addEventListener('mouseup',()=>{
-    //   TweenLite.to(outer,.3,{css:{scale:1}});
-    //   TweenLite.to(dot,.3,{css:{scale:.75}});
-    // });
+    this.SecondInit();
+
+    const cursor = document.querySelector('.cursor');
+    const outer = document.querySelector('.cursor .outer');
+    const dot = document.querySelector('.cursor .dot');
+    document.addEventListener('mousemove',e=>{
+      cursor.setAttribute("style","top:"+e.pageY+"px;left:"+e.pageX+"px;");
+    });
+    document.addEventListener('mousedown',()=>{
+      TweenLite.to(outer,.3,{css:{scale:.75}});
+      TweenLite.to(dot,.3,{css:{scale:1}});
+    });
+    document.addEventListener('mouseup',()=>{
+      TweenLite.to(outer,.3,{css:{scale:1}});
+      TweenLite.to(dot,.3,{css:{scale:.75}});
+    });
 
 
     this.canvas.addEventListener("mousemove", (e) => {
       this.renderThreePosition(e.x, e.y);
     });
-    this.canvas.addEventListener("click", () => {
-      this.FirstSceneClickEvent();
-    });
+    // this.canvas.addEventListener("click", () => {
+    //   this.FirstSceneClickEvent();
+    // });
     // this.canvas.addEventListener("touchmove", (e) => {
     //   this.renderThreePosition(e.touches[0].clientX, e.touches[0].clientY);
     // });
@@ -1065,14 +1081,18 @@ export class welcomeService {
 
   private firstClientX:number=0;
   private onNextLeft:boolean=false;
-  nextSceneFunction(){
-    document.querySelector('#nextScene .nextLeft').addEventListener("mousedown", this.nextLeftDown, false);
+  nextStageFunction(){
+    document.querySelector('#nextStage .nextLeft').addEventListener("mousedown", this.nextLeftDown, false);
+
     document.addEventListener("mouseup", ()=>{
       if(this.onNextLeft){
         document.removeEventListener("mousemove", this.nextLeftMove, false);
+        console.log("cancelled")
         this.firstClientX=0;
-        this.nextCancel();
         this.onNextLeft=false;
+        if(!this.cameraFrameBoolean){
+          this.nextCancel();
+        }
       }
     })
   }
@@ -1083,67 +1103,48 @@ export class welcomeService {
     this.onNextLeft = true;
   }
 
-  private prevLeft:number = 0;
-  private TranslateXed:number = 0;
   nextLeftMove = (e) => {
     var num = e.clientX-this.firstClientX > 0 ? e.clientX-this.firstClientX : 0;
     if(num>0){
-      var offsetr = document.querySelector('#nextScene .nextRight') as HTMLElement;
-      if(num>(offsetr.offsetLeft-40)){
-        // console.log('overlay')
+      if(num>=250){
+        if(!this.cameraFrameBoolean){
+          this.nextLeftOnceOnly();
+        }
+        this.cameraFrameBoolean=true;
+      } else {
+        TweenLite.to(this.Goal,.01,{x:num*.01})
+        TweenLite.set('#nextStage .nextLeft',{css:{left:num+"px"}});
+        TweenLite.set('#nextStage .mid .svg',{css:{width:(200-num)+"px"}});
       }
-      TweenLite.set('#nextScene .nextLeft',{css:{left:num+"px"}});
-      TweenLite.set('#nextScene .mid .svg',{css:{width:(200-num)+"px"}});
-      var Tx = (num-this.prevLeft)*.004;
-      this.camera.translateX(Tx);
-      this.TranslateXed+=Tx;
-      this.prevLeft=num;
+    }
+  }
+
+  nextLeftOnceOnly(){
+    if(this.cameraFrameBoolean=true){
+      console.log('succeed')
+
+      TweenLite.to(this.Goal,1.2,{ease:Power1.easeIn,x:10});
+
+      TweenLite.to('#nextStage',.5,{ease:Power1.easeIn,css:{opacity:0}});
+      TweenLite.set('#nextStage',{css:{visibility:"hidden"},delay:.4});
+      
+      var offsetl = document.querySelector('#nextStage .nextRight') as HTMLElement;
+
+      // TweenLite.to('#nextStage .nextLeft',.2,{css:{left:offsetl.offsetLeft+"px"}});
+      // TweenLite.to('#nextStage .mid .svg',.2,{css:{width:0+"px"}});
+
+      document.removeEventListener("mousemove", this.nextLeftMove, false);
+      console.log("cancelled")
+      this.firstClientX=0;
+      this.onNextLeft=false;
     }
   }
 
   private cameraFrameBoolean:boolean=false;
   nextCancel(){
-    TweenLite.to('#nextScene .nextLeft',.3,{ease:Power1.easeOut,css:{left:0+"px"}});
-    TweenLite.to('#nextScene .mid .svg',.3,{ease:Power1.easeOut,css:{width:200+"px"}});
-    
-    var val = this.TranslateXed/45;
-    this.cameraFrameCancel(val);
-
-    this.prevLeft=0;
-    this.cameraFrameBoolean=true;
-
-    gsap.delayedCall(.3,()=>{
-      this.cameraFrameBoolean=false;
-    })
-
-  }
-
-  cameraFrameCancel(value){
-    setTimeout(() => {
-      if(this.cameraFrameBoolean){
-        this.cameraFrameCancel(value);
-      }
-    }, 6);
-    
-    if(this.TranslateXed-value<0){
-      this.camera.translateX(-this.TranslateXed);
-      this.TranslateXed=0;
-    } else {
-      this.TranslateXed-=value;
-      this.camera.translateX(-value);
-    }
-  }
-
-  nextSucceed(){
-    
-  }
-
-  cameraFrameSucceed(){
-    setTimeout(() => {
-      if(this.cameraFrameBoolean){
-        this.cameraFrameSucceed();
-      }
-    }, 6);
+    TweenLite.to('#nextStage .nextLeft',.3,{ease:Power1.easeOut,css:{left:0+"px"}});
+    TweenLite.to('#nextStage .mid .svg',.3,{ease:Power1.easeOut,css:{width:200+"px"}});
+    TweenLite.to(this.Goal,.3,{ease:Power1.easeOut,x:0})
   }
 
   AddEvent(): void {
@@ -1228,6 +1229,7 @@ export class welcomeService {
     }
   }
 
+  private GoalEasing = .2;
   render() {
     requestAnimationFrame(() => {
       this.render();
@@ -1235,20 +1237,27 @@ export class welcomeService {
 
     this.Runanimation();
 
-    // this.now = performance.now();
+    this.now = performance.now();
+
+    // Camera 
+    // this.EasedGoal.x+=(this.Goal.x - this.EasedGoal.x) * this.GoalEasing;
+    // this.EasedGoal.y+=(this.Goal.y - this.EasedGoal.y) * this.GoalEasing;
+    // this.EasedGoal.z+=(this.Goal.z - this.EasedGoal.z) * this.GoalEasing;
+
+    // this.camera.position.copy(this.EasedGoal).add(this.GoalAngle.clone().normalize().multiplyScalar(this.GoalAngle.z))
 
 
-    // if (this.times.length > 0 && this.times[0] <= this.now - 1000) {
-    //   this.times.shift();
-    // }
+    if (this.times.length > 0 && this.times[0] <= this.now - 1000) {
+      this.times.shift();
+    }
 
-    // this.times.push(this.now);
-    // this.fps = this.times.length;
+    this.times.push(this.now);
+    this.fps = this.times.length;
 
-    // this.world.step(1 / this.fps);
+    this.world02.step(1 / this.fps);
 
     this.FirstSceneRender();
-    // this.MiniGolfRender();
+    this.MiniGolfRender();
 
     this.renderer.render(this.scene, this.camera);
   }
@@ -1257,11 +1266,8 @@ export class welcomeService {
   private CircleGolf;
   SecondInit(){
     this.InitGolfCannon();
-    this.GolfPlane();
-    this.GoldStage();
-    setTimeout(() => {
-      this.MiniGolf()
-    }, 1000);
+    
+    this.GolfStage();
 
 
     this.CircleGolf = document.querySelector('.circle');
@@ -1298,16 +1304,7 @@ export class welcomeService {
         // };
       }
     });
-    this.canvas.addEventListener("mouseup", (e) => {
-      if (e.which == 1) {
-        this.Golfing=false;
-        TweenLite.to(this.CircleGolf,.05,{strokeDashoffset: 270});
-        this.scene.remove(this.GolfString);
-        if(!this.controls.enableRotate){
-          this.GolfMove();
-        }
-      }
-    });
+
   }
 
   private GolfCMaterial:CANNON.Material;
@@ -1316,12 +1313,37 @@ export class welcomeService {
     this.world02 = new CANNON.World();
     this.world02.gravity.set(0, 0, 0);
 
+    this.GolfStageCannon();
+
+    setTimeout(() => {
+      this.MiniGolf()
+
+      this.canvas.addEventListener("mouseup", (e) => {
+        if (e.which == 1) {
+          this.Golfing=false;
+          TweenLite.to(this.CircleGolf,.3,{delay:0,strokeDashoffset: 270});
+  
+          this.scene.remove(this.GolfString);
+  
+          if(!this.controls.enableRotate){
+            this.GolfMove();
+          }
+
+        }
+      });
+
+      this.world02.gravity.set(0, -10, 0);
+    }, 2000);
+
     this.GolfCMaterial = new CANNON.Material("GolfCMaterial");
     this.GolfStageMaterial = new CANNON.Material("GolfStageMaterial");
     let Contact = new CANNON.ContactMaterial(this.GolfCMaterial,this.GolfStageMaterial,{
-      restitution:0.5,
+      friction: 0.3,
+      restitution: 0.3,
+      contactEquationStiffness: 1000
     });
-    this.world02.addContactMaterial(Contact);
+    // this.world02.addContactMaterial(Contact);
+    this.debugger = new CannonDebugRenderer(this.scene, this.world02);
   }
 
   renderGolfPosition(x, y) {
@@ -1342,24 +1364,24 @@ export class welcomeService {
     let startPosition = new CANNON.Vec3(this.FBpos.x, 0, this.FBpos.z);
     let endPosition = new CANNON.Vec3(this.LBpos.x, 0, this.LBpos.z);
 
-    if(this.GolfPercent<0){
-      var Line = new THREE.LineCurve3(new THREE.Vector3(startPosition.x,startPosition.y,startPosition.z),
-        new THREE.Vector3(endPosition.x,endPosition.y,endPosition.z));
-      var len = Line.getLengths();
-      var numberI:number;
-      var Vec3:THREE.Vector3;
+    // if(this.GolfPercent<0){
+    //   var Line = new THREE.LineCurve3(new THREE.Vector3(startPosition.x,startPosition.y,startPosition.z),
+    //     new THREE.Vector3(endPosition.x,endPosition.y,endPosition.z));
+    //   var len = Line.getLengths();
+    //   var numberI:number;
+    //   var Vec3:THREE.Vector3;
 
-      for(var i=0;i<len.length;i++){
-        if(len[i]>1.5){
-          numberI=i;
-          break;
-        }
-      }
+    //   for(var i=0;i<len.length;i++){
+    //     if(len[i]>1.5){
+    //       numberI=i;
+    //       break;
+    //     }
+    //   }
 
-      Vec3 = Line.getPointAt(numberI/201);
-      endPosition.set(Vec3.x,Vec3.y,Vec3.z);
-    }
+    //   Vec3 = Line.getPointAt(numberI/201);
+    //   endPosition.set(Vec3.x,Vec3.y,Vec3.z);
 
+    // }
 
     let direction = new CANNON.Vec3();
     endPosition.vsub(startPosition, direction);
@@ -1370,6 +1392,7 @@ export class welcomeService {
     let speed = totalLength / 0.225;
 
     direction.scale(speed, this.GolfC.velocity);
+
   }
 
   private GolfString:THREE.Object3D;
@@ -1379,7 +1402,7 @@ export class welcomeService {
   RenderGolfCursor(){
     if(this.GolfT && this.Golfing){
       this.FBpos=this.GolfT.position;
-      this.LBpos.set(this.FBpos.x-((this.FBvec.x-this.LBvec.x)*1.5),this.FBpos.y,this.FBpos.z+((this.FBvec.y-this.LBvec.y)*1.5));
+      this.LBpos.set(this.FBpos.x-((this.FBvec.x-this.LBvec.x)*.5),this.FBpos.y,this.FBpos.z+((this.FBvec.y-this.LBvec.y)*.5));
 
 
       this.GolfString.position.copy(this.FBpos);
@@ -1391,7 +1414,7 @@ export class welcomeService {
       this.GolfPercent = 270 - (this.GolfDistance*100)*2.7;
 
       if(this.GolfPercent>0){
-        TweenLite.to(this.CircleGolf,.5,{strokeDashoffset: this.GolfPercent});
+        TweenLite.to(this.CircleGolf,.03,{strokeDashoffset: this.GolfPercent});
       }
     }
   }
@@ -1402,12 +1425,15 @@ export class welcomeService {
   private CameraPos: THREE.Mesh
   private CameraVec :THREE.Vector3
   MiniGolf(){
+    // P
+    var Position = new THREE.Vector3();
+    Position.setFromMatrixPosition(this.StageThreeArray[0].matrixWorld);
+
     if(this.GolfC!=null){
       this.GolfC.velocity.set(0,0,0);
-      this.GolfC.position.set(-2.25,2,-.75);
+      this.GolfC.position.set(Position.x,Position.y + 2,Position.z);
       this.GolfC.angularVelocity.set(0,0,0);
     } else {
-
       let add={
         more:false
       }
@@ -1417,17 +1443,19 @@ export class welcomeService {
         })
 
       this.GolfC = new CANNON.Body({mass:1,material:this.GolfCMaterial})
-      this.GolfC.addShape(new CANNON.Sphere(.07));
+      this.GolfC.addShape(new CANNON.Sphere(.1));
       let quat = new CANNON.Quaternion(0.5,0,0,0.5);
       quat.normalize();
-      // this.GolfC.addShape(new CANNON.Sphere(.07),new CANNON.Vec3,quat);
-      this.GolfC.position.set(-2.25,2,-.75);
+      this.GolfC.addShape(new CANNON.Sphere(.1),new CANNON.Vec3,quat);
+      this.GolfC.position.set(Position.x,Position.y + 2,Position.z);
+
+      this.GolfC.position.set(0,2,0);
       this.world02.addBody(this.GolfC)
       this.bodies.push(this.GolfC);
   
       this.GolfT = new THREE.Object3D();
       let Golf = new THREE.Mesh(
-        new THREE.SphereBufferGeometry(.07,16,16),
+        new THREE.SphereBufferGeometry(.1,16,16),
         new THREE.MeshLambertMaterial({color:0xffffff,emissiveIntensity:0,emissive:0xffffff})
       )
       Golf.castShadow=true;
@@ -1447,73 +1475,41 @@ export class welcomeService {
     }
   }
 
-  GolfPlane(){
-    var shape = new CANNON.Plane();
-    var body = new CANNON.Body({ mass: 0 });
-    body.addShape(shape);
-    body.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -Math.PI / 2);
-    body.position.set(0, 0, 0);
-    this.world02.addBody(body);
-  }
-
   private StageM
   private positionarray = [];
-  GoldStage(){
+  GolfStage(){
     let ThreeStage;
 
-    var params = {
-      roughness: 0,
-      metalness: 0,
-      color: "#e1fcdb",
-      emissive: "#e65a5a",
-    }
-
-    this.StageM = new THREE.MeshLambertMaterial({color:params.color,emissiveIntensity:0})
-
-    var f1 = this.gui.addFolder("Stage");
-    // f1.add(params, 'metalness', 0, 1)
-    //   .onChange(() => {
-    //     this.StageM.metalness = params.metalness;
-    //   });
-    // f1.add(params, 'roughness', 0, 1)
-    //   .onChange(() => {
-    //     this.StageM.roughness = params.roughness;
-    //   });
-    f1.addColor(params, 'color')
-      .onChange(() => {
-        this.StageM.color.set(params.color);
-      });
-    f1.addColor(params, 'emissive')
-      .onChange(() => {
-        this.StageM.emissive.set(params.emissive);
-      });
-      
-    
-      var params02 = {
-        roughness: 0,
-        metalness: 0,
-        color: "#B2E7A6",
-        emissive: "#e65a5a",
-      }
-  
-      var f2 = this.gui.addFolder("Stage 02");
-      // f2.add(params, 'metalness', 0, 1)
-      //   .onChange(() => {
-      //     this.StageM.metalness = params.metalness;
-      //   });
-      // f2.add(params, 'roughness', 0, 1)
-      //   .onChange(() => {
-      //     this.StageM.roughness = params.roughness;
-      //   });
-      f2.addColor(params02, 'color')
-        .onChange(() => {
-          StageM2.color.set(params02.color);
-        });
-
-    let StageM2 = new THREE.MeshLambertMaterial({color:params02.color,emissiveIntensity:0})
+    let white = this.textureLoader.load('assets/matcaps/FFFFFF03.png',()=>{
+      white.encoding=THREE.sRGBEncoding;
+    });
+    let blue = this.textureLoader.load('assets/matcaps/A4BCEC03.png',()=>{
+      blue.encoding=THREE.sRGBEncoding;
+    });
+    let pink = this.textureLoader.load('assets/matcaps/E7B9BE03.png',()=>{
+      pink.encoding=THREE.sRGBEncoding;
+    });
+    // white
+    let mate01 = new THREE.MeshMatcapMaterial({
+      color:0xffffff,
+      side:2,
+      matcap:white
+    })
+    // blue
+    let mate02 = new THREE.MeshMatcapMaterial({
+      color:0xffffff,
+      side:2,
+      matcap:blue
+    })
+    // pink
+    let mate03 = new THREE.MeshMatcapMaterial({
+      color:0xffffff,
+      side:2,
+      matcap:pink
+    })
 
     this.loader.load(
-      'assets/model/GolfStage03.glb',
+      'assets/model/GolfStage02.glb',
       (gltf) => {
         gltf.scene.traverse((node)=>{
           if(node instanceof THREE.Mesh){
@@ -1523,15 +1519,15 @@ export class welcomeService {
         });
         ThreeStage = gltf.scene;
         this.positionarray.push(ThreeStage);
-        ThreeStage.position.set(-1.405,0,-1.925);
-        ThreeStage.rotation.set(0,Math.PI/4,0);
+        ThreeStage.position.set(-1.405+10,0,-1.925);
+        ThreeStage.rotation.set(0,Math.PI/6,0);
         for(var i=0;i<ThreeStage.children.length;i++){
           if(ThreeStage.children[i].children.length>1){
-            ThreeStage.children[i].children[0].material=this.StageM
-            ThreeStage.children[i].children[1].material=StageM2;
+            ThreeStage.children[i].children[0].material=mate01
+            ThreeStage.children[i].children[1].material=mate02;
           }
         }
-        this.CannonStage();
+        // this.CannonStage();
         this.scene.add(ThreeStage);
 
 
@@ -1549,11 +1545,228 @@ export class welcomeService {
           .onChange(()=>{
             this.scene.add(ThreeStage);
           })
-
       }
     );
   }
 
+  private StageThreeArray=[];
+  private StageCannnonArray=[];
+  GolfStageCannon(){
+    let Stage = new THREE.Object3D();
+    this.scene.add(Stage)
+    Stage.rotation.set(0,-45*Math.PI/180,0*Math.PI/180);
+    Stage.position.set(-1.5,0,-2);
+
+    let StageMaterial = new THREE.MeshBasicMaterial({transparent:true,opacity:0,color:0xffffff})
+
+    // THREE 01 
+    let Cube01 = new THREE.Mesh(new THREE.BoxBufferGeometry(1,.5,1),StageMaterial);
+    Cube01.position.set(0,0,0);
+    Cube01.rotation.set(0*Math.PI/180,0*Math.PI/180,0*Math.PI/180)
+    Stage.add(Cube01);
+    this.StageThreeArray.push(Cube01);
+    
+    // CANNON 01
+    let Cube001 = new CANNON.Body({mass:0,material:this.GolfStageMaterial});
+    Cube001.addShape(new CANNON.Box(new CANNON.Vec3(.5,.25,.5)),new CANNON.Vec3());
+
+    this.world02.addBody(Cube001)
+    this.StageCannnonArray.push(Cube001)
+
+
+    // THREE 02
+    let Cube02 = new THREE.Mesh(new THREE.BoxBufferGeometry(1,.5,2),StageMaterial);
+    Cube02.position.set(0,0,-1.5);
+    Cube02.rotation.set(0*Math.PI/180,0*Math.PI/180,0*Math.PI/180)
+    Stage.add(Cube02);
+    this.StageThreeArray.push(Cube02);
+    
+    // CANNON 02
+    let Cube002 = new CANNON.Body({mass:0,material:this.GolfStageMaterial});
+    Cube002.addShape(new CANNON.Box(new CANNON.Vec3(.5,.25,1)),new CANNON.Vec3());
+
+    this.world02.addBody(Cube002)
+    this.StageCannnonArray.push(Cube002)
+
+    // THREE 03 
+    let Cube03 = new THREE.Mesh(new THREE.CylinderBufferGeometry(1.4,1.4,.5,24,8,false,Math.PI/2,Math.PI),StageMaterial);
+    Cube03.position.set(.9,0,-2.5);
+    Cube03.rotation.set(0*Math.PI/180,0*Math.PI/180,0*Math.PI/180)
+    Stage.add(Cube03);
+    this.StageThreeArray.push(Cube03);
+
+    // CANNON 03
+    let quat = new CANNON.Quaternion(0.5,0,0,-.5);
+    quat.normalize();
+
+    let Cube003 = new CANNON.Body({mass:0,material:this.GolfStageMaterial});
+    Cube003.addShape(new CANNON.Cylinder(.4,.4,.5,16),new CANNON.Vec3(0,0,0),quat)
+
+    // Plane Outer Radius
+    var shape = this.CreateCANNONCirclePlane(.25,.75,-1.4,-10*Math.PI/180,175*Math.PI/180,20);
+    Cube003.addShape(shape)
+    var shape = this.CreateCANNONCirclePlane(.25,.75,-1.41,-10*Math.PI/180,175*Math.PI/180,20);
+    Cube003.addShape(shape)
+
+    // Plane
+    shape = this.CreateCANNONPlane(.25,.4,1.4,0,170*Math.PI/180,345*Math.PI/180,20);
+    Cube003.addShape(shape)
+
+    this.world02.addBody(Cube003);
+    this.StageCannnonArray.push(Cube003);
+
+
+    // THREE 04
+    let Cube04 = new THREE.Mesh(new THREE.BoxBufferGeometry(1,.5,2),StageMaterial);
+    Cube04.position.set(2.15,.4,-1.28);
+    Cube04.rotation.set(0*Math.PI/180,15*Math.PI/180,0*Math.PI/180)
+    Stage.add(Cube04);
+    this.StageThreeArray.push(Cube04);
+  
+
+    // CANNON 04
+    var vertTest=[];
+    var number=0;
+    var radius = .15;
+    var numberY = 0;
+    var numberZ = -1.75;
+
+    for(var i=(Math.PI/15)*-8;i<Math.PI*2-1.3;i+=Math.PI/15){
+      if(number%2==0){
+        numberY=Math.sin(i)*radius;
+        numberZ+=.15;
+        vertTest.push(new CANNON.Vec3(-.5,numberY,numberZ));
+      } else {  
+        vertTest.push(new CANNON.Vec3(.5,numberY,numberZ));
+      }
+      number++;
+    }
+
+    var faceTest=[];
+    faceTest.push([0,2,1]);
+    faceTest.push([1,2,3]);
+    faceTest.push([3,2,4]);
+    var zero=3,one=4,two=5;
+    for(var i=0;i<vertTest.length-2-3;i++){
+      if(i%2==0){
+        faceTest.push([zero,one,two]);
+      } else {
+        faceTest.push([one,zero,two]);
+      }
+      zero++;
+      one++;
+      two++;
+    }
+
+    var shape = new CANNON.ConvexPolyhedron(vertTest,faceTest);
+    let zFunction = new CANNON.Body({mass:0,material:this.GolfStageMaterial});
+    zFunction.addShape(shape)
+    zFunction.addShape(shape, new CANNON.Vec3(0,-.01,0))
+
+    this.world02.addBody(zFunction);
+    this.StageCannnonArray.push(zFunction);
+
+
+    // // zFunction.addShape(new CANNON.Box(new CANNON.Vec3(.01,.3,1.2)),new CANNON.Vec3(.743,.025,1.1))
+    // // zFunction.addShape(new CANNON.Box(new CANNON.Vec3(.01,.3,1.2)),new CANNON.Vec3(.005,.025,1.15))
+
+
+    // THREE 05
+    let Cube05 = new THREE.Mesh(new THREE.CylinderBufferGeometry(1.4,1.4,.5,24,8,false,Math.PI/2,Math.PI),StageMaterial);
+    Cube05.position.set(3.15,0,-1);
+    Cube05.rotation.set(0*Math.PI/180,180*Math.PI/180,0*Math.PI/180)
+    Stage.add(Cube05);
+    this.StageThreeArray.push(Cube05);
+
+    // CANNON 05
+    let Cube005 = new CANNON.Body({mass:0,material:this.GolfStageMaterial});
+    Cube005.addShape(new CANNON.Cylinder(.4,.4,.5,16),new CANNON.Vec3(0,0,0),quat)
+
+    // Plane Outer Radius
+    var shape = this.CreateCANNONCirclePlane(0,.5,-1.4,-10*Math.PI/180,175*Math.PI/180,20);
+    Cube005.addShape(shape)
+    var shape = this.CreateCANNONCirclePlane(0,.5,-1.41,-10*Math.PI/180,175*Math.PI/180,20);
+    Cube005.addShape(shape)
+
+    // Plane
+    shape = this.CreateCANNONPlane(.25,.4,1.4,0,170*Math.PI/180,345*Math.PI/180,20);
+    Cube005.addShape(shape)
+
+    this.world02.addBody(Cube005);
+    this.StageCannnonArray.push(Cube005);
+
+
+    // // THREE 06
+    let Cube06 = new THREE.Mesh(new THREE.BoxBufferGeometry(1,.5,2),StageMaterial);
+    Cube06.position.set(4.05,0,-2);
+    Cube06.rotation.set(0*Math.PI/180,0*Math.PI/180,0*Math.PI/180)
+    Stage.add(Cube06);
+    this.StageThreeArray.push(Cube06);
+    
+    // CANNON 06
+    let Cube006 = new CANNON.Body({mass:0,material:this.GolfStageMaterial});
+    Cube006.addShape(new CANNON.Box(new CANNON.Vec3(.5,.25,1)),new CANNON.Vec3());
+
+    this.world02.addBody(Cube006)
+    this.StageCannnonArray.push(Cube006)
+
+
+    // // THREE 07
+    // let Cube07 = new THREE.Mesh(new THREE.BoxBufferGeometry(1,.5,2),StageMaterial);
+    // Cube07.position.set(3.6,0,-.5);
+    // Cube07.rotation.set(0*Math.PI/180,0*Math.PI/180,0*Math.PI/180)
+    // Stage.add(Cube07);
+    // this.StageThreeArray.push(Cube07);
+    
+    // // CANNON 07
+    // let Cube007 = new CANNON.Body({mass:0,material:this.GolfStageMaterial});
+    // Cube007.addShape(new CANNON.Box(new CANNON.Vec3(.5,.25,1)),new CANNON.Vec3());
+    // Cube007.addShape(new CANNON.Box(new CANNON.Vec3(.01,.25,1)),new CANNON.Vec3(-.5,.25,0));
+    // Cube007.addShape(new CANNON.Box(new CANNON.Vec3(.01,.25,1)),new CANNON.Vec3(.5,.25,0));
+
+    // this.world02.addBody(Cube007)
+    // this.StageCannnonArray.push(Cube007)
+
+
+    // THREE 08
+    let Cube08 = new THREE.Mesh(new THREE.BoxBufferGeometry(1,.5,1),StageMaterial);
+    Cube08.position.set(4.05,0,-3.5);
+    Cube08.rotation.set(0*Math.PI/180,0*Math.PI/180,0*Math.PI/180)
+    Stage.add(Cube08);
+    this.StageThreeArray.push(Cube08);
+    
+    // CANNON 08
+    let Cube008 = new CANNON.Body({mass:0,material:this.GolfStageMaterial});
+
+    // Plane
+    shape = this.CreateCANNONPlane(.25,.14,.75,0,0*Math.PI/180,370*Math.PI/180,20);
+    Cube008.addShape(shape)
+
+    Cube008.addShape(new CANNON.Box(new CANNON.Vec3(.01,.25,.5)),new CANNON.Vec3(-.5,.25,0));
+    Cube008.addShape(new CANNON.Box(new CANNON.Vec3(.01,.25,.5)),new CANNON.Vec3(.5,.25,0));
+    Cube008.addShape(new CANNON.Box(new CANNON.Vec3(.5,.25,.01)),new CANNON.Vec3(0,.25,-.5));
+
+    // this.world02.addBody(Cube005);
+    // this.StageCannnonArray.push(Cube005);
+
+    this.world02.addBody(Cube008)
+    this.StageCannnonArray.push(Cube008)
+
+
+    var Position = new THREE.Vector3();
+    var Quaternion = new THREE.Quaternion();
+    gsap.delayedCall(2,()=>{
+      for(var i=0;i<this.StageThreeArray.length;i++){
+        // P
+        Position.setFromMatrixPosition(this.StageThreeArray[i].matrixWorld);
+        this.StageCannnonArray[i].position.set(Position.x,Position.y,Position.z);
+
+        // Q
+        Quaternion.setFromRotationMatrix(this.StageThreeArray[i].matrixWorld)
+        this.StageCannnonArray[i].quaternion.set(Quaternion.x,Quaternion.y,Quaternion.z,Quaternion.w);
+      }
+    })
+  }
 
   CannonStage(){
     // setTimeout(() => {
@@ -1563,7 +1776,6 @@ export class welcomeService {
     //     // vec3.setFromMatrixPosition(this.positionarray[0].children[i].matrixWorld);
     //     // console.log(vec3);
     //   }
-
     // }, 2000);
 
     // Quaternion Stuffs
@@ -1620,7 +1832,7 @@ export class welcomeService {
     
 
     // Plane Outer Radius
-    var shape = this.CreateCANNONCirclePlane(0,.5,-.99,Math.PI,30);
+    // var shape = this.CreateCANNONCirclePlane(0,.5,-.99,Math.PI,30);
 
     something.rotation.set(0,-45 * Math.PI / 180,0);
     quat = new CANNON.Quaternion(something.quaternion.x,something.quaternion.y,something.quaternion.z,something.quaternion.w);
@@ -1635,7 +1847,7 @@ export class welcomeService {
     something.rotation.set(0,134 * Math.PI / 180,0);
     quat = new CANNON.Quaternion(something.quaternion.x,something.quaternion.y,something.quaternion.z,something.quaternion.w);
     quat.normalize();
-    var shape = this.CreateCANNONPlane(.2,.25,1,0.007,190*Math.PI/180,20);
+    // var shape = this.CreateCANNONPlane(.2,.25,1,0.007,190*Math.PI/180,20);
 
     cylinder01.addShape(shape,new CANNON.Vec3(-0.012,-0.125,0.014),quat)
 
@@ -1654,11 +1866,11 @@ export class welcomeService {
     something.rotation.set(0,-45 * Math.PI / 180,0);
     quat = new CANNON.Quaternion(something.quaternion.x,something.quaternion.y,something.quaternion.z,something.quaternion.w);
     quat.normalize();
-    var shape = this.CreateCANNONPlane(.15,.41,1.15,-0.0049,175*Math.PI/180,35);
+    // var shape = this.CreateCANNONPlane(.15,.41,1.15,-0.0049,175*Math.PI/180,35);
     cylinder02.addShape(shape,new CANNON.Vec3(-.012,-0.12,0.01),quat)
 
     // Plane 02 Outer Radius
-    var shape = this.CreateCANNONCirclePlane(0,.5,1.11,Math.PI,30);
+    // var shape = this.CreateCANNONCirclePlane(0,.5,1.11,Math.PI,30);
     something.rotation.set(0,-45 * Math.PI / 180,0);
     quat = new CANNON.Quaternion(something.quaternion.x,something.quaternion.y,something.quaternion.z,something.quaternion.w);
     quat.normalize();
@@ -1697,7 +1909,7 @@ export class welcomeService {
     var numberY = 0;
     var numberZ = 0;
 
-    for(var i=0;i<Math.PI*1.5+.4;i+=Math.PI/15){
+    for(var i=-1;i<Math.PI*1.5+.4+Math.PI*2;i+=Math.PI/15){
       if(number%2==0){
         vertTest.push(new CANNON.Vec3(0,numberY,numberZ));
       } else {  
@@ -1743,14 +1955,14 @@ export class welcomeService {
 
     let zFunction = new CANNON.Body({mass:0,material:this.GolfStageMaterial});
     zFunction.addShape(shape)
-    zFunction.position.set(0.09,0.5,-1.532)
+    zFunction.position.set(0.09,0.5 + 2,-1.532)
     zFunction.quaternion.copy(quat);
     this.world02.addBody(zFunction);
 
-    let zFunction02 = new CANNON.Body({mass:0});
-    zFunction02.addShape(shape);
-    zFunction02.position.set(0.12,0.49,-1.509);
-    zFunction02.quaternion.copy(quat);
+    // let zFunction02 = new CANNON.Body({mass:0});
+    // zFunction02.addShape(shape);
+    // zFunction02.position.set(0.12,0.49,-1.509);
+    // zFunction02.quaternion.copy(quat);
     // this.world02.addBody(zFunction02);
 
     zFunction.addShape(new CANNON.Box(new CANNON.Vec3(.01,.3,1.2)),new CANNON.Vec3(.743,.025,1.1))
@@ -1833,19 +2045,19 @@ export class welcomeService {
 
 
     // GOAL
-    var shape = this.CreateCANNONPlane(.15,.17,.8,0,380*Math.PI/180,15);
+    // var shape = this.CreateCANNONPlane(.15,.17,.8,0,380*Math.PI/180,15);
     let plane003 = new CANNON.Body({mass:0,material:this.GolfStageMaterial});
     plane003.addShape(shape)
 
     // outer shape
-    var shape = this.CreateCANNONCirclePlane(0,.5,.78,Math.PI*1.75,20);
+    // var shape = this.CreateCANNONCirclePlane(0,.5,.78,Math.PI*1.75,20);
     something.rotation.set(0,193 * Math.PI / 180,0);
     quat = new CANNON.Quaternion(something.quaternion.x,something.quaternion.y,something.quaternion.z,something.quaternion.w);
     quat.normalize();
     plane003.addShape(shape,new CANNON.Vec3(0,-.05,0),quat);
 
     // goal
-    var shape = this.CreateCANNONCirclePlane(0,.15,.17,6.7,8);
+    // var shape = this.CreateCANNONCirclePlane(0,.15,.17,6.7,8);
 
     plane003.addShape(shape,new CANNON.Vec3(0,0,0))
 
@@ -1858,10 +2070,10 @@ export class welcomeService {
     this.world02.addBody(plane003);
   }
 
-  CreateCANNONCirclePlane(H1:number,H2:number,radius:number,N:number,Ni:number){
+  CreateCANNONCirclePlane(H1:number,H2:number,radius:number,N0:number,N:number,Ni:number){
     var vertTest=[];
     var number=0;
-    for(var i=0;i<N;i+=Math.PI/Ni){
+    for(var i=N0;i<N;i+=Math.PI/Ni){
       if(number%2==0){
         vertTest.push(new CANNON.Vec3(Math.cos(i)*radius,H1,Math.sin(i)*radius));
       } else {
@@ -1889,11 +2101,11 @@ export class welcomeService {
     return cannonShape;
   }
 
-  CreateCANNONPlane(H:number,Oradius:number,Iradius:number,Hminus:number,N:number,Ni:number){
+  CreateCANNONPlane(H:number,Oradius:number,Iradius:number,Hminus:number,N0:number,N:number,Ni:number){
     var vertTest=[];
     var number=0;
   
-    for(var i=0;i<N;i+=Math.PI/Ni){
+    for(var i=N0;i<N;i+=Math.PI/Ni){
       if(number%2==0){
         H-=Hminus;
         vertTest.push(new CANNON.Vec3(Math.cos(i)*Oradius,H,Math.sin(i)*Oradius));
@@ -1951,10 +2163,10 @@ export class welcomeService {
     if(this.GolfT){
       this.trail.advance();
     }
-    // this.debugger02.update();
+    this.debugger.update();
     for (var i = 0; i < this.meshes.length; i++) {
       this.meshes[i].position.copy(this.bodies[i].position);
-      // this.meshes[i].quaternion.copy(this.bodies[i].quaternion);
+      this.meshes[i].quaternion.copy(this.bodies[i].quaternion);
     }
     this.RenderGolfCursor();
     // this.CameraVec.setFromMatrixPosition(this.CameraPos.matrixWorld);
@@ -2233,9 +2445,9 @@ export class welcomeService {
     this.world = new CANNON.World();
     this.world.gravity.set(0, 0, 0);
 
-    gsap.delayedCall(1,()=>{
-      this.world.gravity.set(0, -7, 0);
-    })
+    // gsap.delayedCall(1,()=>{
+    //   this.world.gravity.set(0, -7, 0);
+    // })
     
     this.LetterMaterial = new CANNON.Material("LetterMaterial");
     this.PlaneMaterial = new CANNON.Material("PlaneMaterial");
@@ -2255,7 +2467,7 @@ export class welcomeService {
 
 
 
-    this.debugger = new CannonDebugRenderer(this.scene, this.world);
+
     
   }
 

@@ -10,6 +10,7 @@ canvas {
     // background:#ADD2E6;
 
     background: #FADEC9;
+    background:#848484;
     // background: linear-gradient(to bottom, #a9d2f8 0%,#a6bbed 100%)
     // background: linear-gradient(rgb(208, 242, 205) 0%, rgb(186, 230, 177) 100%);
 }
@@ -113,7 +114,7 @@ canvas {
 }
 
 
-#nextScene{
+#nextStage{
     position: absolute;
     width:290px;
     height:60px;
@@ -124,6 +125,8 @@ canvas {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    opacity: 1;
+    visibility: visible;
     .mid{
         width:190px;
         height:10px;
