@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import * as CANNON from 'cannon';
-import { TimelineMax,TimelineLite,TweenLite,Power0,Power1,Power2,gsap,TweenMax } from 'gsap';
+import { TimelineMax,TimelineLite,TweenLite,Power0,Power1,Power2,gsap } from 'gsap';
 import * as OrbitControls from 'three-orbitcontrols';
 import GLTFLoader from 'three-gltf-loader';
 // import thisWork from 'three-dragcontrols';
@@ -194,8 +194,6 @@ export class welcomeService {
     // this.camera.position.set(0, 2, 8);
     // this.camera.position.set(0, 3.5, 7);
 
-    // this.camera.lookAt(0,1,-.5);
-
     this.scene.add(this.camera);
 
     this.raycaster.linePrecision=.01;
@@ -206,25 +204,25 @@ export class welcomeService {
     this.dracoLoader.setDecoderPath('assets/draco/');
     this.loader.setDRACOLoader(this.dracoLoader);
 
-    this.controls = new OrbitControls(this.camera, this.canvas);
-    
-
-    this.GoalAngle.set(0,2.4,8);
-    this.controls.target.set(0,1.2,0);
-    this.camera.position.copy(this.GoalAngle);
-    // this.camera.lookAt(new THREE.Vector3(0,0,0));
-
-    // this.Goal.set(0,1,0)
-    // this.EasedGoal.copy(this.Goal);
-
+    // this.controls = new OrbitControls(this.camera, this.canvas);
+    // this.controls.target.set(0,1.2,0);
     // this.controls.update();
-    this.controls.enableRotate = false;
-    this.gui.add(this.controls,'enableRotate');
+    // this.controls.enableRotate = false;
+    // this.gui.add(this.controls,'enableRotate');
+
+
+    this.GoalAngle.set(0,1.4,8);
+    this.camera.position.copy(this.GoalAngle);
+    this.camera.lookAt(new THREE.Vector3(0,0,0));
+
+    this.Goal.set(0,1,0)
+    this.EasedGoal.copy(this.Goal);
+
 
     // second
     // this.GoalAngle.set(0,5,6);
     // this.controls.target.set(0,.5,0);
-    this.controls.update();
+    // this.controls.update();
 
 
     // this.controls.minAzimuthAngle=.5;
@@ -274,13 +272,13 @@ export class welcomeService {
   private FerrisShadow = new THREE.Object3D();
   private FerrisShadows = [];
   CreateParkObject() {
-    let white = this.textureLoader.load('assets/matcaps/FFFFFF04.png',()=>{
+    let white = this.textureLoader.load('assets/matcaps/FFFFFF05.png',()=>{
       white.encoding=THREE.sRGBEncoding;
     });
-    let blue = this.textureLoader.load('assets/matcaps/A4BCEC04.png',()=>{
+    let blue = this.textureLoader.load('assets/matcaps/A4BCEC05.png',()=>{
       blue.encoding=THREE.sRGBEncoding;
     });
-    let pink = this.textureLoader.load('assets/matcaps/E7B9BE04.png',()=>{
+    let pink = this.textureLoader.load('assets/matcaps/E7B9BE05.png',()=>{
       pink.encoding=THREE.sRGBEncoding;
     });
     // white
@@ -426,7 +424,7 @@ export class welcomeService {
         let uniforms00 = {
           tShadow:{value:texture},
           uShadowColor:{value:new THREE.Color("#000000")},
-          uAlpha:{value:.2}
+          uAlpha:{value:.3}
         }
         let material00 = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms:uniforms00,depthWrite:false,
           vertexShader:document.getElementById('vertexShader').textContent,
@@ -447,7 +445,7 @@ export class welcomeService {
         let uniforms = {
           tShadow:{value:texture},
           uShadowColor:{value:new THREE.Color("#000000")},
-          uAlpha:{value:.4}
+          uAlpha:{value:.3}
         }
         let material = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms,depthWrite:false,
           vertexShader:document.getElementById('vertexShader').textContent,
@@ -586,7 +584,7 @@ export class welcomeService {
         let uniforms = {
           tShadow:{value:texture},
           uShadowColor:{value:new THREE.Color("#000000")},
-          uAlpha:{value:.2}
+          uAlpha:{value:.3}
         }
         let material = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms,depthWrite:false,
           vertexShader:document.getElementById('vertexShader').textContent,
@@ -721,8 +719,8 @@ export class welcomeService {
 
         let uniforms = {
           tShadow:{value:texture},
-          uShadowColor:{value:new THREE.Color("#000000")},
-          uAlpha:{value:.2}
+          uShadowColor:{value:new THREE.Color("#c0a68e")},
+          uAlpha:{value:1}
         }
         let material = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms,depthWrite:false,
           vertexShader:document.getElementById('vertexShader').textContent,
@@ -996,7 +994,7 @@ export class welcomeService {
     this.CreateParkObject();
     this.ParkStaticShadow();
 
-    // this.SecondInit();
+    this.SecondInit();
 
 
 
@@ -1019,9 +1017,9 @@ export class welcomeService {
     this.canvas.addEventListener("mousemove", (e) => {
       this.renderThreePosition(e.x, e.y);
     });
-    // this.canvas.addEventListener("click", () => {
-    //   this.FirstSceneClickEvent();
-    // });
+    this.canvas.addEventListener("click", () => {
+      this.FirstSceneClickEvent();
+    });
     this.canvas.addEventListener("touchmove", (e) => {
       this.renderThreePosition(e.touches[0].clientX, e.touches[0].clientY);
     });
@@ -1075,8 +1073,8 @@ export class welcomeService {
 
     let uniforms = {
       tShadow:{value:texture},
-      uShadowColor:{value:new THREE.Color("#000000")},
-      uAlpha:{value:.3}
+      uShadowColor:{value:new THREE.Color("#c0a68e")},
+      uAlpha:{value:1}
     }
     let material = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms,depthWrite:false,
       vertexShader:document.getElementById('vertexShader').textContent,
@@ -1254,11 +1252,11 @@ export class welcomeService {
     this.now = performance.now();
 
     // Camera 
-    // this.EasedGoal.x+=(this.Goal.x - this.EasedGoal.x) * this.GoalEasing;
-    // this.EasedGoal.y+=(this.Goal.y - this.EasedGoal.y) * this.GoalEasing;
-    // this.EasedGoal.z+=(this.Goal.z - this.EasedGoal.z) * this.GoalEasing;
+    this.EasedGoal.x+=(this.Goal.x - this.EasedGoal.x) * this.GoalEasing;
+    this.EasedGoal.y+=(this.Goal.y - this.EasedGoal.y) * this.GoalEasing;
+    this.EasedGoal.z+=(this.Goal.z - this.EasedGoal.z) * this.GoalEasing;
 
-    // this.camera.position.copy(this.EasedGoal).add(this.GoalAngle.clone().normalize().multiplyScalar(this.GoalAngle.z))
+    this.camera.position.copy(this.EasedGoal).add(this.GoalAngle.clone().normalize().multiplyScalar(this.GoalAngle.z))
 
 
     if (this.times.length > 0 && this.times[0] <= this.now - 1000) {
@@ -1364,9 +1362,9 @@ export class welcomeService {
   
           this.scene.remove(this.GolfString);
   
-          if(!this.controls.enableRotate&&this.GolfState.value==1){
-            this.GolfMove();
-          }
+          // if(!this.controls.enableRotate&&this.GolfState.value==1){
+          //   this.GolfMove();
+          // }
 
         }
       });
@@ -1515,7 +1513,7 @@ export class welcomeService {
         })
 
       // FIRST TIME
-      let white = this.textureLoader.load('assets/matcaps/FFFFFF04.png',()=>{
+      let white = this.textureLoader.load('assets/matcaps/FFFFFF05.png',()=>{
         white.encoding=THREE.sRGBEncoding;
       });
       // white
@@ -1569,13 +1567,13 @@ export class welcomeService {
   // GolfStage(){
   //   let ThreeStage;
 
-  //   let white = this.textureLoader.load('assets/matcaps/FFFFFF04.png',()=>{
+  //   let white = this.textureLoader.load('assets/matcaps/FFFFFF05.png',()=>{
   //     white.encoding=THREE.sRGBEncoding;
   //   });
-  //   let blue = this.textureLoader.load('assets/matcaps/A4BCEC04.png',()=>{
+  //   let blue = this.textureLoader.load('assets/matcaps/A4BCEC05.png',()=>{
   //     blue.encoding=THREE.sRGBEncoding;
   //   });
-  //   let pink = this.textureLoader.load('assets/matcaps/E7B9BE04.png',()=>{
+  //   let pink = this.textureLoader.load('assets/matcaps/E7B9BE05.png',()=>{
   //     pink.encoding=THREE.sRGBEncoding;
   //   });
   //   // white
@@ -1625,17 +1623,25 @@ export class welcomeService {
   private StageThreeArray=[];
   private StageCannnonArray=[];
   GolfStageCannon(){
-
-    let white = this.textureLoader.load('assets/matcaps/FFFFFF04.png',()=>{
+    let white = this.textureLoader.load('assets/matcaps/FFFFFF05.png',()=>{
       white.encoding=THREE.sRGBEncoding;
     });
-    let blue = this.textureLoader.load('assets/matcaps/A4BCEC04.png',()=>{
+    let blue = this.textureLoader.load('assets/matcaps/A4BCEC05.png',()=>{
       blue.encoding=THREE.sRGBEncoding;
     });
-    let pink = this.textureLoader.load('assets/matcaps/E7B9BE04.png',()=>{
+    let pink = this.textureLoader.load('assets/matcaps/E7B9BE05.png',()=>{
       pink.encoding=THREE.sRGBEncoding;
     });
-    let green = this.textureLoader.load('assets/matcaps/82bca104.png',()=>{
+    let green01 = this.textureLoader.load('assets/matcaps/95E79B05.png',()=>{
+      pink.encoding=THREE.sRGBEncoding;
+    });
+    let green02 = this.textureLoader.load('assets/matcaps/66BD5D05.png',()=>{
+      pink.encoding=THREE.sRGBEncoding;
+    });
+    let wood = this.textureLoader.load('assets/matcaps/E7CDA105.png',()=>{
+      pink.encoding=THREE.sRGBEncoding;
+    });
+    let wood02 = this.textureLoader.load('assets/matcaps/E7D39F05.png',()=>{
       pink.encoding=THREE.sRGBEncoding;
     });
     // white
@@ -1650,17 +1656,29 @@ export class welcomeService {
       side:2,
       matcap:blue
     })
-    // pink
+    // green01
     let mate03 = new THREE.MeshMatcapMaterial({
       color:0xffffff,
       side:2,
-      matcap:pink
+      matcap:green01
     })
-    // green
+    // green02
     let mate04 = new THREE.MeshMatcapMaterial({
       color:0xffffff,
       side:2,
-      matcap:green
+      matcap:green02
+    })
+    // wood
+    let mate05 = new THREE.MeshMatcapMaterial({
+      color:0xffffff,
+      side:2,
+      matcap:wood
+    })
+    // wood 02
+    let mate06 = new THREE.MeshMatcapMaterial({
+      color:0xffffff,
+      side:2,
+      matcap:wood02
     })
     let FlagMate = new THREE.MeshMatcapMaterial({
       color:0xec1c24,
@@ -1671,43 +1689,18 @@ export class welcomeService {
 
     let Stage = new THREE.Object3D();
     this.scene.add(Stage)
-    Stage.position.set(0,0,-1);
-    Stage.rotation.set(3*Math.PI/180,-35*Math.PI/180,0*Math.PI/180);
+    Stage.position.set(10,0,-1.5);
+    // Stage.scale.set(1.1,1.1,1.1);
+    Stage.rotation.set(5*Math.PI/180,-23*Math.PI/180,0*Math.PI/180);
 
     let StageMaterial = new THREE.MeshBasicMaterial({transparent:true,opacity:0,color:0x2395dc})
-
-    this.loader.load(
-      'assets/model/Windmill03.glb',
-      (gltf) => {
-        let stage = gltf.scene;
-        stage.position.set(0,0,-1);
-        stage.rotation.set(3*Math.PI/180,-35*Math.PI/180,0)
-        for(var i=0;i<stage.children.length;i++){
-          if(stage.children[""+i+""].name == "Windmill"){
-            stage.children[""+i+""].children[0].material=mate01;
-            stage.children[""+i+""].children[1].material=mate02;
-          } else if (stage.children[""+i+""].name == "Goal"){
-            stage.children[""+i+""].children[0].material=mate01;
-            stage.children[""+i+""].children[1].material=mate01;
-          } else if (stage.children[""+i+""].name == "Fan"){
-            stage.children[""+i+""].material=mate02;
-          } else if (stage.children[""+i+""].name == "Cube029"){
-            stage.children[""+i+""].children[0].material=mate01;
-            stage.children[""+i+""].children[1].material=mate01;
-          }  else {
-            stage.children[""+i+""].material=mate01;
-          }
-        }
-        this.scene.add(stage);
-      }
-    );
 
     var texture = this.textureLoader.load('assets/shadow/Windmill01.png');
 
     let uniforms = {
       tShadow:{value:texture},
-      uShadowColor:{value:new THREE.Color("#000000")},
-      uAlpha:{value:.2}
+      uShadowColor:{value:new THREE.Color("#c0a68e")},
+      uAlpha:{value:1}
     }
     let material = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms,depthWrite:false,
       vertexShader:document.getElementById('vertexShader').textContent,
@@ -1716,9 +1709,127 @@ export class welcomeService {
       
     let StageShadow = new THREE.Mesh(new THREE.PlaneGeometry(10,10),material);
     StageShadow.rotation.set(-Math.PI/2,0,0)
-    StageShadow.position.set(0,-0.0,0);
+    StageShadow.position.set(0,0,0);
 
     Stage.add(StageShadow);
+
+    var texture02 = this.textureLoader.load('assets/shadow/Windmill02.png');
+    let uniforms02 = {
+      tShadow:{value:texture02},
+      uShadowColor:{value:new THREE.Color("#c0a68e")},
+      uAlpha:{value:1}
+    }
+    let material02 = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms:uniforms02,depthWrite:false,
+      vertexShader:document.getElementById('vertexShader').textContent,
+      fragmentShader:document.getElementById('fragmentShader').textContent})
+
+      
+    let StageShadow02 = new THREE.Mesh(new THREE.PlaneGeometry(10,10),material02);
+    StageShadow02.rotation.set(-Math.PI/2,0,0)
+    StageShadow02.position.set(0,-.2,0);
+
+    Stage.add(StageShadow02);
+
+
+    
+    var texture03 = this.textureLoader.load('assets/shadow/Windmill03.png');
+    let uniforms03 = {
+      tShadow:{value:texture03},
+      uShadowColor:{value:new THREE.Color("#000000")},
+      uAlpha:{value:.08}
+    }
+    let material03 = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms:uniforms03,depthWrite:false,
+      vertexShader:document.getElementById('vertexShader').textContent,
+      fragmentShader:document.getElementById('fragmentShader').textContent})
+
+      
+    let StageShadow03 = new THREE.Mesh(new THREE.PlaneGeometry(3,3),material03);
+    StageShadow03.rotation.set(0*Math.PI/180,0,0)
+    StageShadow03.scale.set(.5,.5,1)
+    StageShadow03.position.set(0,1.2,.48);
+
+    Stage.add(StageShadow03);
+
+    let StageShadow0302 = StageShadow03.clone();
+    Stage.add(StageShadow0302);
+
+    let StageShadow0303 = StageShadow03.clone();
+    Stage.add(StageShadow0303);
+
+    let StageShadow0304 = StageShadow03.clone();
+    Stage.add(StageShadow0304);
+
+
+    this.loader.load(
+      'assets/model/Windmill04.glb',
+      (gltf) => {
+        let stage = gltf.scene;
+        console.log(stage);
+        stage.position.set(10-0.01,0,-1.5);
+        // stage.scale.set(1.1,1.1,1.1);
+        stage.rotation.set(5*Math.PI/180,-23*Math.PI/180,0)
+        for(var i=0;i<stage.children.length;i++){
+          if(stage.children[""+i+""].name == "Windmill"){
+            stage.children[""+i+""].children[0].material=mate01;
+            stage.children[""+i+""].children[1].material=mate02;
+          } else if (stage.children[""+i+""].name == "Goal"){
+            stage.children[""+i+""].children[0].material=mate04;
+            stage.children[""+i+""].children[1].material=mate06;
+          } else if (stage.children[""+i+""].name == "Fan"){
+            stage.children[""+i+""].material=mate02;
+            gsap.fromTo(stage.children[""+i+""].rotation,10,{y:0},{y:-Math.PI*2,ease:"none",repeat:-1})
+
+
+            gsap.fromTo(StageShadow03.rotation,10,{z:0*Math.PI/180},{z:-360*Math.PI/180,ease:"none",delay:.3,repeat:-1})
+            var ShadowTween = gsap.timeline({repeat:-1,delay:.3,repeatDelay:2.5});
+            ShadowTween.to(StageShadow03.scale,.75,{x:1,y:1,ease:"none",})
+            ShadowTween.to(StageShadow03.scale,.75,{x:.3,y:.3,ease:"none",delay:.75})
+            ShadowTween.to(StageShadow03.scale,1.75,{x:.45,y:.45,ease:"none",delay:3})
+            ShadowTween.to(StageShadow03.scale,.5,{x:.5,y:.5,ease:"none",})
+
+
+            gsap.fromTo(StageShadow0302.rotation,10,{z:0*Math.PI/180},{z:-360*Math.PI/180,ease:"none",delay:2.8,repeat:-1})
+            var ShadowTween02 = gsap.timeline({repeat:-1,delay:2.8,repeatDelay:2.5});
+            ShadowTween02.to(StageShadow0302.scale,.75,{x:1,y:1,ease:"none",})
+            ShadowTween02.to(StageShadow0302.scale,.75,{x:.3,y:.3,ease:"none",delay:.75})
+            ShadowTween02.to(StageShadow0302.scale,1.75,{x:.45,y:.45,ease:"none",delay:3})
+            ShadowTween02.to(StageShadow0302.scale,.5,{x:.5,y:.5,ease:"none"})
+
+            gsap.fromTo(StageShadow0303.rotation,10,{z:0*Math.PI/180},{z:-360*Math.PI/180,ease:"none",delay:5.3,repeat:-1})
+            var ShadowTween03 = gsap.timeline({repeat:-1,delay:5.3,repeatDelay:2.5});
+            ShadowTween03.to(StageShadow0303.scale,.75,{x:1,y:1,ease:"none",})
+            ShadowTween03.to(StageShadow0303.scale,.75,{x:.3,y:.3,ease:"none",delay:.75})
+            ShadowTween03.to(StageShadow0303.scale,1.75,{x:.45,y:.45,ease:"none",delay:3})
+            ShadowTween03.to(StageShadow0303.scale,.5,{x:.5,y:.5,ease:"none"})
+
+            gsap.fromTo(StageShadow0304.rotation,10,{z:0*Math.PI/180},{z:-360*Math.PI/180,ease:"none",delay:7.8,repeat:-1})
+            var ShadowTween04 = gsap.timeline({repeat:-1,delay:7.8,repeatDelay:2.5});
+            ShadowTween04.to(StageShadow0304.scale,.75,{x:1,y:1,ease:"none",})
+            ShadowTween04.to(StageShadow0304.scale,.75,{x:.3,y:.3,ease:"none",delay:.75})
+            ShadowTween04.to(StageShadow0304.scale,1.75,{x:.45,y:.45,ease:"none",delay:3})
+            ShadowTween04.to(StageShadow0304.scale,.5,{x:.5,y:.5,ease:"none"})
+
+          } else if (stage.children[""+i+""].name == "Bench"){
+            stage.children[""+i+""].material=mate06;
+          } else if (stage.children[""+i+""].name == "Wall"){
+            stage.children[""+i+""].material=mate02;
+          } else if (stage.children[""+i+""].name == "Bush"){
+            stage.children[""+i+""].material=mate04;
+          } else if (stage.children[""+i+""].name == "Tree"){
+            stage.children[""+i+""].children[0].material=mate04;
+            stage.children[""+i+""].children[1].material=mate06;
+          }  else if (stage.children[""+i+""].name == "Flip"){
+            stage.children[""+i+""].material=mate04;
+          } else if (stage.children[""+i+""].name == "Start"){
+            stage.children[""+i+""].children[0].material=mate06;
+            stage.children[""+i+""].children[1].material=mate04;
+          } else {
+            stage.children[""+i+""].material=mate01;
+          }
+        }
+        this.scene.add(stage);
+      }
+    );
 
 
 
