@@ -6,8 +6,10 @@ canvas {
     max-height: 100%;
     z-index: -1;
     background: linear-gradient(to bottom, #f0d4c8 0%, #f0d4c8 45%, #eee2d9 40%, #eee2d9 100%);
-    // background: #848484;
+    background: #848484;
     background: linear-gradient(to bottom, #dbbbaa 0%, #dfc1b1 35%, #e6d7c8 35%, #e6d7c8  100%);
+    background: #aee3f2;
+    
 }
 
 @mixin phone {

@@ -12,32 +12,48 @@ import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter';
 import { Line2 } from 'three/examples/jsm/lines/Line2';
 import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial';
 import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry';
-import { Vector2, BoxBufferGeometry } from 'three';
+import { Reflector } from 'three/examples/jsm/objects/Reflector';
 
 
 class GiftBalloon{
+  GB: THREE.Object3D
+  GBBody: CANNON.Body
+
   Balloon3d: THREE.Object3D
   BalloonBody: CANNON.Body
+  BalloonAttach: THREE.Mesh
+
   Box3d: THREE.Object3D
   BoxBody: CANNON.Body
+  BoxTopBody: CANNON.Body
+  BoxAttach: THREE.Mesh
+  BoxConstraint: CANNON.LockConstraint
+
+  Shadow: THREE.Mesh
+  
+  Curve: THREE.LineCurve3
+  CurvePoint: any
+
+  NormalGeo: THREE.Geometry
+  NormalLine: THREE.Line
+
   Lines01: CANNON.Body[]
-  LinePoints01: number[]
+  Catmull01: THREE.CatmullRomCurve3
+  LinePoints01: any
   StringPoints01: LineGeometry
   StringLine01: Line2
-  LockConstrain01: CANNON.LockConstraint[]
+  LockConstrain01: CANNON.LockConstraint
   DisConstrain01: CANNON.DistanceConstraint[]
+
   Lines02: CANNON.Body[]
-  LinePoints02: number[]
+  Catmull02: THREE.CatmullRomCurve3
+  LinePoints02: any
   StringPoints02: LineGeometry
   StringLine02: Line2
-  LockConstrain02: CANNON.LockConstraint[]
+  LockConstrain02: CANNON.LockConstraint
   DisConstrain02: CANNON.DistanceConstraint[]
-  Lines03: CANNON.Body[]
-  LinePoints03: number[]
-  StringPoints03: LineGeometry
-  StringLine03: Line2
-  LockConstrain03: CANNON.LockConstraint[]
-  DisConstrain03: CANNON.DistanceConstraint[]
+
+  Boop:Boolean
   State:Boolean
 }
 
@@ -121,6 +137,9 @@ export class welcomeService {
 
   private meshes03 = [];
   private bodies03 = [];
+
+  private Remeshes03 = [];
+  private Rebodies03 = [];
   smokeThree: THREE.Mesh;
   FETHREE = new THREE.Group();
   FETap = new THREE.Mesh();
@@ -150,7 +169,6 @@ export class welcomeService {
   // Smoke
   sphereShape = new CANNON.Sphere(0.068);
   tweenTime = 0.6; // seconds
-  boop;
 
   // GUI
   private gui = new dat.GUI();
@@ -193,6 +211,7 @@ export class welcomeService {
   private EasedGoal = new THREE.Vector3();
   private GoalAngle = new THREE.Vector3();
   
+  
   InitThree(elementId: string): void {
     this.canvas = <HTMLCanvasElement>document.getElementById(elementId);
     this.renderer = new THREE.WebGLRenderer({
@@ -201,32 +220,35 @@ export class welcomeService {
       // antialias: true // smooth edges
     });
     this.renderer.gammaOutput=true;
-    this.renderer.toneMapping = THREE.LinearToneMapping;
-    this.renderer.toneMappingExposure = 1;
+    this.renderer.gammaFactor=2.2;
+    // this.renderer.toneMapping = THREE.LinearToneMapping;
+    // this.renderer.toneMappingExposure = 1;
+    
+    this.renderer.setPixelRatio(2);
     this.textureLoader = new THREE.TextureLoader();
     this.clock = new THREE.Clock();
-    var PixelRatio = 2;
+    var PixelRatio = 1;
     var width = window.innerWidth * PixelRatio;
     var height = window.innerHeight * PixelRatio;
     this.renderer.setSize(width,height);
     this.canvas.style.width=width/PixelRatio+"px";
     this.canvas.style.height=height/PixelRatio+"px";
     // this.renderer.setSize(window.innerWidth, window.innerHeight);
-    this.renderer.setClearColor("#a8b3d3", 0);
-    this.renderer.shadowMap.enabled=true;
-    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    // this.renderer.setClearColor("#a8b3d3", 0);
+    // this.renderer.autoClearColor=false;
     // create the scene
     this.scene = new THREE.Scene();
     this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, .1, 1000);
     // this.camera.position.set(3,2,6);
     // this.camera.position.set(0,1,6);
 
-    this.camera.position.set(0, 2.4, 8);
-    // this.camera.position.set(0, 3.5, 7);
+    // this.camera.position.set(0, 2.4, 8);
+    this.camera.position.set(0, 3, 8);
 
     this.scene.add(this.camera);
 
-    this.raycaster.linePrecision=.01;
+    this.raycaster.linePrecision=.012;
+    //  this.raycaster.params.Line.threshold = 1000;
 
     // loader 
     this.loader = new GLTFLoader();
@@ -275,16 +297,49 @@ export class welcomeService {
     
   
     var bg = this.gui.addFolder("Background");
+    // bg.addColor(bgparams, "background")
+    //   .onChange(() => {
+    //     canvas.setAttribute("style","background:linear-gradient(to bottom, "+ bgparams.background+" 0%,"+bgparams.background02+" 100%);");
+    //   });
+    // bg.addColor(bgparams, "background02")
+    //   .onChange(() => {
+    //     canvas.setAttribute("style","background:linear-gradient(to bottom, "+ bgparams.background+" 0%,"+bgparams.background02+" 100%);");
+    //   });
+
     bg.addColor(bgparams, "background")
       .onChange(() => {
-        canvas.setAttribute("style","background:linear-gradient(to bottom, "+ bgparams.background+" 0%,"+bgparams.background02+" 100%);");
+        canvas.setAttribute("style","background:"+ bgparams.background+";");
       });
-    bg.addColor(bgparams, "background02")
-      .onChange(() => {
-        canvas.setAttribute("style","background:linear-gradient(to bottom, "+ bgparams.background+" 0%,"+bgparams.background02+" 100%);");
-      });
+
+
+
+    // Color
+    this.white = this.textureLoader.load('assets/matcaps/white.png',()=>{
+      this.white.encoding=THREE.sRGBEncoding;
+    });
+    this.blue01 = this.textureLoader.load('assets/matcaps/blue01.png',()=>{
+      this.blue01.encoding=THREE.sRGBEncoding;
+    });
+    this.blue02 = this.textureLoader.load('assets/matcaps/blue02.png',()=>{
+      this.blue02.encoding=THREE.sRGBEncoding;
+    });
+    this.pink = this.textureLoader.load('assets/matcaps/pink.png',()=>{
+      this.pink.encoding=THREE.sRGBEncoding;
+    });
+    this.green01 = this.textureLoader.load('assets/matcaps/green01.png',()=>{
+      this.green01.encoding=THREE.sRGBEncoding;
+    });
+    this.wood = this.textureLoader.load('assets/matcaps/wood.png',()=>{
+      this.wood.encoding=THREE.sRGBEncoding;
+    });
   }
 
+  private blue01; 
+  private blue02; 
+  private white;
+  private pink;
+  private green01;
+  private wood;
   
   private Train;
   private FerrisWheel;
@@ -301,7 +356,7 @@ export class welcomeService {
   private FerrisShadow = new THREE.Object3D();
   private FerrisShadows = [];
   CreateParkObject() {
-    let white = this.textureLoader.load('assets/matcaps/FFFFFF05.png',()=>{
+    let white = this.textureLoader.load('assets/matcaps/white.png',()=>{
       white.encoding=THREE.sRGBEncoding;
     });
     let blue = this.textureLoader.load('assets/matcaps/A4BCEC05.png',()=>{
@@ -1007,22 +1062,22 @@ export class welcomeService {
 
   private BaseMatcap;
   FirstInit(): void {
-
     this.ScenePhase=1;
 
     this.StringM = new LineMaterial({
-      color:0xffffff,
-      linewidth:.001,
+      color:0xeeeeee,
+      linewidth:.0012,
     })
 
     this.AddEvent();
 
-    this.nextStageFunction();
-    this.CreateParkObject();
-    this.ParkStaticShadow();
+    // this.nextStageFunction();
+    // this.CreateParkObject();
+    // this.ParkStaticShadow();
 
     // this.SecondInit();
     this.ThirdInit();
+    this.CreateBalloonCursor();
 
     let cursor = document.querySelector('.cursor');
 
@@ -1032,9 +1087,9 @@ export class welcomeService {
     document.addEventListener('mousedown',this.CursorDown,false);
     document.addEventListener('mouseup',this.CursorUp,false);
     
-    this.canvas.addEventListener("click", () => {
-      this.FirstSceneClickEvent();
-    });
+    // this.canvas.addEventListener("click", () => {
+    //   this.FirstSceneClickEvent();
+    // });
 
     this.canvas.addEventListener("mousemove", (e) => {
       this.renderThreePosition(e.x, e.y);
@@ -1044,14 +1099,15 @@ export class welcomeService {
     // this.canvas.addEventListener("touchmove", (e) => {
     //   this.renderThreePosition(e.touches[0].clientX, e.touches[0].clientY);
     // });
-    // this.canvas.addEventListener("mousedown", (e) => {
-    //   if (e.which == 1) {
-    //     this.CursorBegin();
-    //     this.canvas.onmousemove = () => {
-    //       this.BalloonCursor();
-    //     };
-    //   }
-    // });
+    this.canvas.addEventListener("mousedown", (e) => {
+      if (e.which == 1) {
+        this.CursorBegin();
+        // this.canvas.onmousemove = () => {
+        //   this.BalloonCursor();
+        // };
+        this.canvas.addEventListener("mousemove",this.ThirdSceneMouseMove,false);
+      }
+    });
     // this.canvas.addEventListener("touchstart", (e) => {
     //   this.renderThreePosition(e.touches[0].clientX, e.touches[0].clientY);
     //     this.CursorBegin();
@@ -1060,20 +1116,26 @@ export class welcomeService {
     //       this.FirstSceneClickEvent();
     //     };
     // });
-    // this.canvas.addEventListener("mouseup", (e) => {
-    //   if (e.which == 1) {
-    //     this.canvas.onmousemove = null;
-    //     if (this.collided) {
-    //       this.FirstCursor.copy(this.LastCursor);
-    //     } else {
-    //       TweenLite.to(this.FirstCursor, .5, {
-    //         x: this.LastCursor.x,
-    //         y: this.LastCursor.y, z: this.LastCursor.z
-    //       })
-    //       this.CheckLetterIntersect()
-    //     }
-    //   }
-    // });
+    this.canvas.addEventListener("mouseup", (e) => {
+      if (e.which == 1) {
+        // this.canvas.onmousemove = null;
+        this.canvas.removeEventListener("mousemove",this.ThirdSceneMouseMove,false);
+        TweenLite.to(this.FirstCursor, .5, {
+          x: this.LastCursor.x,
+          y: this.LastCursor.y, z: this.LastCursor.z
+        })
+        this.CheckIntersect();
+        // if (this.collided) {
+        //   this.FirstCursor.copy(this.LastCursor);
+        // } else {
+        //   TweenLite.to(this.FirstCursor, .5, {
+        //     x: this.LastCursor.x,
+        //     y: this.LastCursor.y, z: this.LastCursor.z
+        //   })
+        //   this.CheckIntersect()
+        // }
+      }
+    });
     // this.canvas.addEventListener("touchend", (e) => {
     //   // this.renderThreePosition(e.touches[0].clientX, e.touches[0].clientY);
     //     this.canvas.ontouchmove = null;
@@ -1097,6 +1159,11 @@ export class welcomeService {
   CursorUp = ()=>{
     let outer = document.querySelector('.cursor .svg-cursor');
     gsap.to(outer,.2,{css:{scale:1}});
+  }
+
+
+  ThirdSceneMouseMove = ()=>{
+    this.BalloonCursor();
   }
 
   ParkStaticShadow(){
@@ -1316,7 +1383,14 @@ export class welcomeService {
   SecondInit(){
     this.InitGolfCannon();
 
-    this.CannonPlane();
+
+
+    var shape = new CANNON.Plane();
+    var PlaneBody = new CANNON.Body({ mass: 0,material:this.PlaneMaterial });
+    PlaneBody.addShape(shape);
+    PlaneBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -Math.PI / 2);
+    PlaneBody.position.set(0, -.2, 0);
+    this.world02.addBody(PlaneBody)
 
     this.GolfStageCannon();
     // this.GolfStage();
@@ -1412,7 +1486,7 @@ export class welcomeService {
     if(this.GolfClone==null){
 
       // Create material once time
-      let white = this.textureLoader.load('assets/matcaps/FFFFFF05.png',()=>{
+      let white = this.textureLoader.load('assets/matcaps/white.png',()=>{
         white.encoding=THREE.sRGBEncoding;
       });
       // white
@@ -1440,15 +1514,7 @@ export class welcomeService {
   }
 
 
-  private CannonPlaneBody;
-  CannonPlane() {
-    var shape = new CANNON.Plane();
-    this.CannonPlaneBody = new CANNON.Body({ mass: 0,material:this.PlaneMaterial });
-    this.CannonPlaneBody.addShape(shape);
-    this.CannonPlaneBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -Math.PI / 2);
-    this.CannonPlaneBody.position.set(0, -.2, 0);
-    this.world02.addBody(this.CannonPlaneBody)
-  }
+
   
   private FBasePosition=new THREE.Vector2();
   GolfBegin(){
@@ -1602,7 +1668,6 @@ export class welcomeService {
       // Collision
       body.addEventListener('collide',(e)=>{
         if(e.body.material.name=="GoalMaterial"){
-          console.log('score');
           this.ScoreFunction(body.position)
         }
       });
@@ -1634,8 +1699,49 @@ export class welcomeService {
     }
   }
 
+  // 6 for each time function is call, 3 material , 5 usage at the same time.
+  private ScoreMax = 6*3*5;
+  private ScoreCurrent = 0;
+  private ScoreLast = 0;
+  CreateScoreMaterial(){
+
+    // Score
+    let Score01 = new THREE.Mesh(new THREE.CylinderBufferGeometry(.04,.04,.02,8,1),
+    new THREE.MeshMatcapMaterial({color:0xffffff,matcap:this.white,transparent:true}));
+    Score01.position.set(0,5,0)
+    this.GolfScore.push(Score01);
+    for(var i=0;i<this.ScoreMax/3;i++){
+      let mesh = Score01.clone();
+      this.scene.add(mesh);
+      this.GolfScore.push(mesh);
+    }
+    let Score02 = new THREE.Mesh(new THREE.CylinderBufferGeometry(.04,.04,.02,8,1),
+      new THREE.MeshMatcapMaterial({color:0xffffff,matcap:this.blue02,transparent:true}));
+    Score02.position.set(0,5,0)
+    for(var i=0;i<this.ScoreMax/3;i++){
+      let mesh = Score02.clone();
+      this.scene.add(mesh);
+      this.GolfScore.push(mesh);
+    }
+    let Score03 = new THREE.Mesh(new THREE.CylinderBufferGeometry(.04,.04,.02,8,1),
+      new THREE.MeshMatcapMaterial({color:0xffffff,matcap:this.pink,transparent:true}));
+    Score03.position.set(0,5,0)
+    for(var i=0;i<this.ScoreMax/3;i++){
+      let mesh = Score03.clone();
+      this.scene.add(mesh);
+      this.GolfScore.push(mesh);
+    }
+  }
+
   ScoreFunction(Po:CANNON.Vec3){
-    for(var i=0;i<this.GolfScore.length;i++){
+    if(this.ScoreCurrent >= this.ScoreMax){
+      this.ScoreCurrent=6*3;
+      this.ScoreLast=0;
+    } else {
+      this.ScoreCurrent+=6*3;
+    }
+
+    for(var i=this.ScoreLast;i<this.ScoreCurrent;i++){
       // Position
       gsap.fromTo(this.GolfScore[i].position,1,{x:Po.x,z:Po.z},{x:Po.x+Math.random()*1.4-.7,z:Po.z+Math.random()*1.4-.7,});
       gsap.fromTo(this.GolfScore[i].position,.35,{y:Po.y},{ease:"power1.out",y:Math.random()*.5+.6})
@@ -1648,6 +1754,49 @@ export class welcomeService {
       gsap.set(this.GolfScore[i].scale,{x:Math.random()*.3+.7,y:Math.random()*.3+.7,z:Math.random()*.3+.7});
       gsap.to(this.GolfScore[i].scale,1,{delay:.6,x:.1,y:.1,z:.1})
     }
+    this.ScoreLast = this.ScoreCurrent;
+  }
+
+  BOOPArray=[];
+  BOOPCurrent=0;
+  BOOPMaterial(){
+    for(var i=0;i<5;i++){
+      let B1 = new THREE.Object3D();
+      B1.scale.set(1,1,1);
+      B1.rotation.set(10*Math.PI/180,0,0);
+      this.scene.add(B1);
+      this.BOOPArray.push(B1);
+
+      let boopMat = new THREE.MeshBasicMaterial({ color: 0xf0f0f0,transparent:true,opacity:0 });
+      let meshB = new THREE.Mesh(new THREE.BoxBufferGeometry(.2, .05, .05),boopMat);
+
+      for(var j=0;j<5;j++){
+        let layer2 = new THREE.Object3D();
+        
+        let layer3 = meshB.clone();
+        layer3.position.set(0,0,0);
+        
+        layer2.add(layer3);
+        layer2.rotation.set(0,j*72*Math.PI/180,0);
+        
+        B1.add(layer2);
+      }
+    }
+    
+  }
+
+  BOOP(Ox: number, Oy: number, Oz: number) {
+    if(this.BOOPCurrent == 5){
+      this.BOOPCurrent=0;
+    }
+
+    this.BOOPArray[this.BOOPCurrent].position.set(Ox, Oy, Oz);
+    for(var i=0;i<this.BOOPArray[this.BOOPCurrent].children.length;i++){
+      gsap.fromTo(this.BOOPArray[this.BOOPCurrent].children[i].children[0].position,.3,{x:0},{x:"+=.17"});
+      gsap.fromTo(this.BOOPArray[this.BOOPCurrent].children[i].children[0].scale,.75,{x:1,y:1,z:1},{x:.1,y:.1,z:.1});
+      gsap.fromTo(this.BOOPArray[this.BOOPCurrent].children[i].children[0].material,.1,{opacity:1},{opacity:0,delay:1});
+    }
+    this.BOOPCurrent++;
   }
 
   private StageThreeArray=[];
@@ -1655,101 +1804,13 @@ export class welcomeService {
   private GolfFlip=[];
   private GolfScore=[];
   GolfStageCannon(){
-    let white = this.textureLoader.load('assets/matcaps/FFFFFF05.png',()=>{
-      white.encoding=THREE.sRGBEncoding;
-    });
-    var blue = this.textureLoader.load('assets/matcaps/83AFFF05.png',()=>{
-      blue.encoding=THREE.sRGBEncoding;
-    });
-    let pink = this.textureLoader.load('assets/matcaps/E7B9BE05.png',()=>{
-      pink.encoding=THREE.sRGBEncoding;
-    });
-    let green01 = this.textureLoader.load('assets/matcaps/AAF2AC05.png',()=>{
-      green01.encoding=THREE.sRGBEncoding;
-    });
-    let green02 = this.textureLoader.load('assets/matcaps/66BD5D05.png',()=>{
-      green02.encoding=THREE.sRGBEncoding;
-    });
-    let wood = this.textureLoader.load('assets/matcaps/E7CDA105.png',()=>{
-      wood.encoding=THREE.sRGBEncoding;
-    });
-    let wood02 = this.textureLoader.load('assets/matcaps/E7D39F05.png',()=>{
-      wood02.encoding=THREE.sRGBEncoding;
-    });
-    // // white
-    // let mate01 = new THREE.MeshMatcapMaterial({
-    //   color:0xffffff,
-    //   side:2,
-    //   matcap:white,
-    // })
-    // // blue
-    // let mate02 = new THREE.MeshMatcapMaterial({
-    //   color:0xffffff,
-    //   side:2,
-    //   matcap:blue,
-    // })
-    // // green01
-    // let mate03 = new THREE.MeshMatcapMaterial({
-    //   color:0xffffff,
-    //   side:2,
-    //   matcap:green01
-    // })
-    // // green02
-    // let mate04 = new THREE.MeshMatcapMaterial({
-    //   color:0xffffff,
-    //   side:2,
-    //   matcap:green02
-    // })
-    // // wood
-    // let mate05 = new THREE.MeshMatcapMaterial({
-    //   color:0xffffff,
-    //   side:2,
-    //   matcap:wood
-    // })
-    // // wood 02
-    // let mate06 = new THREE.MeshMatcapMaterial({
-    //   color:0xffffff,
-    //   side:2,
-    //   matcap:wood
-    // })
+
     let FlagMate = new THREE.MeshMatcapMaterial({
       color:0xec1c24,
       side:2,
-      matcap:white,
+      matcap:this.white,
       morphTargets:true,
     })
-
-    // Score
-    let Score01 = new THREE.Mesh(new THREE.CylinderBufferGeometry(.04,.04,.02,8,1),
-      new THREE.MeshMatcapMaterial({color:0xffffff,matcap:white,transparent:true}));
-    this.scene.add(Score01);
-    Score01.position.set(0,5,0)
-    this.GolfScore.push(Score01);
-    for(var i=0;i<6;i++){
-      let mesh = Score01.clone();
-      this.scene.add(mesh);
-      this.GolfScore.push(mesh);
-    }
-    let Score02 = new THREE.Mesh(new THREE.CylinderBufferGeometry(.04,.04,.02,8,1),
-      new THREE.MeshMatcapMaterial({color:0xffffff,matcap:blue,transparent:true}));
-    this.scene.add(Score02);
-    this.GolfScore.push(Score02);
-    Score02.position.set(0,5,0)
-    for(var i=0;i<6;i++){
-      let mesh = Score02.clone();
-      this.scene.add(mesh);
-      this.GolfScore.push(mesh);
-    }
-    let Score03 = new THREE.Mesh(new THREE.CylinderBufferGeometry(.04,.04,.02,8,1),
-      new THREE.MeshMatcapMaterial({color:0xffffff,matcap:pink,transparent:true}));
-    this.scene.add(Score03);
-    this.GolfScore.push(Score03);
-    Score03.position.set(0,5,0)
-    for(var i=0;i<6;i++){
-      let mesh = Score03.clone();
-      this.scene.add(mesh);
-      this.GolfScore.push(mesh);
-    }
 
     let Stage = new THREE.Object3D();
     this.scene.add(Stage)
@@ -1836,12 +1897,12 @@ export class welcomeService {
             let mate01 = new THREE.MeshMatcapMaterial({
               color:0xffffff,
               side:2,
-              matcap:white
+              matcap:this.white
             })
             let mate02 = new THREE.MeshMatcapMaterial({
               color:0xffffff,
               side:2,
-              matcap:blue
+              matcap:this.blue02
             })
             stage.children[""+i+""].children[0].material=mate01;
             stage.children[""+i+""].children[1].material=mate02;
@@ -1849,12 +1910,12 @@ export class welcomeService {
             let mate01 = new THREE.MeshMatcapMaterial({
               color:0xffffff,
               side:2,
-              matcap:green01
+              matcap:this.green01
             })
             let mate02 = new THREE.MeshMatcapMaterial({
               color:0xffffff,
               side:2,
-              matcap:wood
+              matcap:this.wood
             })
             stage.children[""+i+""].children[0].material=mate01;
             stage.children[""+i+""].children[1].material=mate02;
@@ -1862,7 +1923,7 @@ export class welcomeService {
             let mate01 = new THREE.MeshMatcapMaterial({
               color:0xffffff,
               side:2,
-              matcap:blue
+              matcap:this.blue02
             })
             stage.children[""+i+""].material=mate01;
             let wmthree = new THREE.Mesh();
@@ -1904,33 +1965,33 @@ export class welcomeService {
             let mate01 = new THREE.MeshMatcapMaterial({
               color:0xffffff,
               side:2,
-              matcap:wood
+              matcap:this.wood
             })
             stage.children[""+i+""].material=mate01;
           } else if (stage.children[""+i+""].name == "Wall"){
             let mate01 = new THREE.MeshMatcapMaterial({
               color:0xffffff,
               side:2,
-              matcap:blue
+              matcap:this.blue02
             })
             stage.children[""+i+""].material=mate01;
           } else if (stage.children[""+i+""].name == "Bush"){
             let mate01 = new THREE.MeshMatcapMaterial({
               color:0xffffff,
               side:2,
-              matcap:green01
+              matcap:this.green01
             })
             stage.children[""+i+""].material=mate01;
           } else if (stage.children[""+i+""].name == "Tree"){
             let mate01 = new THREE.MeshMatcapMaterial({
               color:0xffffff,
               side:2,
-              matcap:green01
+              matcap:this.green01
             })
             let mate02 = new THREE.MeshMatcapMaterial({
               color:0xffffff,
               side:2,
-              matcap:wood
+              matcap:this.wood
             })
             stage.children[""+i+""].children[0].material=mate01;
             stage.children[""+i+""].children[1].material=mate02;
@@ -1938,7 +1999,7 @@ export class welcomeService {
             let mate01 = new THREE.MeshMatcapMaterial({
               color:0xffffff,
               side:2,
-              matcap:green01
+              matcap:this.green01
             })
             stage.children[""+i+""].material=mate01;
             this.GolfFlip.push(stage.children[""+i+""]);
@@ -1946,12 +2007,12 @@ export class welcomeService {
             let mate01 = new THREE.MeshMatcapMaterial({
               color:0xffffff,
               side:2,
-              matcap:green01
+              matcap:this.green01
             })
             let mate02 = new THREE.MeshMatcapMaterial({
               color:0xffffff,
               side:2,
-              matcap:wood
+              matcap:this.wood
             })
             stage.children[""+i+""].children[0].material=mate02;
             stage.children[""+i+""].children[1].material=mate01;
@@ -1959,28 +2020,28 @@ export class welcomeService {
             let mate01 = new THREE.MeshMatcapMaterial({
               color:0xffffff,
               side:2,
-              matcap:white
+              matcap:this.white
             })
             stage.children[""+i+""].material=mate01;
           } else if (stage.children[""+i+""].name == "Window"){
             let mate01 = new THREE.MeshMatcapMaterial({
               color:0xffffff,
               side:2,
-              matcap:white
+              matcap:this.white
             })
             stage.children[""+i+""].material=mate01;
           } else if (stage.children[""+i+""].name == "Pole"){
             let mate01 = new THREE.MeshMatcapMaterial({
               color:0xffffff,
               side:2,
-              matcap:white
+              matcap:this.white
             })
             stage.children[""+i+""].material=mate01;
           } else {
             let mate01 = new THREE.MeshMatcapMaterial({
               color:0xffffff,
-              side:2,
-              matcap:white
+              side:2,  
+              matcap:this.white
             })
             stage.children[""+i+""].material=mate01;
           }
@@ -2251,110 +2312,6 @@ export class welcomeService {
     Cube007.addShape(new CANNON.Box(new CANNON.Vec3(.25,.25,.1)),new CANNON.Vec3(0,-0.25,0),quat);
     this.world02.addBody(Cube007);
     this.StageCannnonArray.push(Cube007);
-
-
-
-    // sizeX = 1;
-    // sizeY = .2;
-    // sizeZ = .5;
-
-    // let CG08 = {
-    //   x:5.5,
-    //   y:0.4,
-    //   z:-.3,
-    //   Rx:0,
-    //   Ry:30,
-    //   Rz:0,
-    // }
-
-    // // THREE 08 
-    // let Cube08 = new THREE.Mesh(new THREE.BoxBufferGeometry(sizeX*2,sizeY*2,sizeZ*2),StageMaterial);
-    // Cube08.position.set(CG08.x,CG08.y,CG08.z);
-    // Cube08.rotation.set(CG08.Rx*Math.PI/180,CG08.Ry*Math.PI/180,CG08.Rz*Math.PI/180)
-    // Stage.add(Cube08);
-    // this.StageThreeArray.push(Cube08);
-    
-    // // CANNON 08
-    // let Cube008 = new CANNON.Body({mass:0,material:this.GolfStageMaterial});
-    // Cube008.addShape(new CANNON.Box(new CANNON.Vec3(sizeX,sizeY,sizeZ)),new CANNON.Vec3());
-    // this.world02.addBody(Cube008)
-    // this.StageCannnonArray.push(Cube008)
-
-
-    // let CGG08 = this.gui.addFolder("CG08");
-    // CGG08.close();
-    // CGG08.add(CG08,'x').step(0.1).min(-10).max(10).onChange(()=>{
-    //   Cube08.position.set(CG08.x,CG08.y,CG08.z);
-    //   setTimeout(() => {
-    //     this.SetStageCannonPosition();
-    //   }, 100);
-    // })
-    // CGG08.add(CG08,'y').step(0.1).min(-5).max(5).onChange(()=>{
-    //   Cube08.position.set(CG08.x,CG08.y,CG08.z);
-    //   setTimeout(() => {
-    //     this.SetStageCannonPosition();
-    //   }, 100);
-    // })
-    // CGG08.add(CG08,'z').step(0.1).min(-5).max(5).onChange(()=>{
-    //   Cube08.position.set(CG08.x,CG08.y,CG08.z);
-    //   setTimeout(() => {
-    //     this.SetStageCannonPosition();
-    //   }, 100);
-    // })
-    // CGG08.add(CG08,'Rx').step(.5).min(-180).max(180).onChange(()=>{
-    //   Cube08.rotation.set(CG08.Rx,CG08.Ry,CG08.Rz);
-    //   setTimeout(() => {
-    //     this.SetStageCannonPosition();
-    //   }, 100);
-    // })
-    // CGG08.add(CG08,'Ry').step(.5).min(-180).max(180).onChange(()=>{
-    //   Cube08.rotation.set(CG08.Rx,CG08.Ry,CG08.Rz);
-    //   setTimeout(() => {
-    //     this.SetStageCannonPosition();
-    //   }, 100);
-    // })
-    // CGG08.add(CG08,'Rz').step(.5).min(-180).max(180).onChange(()=>{
-    //   Cube08.rotation.set(CG08.Rx,CG08.Ry,CG08.Rz);
-    //   setTimeout(() => {
-    //     this.SetStageCannonPosition();
-    //   }, 100);
-    // })
-
-
-    // // // THREE 08
-    // // let Cube08 = new THREE.Mesh(new THREE.BoxBufferGeometry(1,.5,1),StageMaterial);
-    // // Cube08.position.set(4.05,0,-3.5);
-    // // Cube08.rotation.set(0*Math.PI/180,0*Math.PI/180,0*Math.PI/180)
-    // // Stage.add(Cube08);
-    // // this.StageThreeArray.push(Cube08);
-    
-    // // // CANNON 08
-    // // let Cube008 = new CANNON.Body({mass:0,material:this.GolfStageMaterial});
-
-    // // // Plane
-    // // shape = this.CreateCANNONPlane(.25,.14,.75,0,0*Math.PI/180,370*Math.PI/180,20);
-    // // Cube008.addShape(shape)
-
-    // // Cube008.addShape(new CANNON.Box(new CANNON.Vec3(.01,.25,.5)),new CANNON.Vec3(-.5,.25,0));
-    // // Cube008.addShape(new CANNON.Box(new CANNON.Vec3(.01,.25,.5)),new CANNON.Vec3(.5,.25,0));
-    // // Cube008.addShape(new CANNON.Box(new CANNON.Vec3(.5,.25,.01)),new CANNON.Vec3(0,.25,-.5));
-
-    // // // this.world02.addBody(Cube005);
-    // // // this.StageCannnonArray.push(Cube005);
-
-    // // this.world02.addBody(Cube008)
-    // // this.StageCannnonArray.push(Cube008)
-
-    // let white = this.textureLoader.load('assets/matcaps/FFFFFF03.png',()=>{
-    //   white.encoding=THREE.sRGBEncoding;
-    // });
-    // // white
-    // let mate01 = new THREE.MeshMatcapMaterial({
-    //   color:0xffffff,
-    //   side:2,
-    //   matcap:white
-    // })
-
     
     gsap.delayedCall(1,()=>{
       this.SetStageCannonPosition();
@@ -2535,7 +2492,194 @@ export class welcomeService {
   // THIRD SCENE SETUP
   ThirdInit(){
     this.InitThirdWorld();
-    this.CreateGiftBalloon(-10,3,0);
+    this.CreateScoreMaterial();
+    this.BOOPMaterial();
+    this.CreateGiftBalloon(-5,3,-1);
+    this.CreateGiftBalloon(-2,2.7,0);
+    this.CreateGiftBalloon(2,2.5,1);
+
+    this.CreateIsland();
+    // this.CreateGiftBalloon(-1,2.7,0);
+    // this.CreateGiftBalloon(1,2.5,1);
+    // this.CreateGiftBalloon(-2.5,2.7,0);
+    // this.CreateGiftBalloon(2.5,2.5,1);
+  }
+
+  private islandSea: THREE.PlaneGeometry
+  CreateIsland(){
+    // Material
+    let tent01 = this.textureLoader.load('assets/matcaps/03/tent01.png',()=>{
+      tent01.encoding=THREE.sRGBEncoding;
+    });
+    let tent02 = this.textureLoader.load('assets/matcaps/03/tent02.png',()=>{
+      tent02.encoding=THREE.sRGBEncoding;
+    });
+    let tree = this.textureLoader.load('assets/matcaps/03/tree.png',()=>{
+      tree.encoding=THREE.sRGBEncoding;
+    });
+    let wood = this.textureLoader.load('assets/matcaps/03/wood.png',()=>{
+      wood.encoding=THREE.sRGBEncoding;
+    });
+    let land = this.textureLoader.load('assets/matcaps/03/land.png',()=>{
+      land.encoding=THREE.sRGBEncoding;
+    });
+    let sea = this.textureLoader.load('assets/matcaps/03/sea.png',()=>{
+      sea.encoding=THREE.sRGBEncoding;
+    });
+    let white = this.textureLoader.load('assets/matcaps/03/white.png',()=>{
+      white.encoding=THREE.sRGBEncoding;
+    });
+
+
+    this.loader.load(
+      'assets/model/Island.glb',
+      (gltf) => {
+        var s = gltf.scene;
+        s.scale.set(1.75,1.75,1.75);
+        s.rotation.set(0,0*Math.PI/180,0)
+        s.position.set(0,-0.075,-1)
+        console.log(s)
+        for(var i=0;i<s.children.length;i++){
+          if(s.children[""+i+""].name=="Land"){
+            let mate01 = new THREE.MeshMatcapMaterial({
+              color:0xffffff,side:2,matcap:land
+            });
+            s.children[""+i+""].children[0].material=mate01;
+            let mate02 = new THREE.MeshMatcapMaterial({
+              color:0xffffff,side:2,matcap:tree
+            });
+            s.children[""+i+""].children[1].material=mate02;
+          } else if(s.children[""+i+""].name=="Tent"){
+            let mate01 = new THREE.MeshMatcapMaterial({
+              color:0xffffff,side:2,matcap:tent01
+            });
+            s.children[""+i+""].children[0].material=mate01;
+            let mate02 = new THREE.MeshMatcapMaterial({
+              color:0xffffff,side:2,matcap:tent02
+            });
+            s.children[""+i+""].children[1].material=mate02;
+          } else if(s.children[""+i+""].name=="Tree"){
+            let mate01 = new THREE.MeshMatcapMaterial({
+              color:0xffffff,side:2,matcap:tree
+            });
+            s.children[""+i+""].children[0].material=mate01;
+            let mate02 = new THREE.MeshMatcapMaterial({
+              color:0xffffff,side:2,matcap:wood
+            });
+            s.children[""+i+""].children[1].material=mate02;
+          } else if(s.children[""+i+""].name=="Mail"){
+            let mate01 = new THREE.MeshMatcapMaterial({
+              color:0xffffff,side:2,matcap:wood
+            });
+            s.children[""+i+""].children[0].material=mate01;
+            let mate02 = new THREE.MeshMatcapMaterial({
+              color:0xcccccc,side:2,matcap:wood
+            });
+            s.children[""+i+""].children[1].material=mate02;
+          } else if(s.children[""+i+""].name=="Pillar"){
+            let mate01 = new THREE.MeshMatcapMaterial({
+              color:0xffffff,side:2,matcap:wood
+            });
+            s.children[""+i+""].material=mate01;
+          } else if(s.children[""+i+""].name=="Rope"){
+            let mate01 = new THREE.MeshMatcapMaterial({
+              color:0xffffff,side:2,matcap:wood
+            });
+            s.children[""+i+""].material=mate01;
+          } else if(s.children[""+i+""].name=="Rock"){
+            let mate01 = new THREE.MeshMatcapMaterial({
+              color:0xffffff,side:2,matcap:white
+            });
+            s.children[""+i+""].material=mate01;
+          } else if(s.children[""+i+""].name=="Sea"){
+            
+            var seaMate = new THREE.MeshBasicMaterial({color:0x94d2e3});
+            let bgparams = {
+              sea: "#94d2e3",
+            }
+          
+            var bg = this.gui.addFolder("Sea Inner");
+        
+            bg.addColor(bgparams, "sea")
+              .onChange(() => {
+                seaMate.color.set(new THREE.Color(bgparams.sea));
+              });
+            s.children[""+i+""].material=seaMate;
+          }
+          
+        }
+
+        this.scene.add(s);
+      }
+    );
+
+    // Shadow
+    var texture = this.textureLoader.load('assets/shadow/Island.png');
+
+    let uniforms = {
+      tShadow:{value:texture},
+      uShadowColor:{value:new THREE.Color("#78b75e")},
+      uAlpha:{value:.75}
+    }
+    let material = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms,depthWrite:false,
+      vertexShader:document.getElementById('vertexShader').textContent,
+      fragmentShader:document.getElementById('fragmentShader').textContent})
+
+      
+    let shadow = new THREE.Mesh(new THREE.PlaneGeometry(6*1.75,6*1.75),material);
+    shadow.rotation.set(-Math.PI/2,0,0)
+    shadow.position.set(0,.19,-.99);
+
+    this.scene.add(shadow);
+    
+    
+    // // Moving Sea
+    // this.islandSea = new THREE.PlaneGeometry(10,10,5,5);
+    // var seaMater = new THREE.MeshBasicMaterial({color:0x3a74b4});
+    // let bgparams = {
+    //   sea: "#3a74b4",
+    // }
+  
+    // var bg = this.gui.addFolder("Sea");
+
+    // bg.addColor(bgparams, "sea")
+    //   .onChange(() => {
+    //     seaMater.color.set(new THREE.Color(bgparams.sea));
+    //   });
+
+    // let planeMesh = new THREE.Mesh(this.islandSea,seaMater);
+    // planeMesh.rotation.set(-Math.PI/2,0,0);
+    // planeMesh.position.set(0,0,-1.5);
+
+    // this.scene.add(planeMesh);
+
+    // Static Sea
+    // var mirror = new THREE.CubeCamera()
+
+    // let mesh = new THREE.Mesh(new THREE.PlaneGeometry(40,30),seaMater);
+    // mesh.rotation.set(-Math.PI/2,0,0);
+    // mesh.position.set(0,-.01,-1.5);
+    // this.scene.add(mesh);
+
+    // for(var i=0;i<this.islandSea.vertices.length;i++){
+    //   let mesh = new THREE.Mesh(new THREE.BoxBufferGeometry(.1,.1,.1),mate01);
+    //   mesh.position.set(this.islandSea.vertices[i].x,this.islandSea.vertices[i].z+.3,this.islandSea.vertices[i].y);
+    //   this.scene.add(mesh);
+    // }
+
+    // gsap.to(this.islandSea.vertices[27],1.4,{z:.2,yoyo:true,repeat:-1});
+
+
+    // Mirror
+    // var geometry = new THREE.PlaneBufferGeometry(10,10,5,5);
+    // var groundMirror = new Reflector(geometry,{
+    //   clipBias: 0.003,
+		// 	textureWidth: window.innerWidth,
+		// 	textureHeight: window.innerHeight,
+		// 	color: 0x777777
+    // })
+    // groundMirror.rotateX(-Math.PI/2);
+    // this.scene.add(groundMirror);
   }
 
   InitThirdWorld(): void {
@@ -2543,7 +2687,7 @@ export class welcomeService {
     this.world03.gravity.set(0, 0, 0);
 
     gsap.delayedCall(2,()=>{
-      this.world03.gravity.set(0, -1, 0);
+      this.world03.gravity.set(0, -5, 0);
     })
 
     this.debugger03 = new CannonDebugRenderer(this.scene, this.world03);
@@ -2552,136 +2696,177 @@ export class welcomeService {
     //   restitution:0.5,
     // })
     // this.world02.addContactMaterial(Contact02);
+    this.PlaneMaterial = new CANNON.Material("PlaneMaterial");
 
     let shape = new CANNON.Plane();
-    let plane = new CANNON.Body({ mass: 0});
+    let plane = new CANNON.Body({ mass: 0, material: this.PlaneMaterial});
     plane.addShape(shape);
     plane.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -Math.PI / 2);
     plane.position.set(0, 0, 0);
-    this.world03.addBody(plane)
+    this.world03.addBody(plane);
+
   }
 
   CreateGiftBalloon(Px,Py,Pz){
     let E = new GiftBalloon;
     this.GiftBalloonArray.push(E)
 
-    var blue = this.textureLoader.load('assets/matcaps/83AFFF05.png',()=>{
-      blue.encoding=THREE.sRGBEncoding;
-    });
-    let pink = this.textureLoader.load('assets/matcaps/E7B9BE05.png',()=>{
-      pink.encoding=THREE.sRGBEncoding;
-    });
+    // false: uncut, true: cut
+    E.State=false;
+    // false: The gift hasn't broken
+    E.Boop=false;
+        
+    E.Lines01=[];
+    E.Lines02=[];
+    E.DisConstrain01=[];
+    E.DisConstrain02=[];
+
+    // Material
     let mate01 = new THREE.MeshMatcapMaterial({
       color:0xffffff,
       side:2,
       transparent:true,
       opacity:1,
-      matcap:blue
+      matcap:this.blue02
+    })
+    let mate03 = new THREE.MeshMatcapMaterial({
+      color:0xfefefe,
+      side:2,
+      transparent:true,
+      opacity:1,
+      matcap:this.white
     })
     let mate02 = new THREE.MeshMatcapMaterial({
       color:0xffffff,
       side:2,
-      matcap:pink
+      transparent:true,
+      opacity:1,
+      matcap:this.pink
     })
 
-    // Balloon
+
+    // GB (top force)
+    E.GBBody = new CANNON.Body({mass:0});
+    E.GBBody.addShape(new CANNON.Sphere(.02));
+    E.GBBody.position.set(Px,Py,Pz);
+    this.world03.addBody(E.GBBody);
+
+    // Balloon 3d
     E.Balloon3d = new THREE.Object3D();
     this.loader.load(
       'assets/model/balloon01.glb',
       (gltf) => {
         var s = gltf.scene;
-        s.scale.set(1,1,1)
+        s.scale.set(1.4,1.4,1.4)
         s.children["0"].position.set(0,0,0);
         s.children["0"].material=mate01;
         E.Balloon3d.add(s);
       }
     );
+
+    // Balloon Attach
+    E.BalloonAttach = new THREE.Mesh(new THREE.BoxBufferGeometry(.02,.02,.02),mate02)
+    E.BalloonAttach.position.set(0,-.2,0);
+    E.Balloon3d.add(E.BalloonAttach);
+    E.Balloon3d.position.set(0,0,0);
     this.scene.add(E.Balloon3d);
-    this.meshes03.push(E.Balloon3d);
 
-    E.BalloonBody = new CANNON.Body({ mass: 0});
-    // E.ObjectBody.allowSleep=true;
-    E.BalloonBody.addShape(new CANNON.Sphere(.13),new CANNON.Vec3(0,0.04,0));
-    // E.BalloonBody.addShape(new CANNON.Sphere(.11),new CANNON.Vec3(0,0,0));
-    // let quat = new THREE.Mesh();
-    // quat.rotation.set(RotateX, RotateY, RotateZ);
-    // E.BalloonBody.quaternion.set(quat.quaternion.x, quat.quaternion.y, quat.quaternion.z, quat.quaternion.w);
+    var linearDamping = .3;
+    var angularDamping = .3;
 
-    E.BalloonBody.position.set( Px, Py+.05, Pz);
-    E.BalloonBody.angularDamping = 0.5;
-    E.BalloonBody.linearDamping = 0.5;
+    // Balloon body
+    E.BalloonBody = new CANNON.Body({ mass: 10});
+    E.BalloonBody.addShape(new CANNON.Sphere(.18),new CANNON.Vec3(0,0.07,0));
     this.world03.addBody(E.BalloonBody);
-    this.bodies03.push(E.BalloonBody);
 
+    E.BalloonBody.position.set( Px, Py-.3, Pz);
 
-    // Box
+    E.BalloonBody.angularDamping = angularDamping;
+    E.BalloonBody.linearDamping = linearDamping;
+
+    // Box 
     E.Box3d = new THREE.Object3D();
-    E.Box3d.add(new THREE.Mesh(new BoxBufferGeometry(.2,.2,.2),mate02));
-    this.scene.add(E.Box3d);
-    this.meshes03.push(E.Box3d);
-    
-    E.BoxBody = new CANNON.Body({mass:1});
-    E.BoxBody.addShape(new CANNON.Box(new CANNON.Vec3(.1,.1,.1)));
-
-    E.BoxBody.angularDamping = 0.5;
-    E.BoxBody.linearDamping = 0.5;
-    E.BoxBody.position.set(Px,Py-.4-.11,Pz);
-    this.world03.addBody(E.BoxBody);
-    this.bodies03.push(E.BoxBody);
-    
-
-    E.Lines01=[];
-    E.Lines02=[];
-    E.Lines03=[];
-    E.LockConstrain01=[];
-    E.LockConstrain02=[];
-    E.LockConstrain03=[];
-    E.DisConstrain01=[];
-    E.DisConstrain02=[];
-    E.DisConstrain03=[];
-
-
-    // Create Lines01
-    let lastBody: CANNON.Body;
-    for (var i = 0; i < 4; i++) {
-      let body = new CANNON.Body({ mass: i == 0 ? 1 : 1 });
-      body.addShape(new CANNON.Box(new CANNON.Vec3(.01, .01, .01)));
-
-      body.position.set(Px, Py - (i+1)*.1, Pz);
-
-      body.angularDamping = 0.5;
-      body.linearDamping = 0.5;
-
-      this.world03.addBody(body);
-      E.Lines01.push(body);
-
-      if (i == 0) {
-        // Balloon Constraint
-        var c = new CANNON.LockConstraint(E.BalloonBody, body);
-        E.LockConstrain01.push(c);
-        console.log('asdfasdf')
-        this.world03.addConstraint(c);
-      } else {
-        var distance = this.distance(body.position.x,body.position.y,body.position.z,lastBody.position.x,lastBody.position.y,lastBody.position.z);
-        var d = new CANNON.DistanceConstraint(body, lastBody, distance);
-        E.DisConstrain01.push(d);
-        this.world03.addConstraint(d);
-
-        // Box Constraint
-        if(i==3){
-          var c = new CANNON.LockConstraint(body, E.BoxBody);
-          E.LockConstrain01.push(c);
-          this.world03.addConstraint(c);
-        }
+    this.loader.load(
+      'assets/model/Gift.glb',
+      (gltf) => {
+        var s = gltf.scene;
+        s.scale.set(1.5,1.5,1.5)
+        s.position.set(0,-.13,0);
+        s.children["0"].children[0].material=mate03;
+        s.children["0"].children[1].material=mate01;
+        s.children["1"].children[0].material=mate03;
+        s.children["1"].children[1].material=mate01;
+        E.Box3d.add(s);
       }
-      lastBody = body;
-    }
+    );
 
-    // Create Line2
+    E.BoxAttach = new THREE.Mesh(new THREE.BoxBufferGeometry(.02,.02,.02),mate02)
+    E.BoxAttach.position.set(0,.16,0);
+    E.Box3d.add(E.BoxAttach);
+    this.scene.add(E.Box3d);
+
+    E.BoxBody = new CANNON.Body({ mass: 5 });
+    E.BoxBody.addShape(new CANNON.Box(new CANNON.Vec3(.15,.1,.15)),new CANNON.Vec3(0,-.03,0));
+    E.BoxBody.position.set(Px, Py-1, Pz);
+    this.world03.addBody(E.BoxBody);
+
+    E.BoxTopBody = new CANNON.Body({ mass: 5 });
+    E.BoxTopBody.addShape(new CANNON.Box(new CANNON.Vec3(.165,.04,.165)),new CANNON.Vec3(0,0.095,0));
+
+    var something = new THREE.Mesh();
+    something.rotation.set(0,0,40*Math.PI/180);
+    var quat = new CANNON.Quaternion();
+    quat.set(something.quaternion.x,something.quaternion.y,something.quaternion.z,something.quaternion.w);
+
+    E.BoxTopBody.addShape(new CANNON.Box(new CANNON.Vec3(.05,.04,.04)),new CANNON.Vec3(0.12,0.18,0),quat);
+
+    var something = new THREE.Mesh();
+    something.rotation.set(0,0,-40*Math.PI/180);
+    var quat = new CANNON.Quaternion();
+    quat.set(something.quaternion.x,something.quaternion.y,something.quaternion.z,something.quaternion.w);
+    E.BoxTopBody.addShape(new CANNON.Box(new CANNON.Vec3(.05,.04,.04)),new CANNON.Vec3(-0.12,0.18,0),quat);
+    E.BoxTopBody.position.set(Px, Py-1, Pz);
+    this.world03.addBody(E.BoxTopBody);
+    var b = new CANNON.LockConstraint(E.BoxBody,E.BoxTopBody);
+    b.collideConnected=false;
+    this.world03.addConstraint(b)
+
+    // E.BoxBody.addEventListener('collide',(e)=>{
+    //   if(e.body.material){
+    //     if(e.body.material.name=="PlaneMaterial"&&!E.Boop){
+    //       E.Boop=true;
+    //       gsap.to(E.Box3d.scale,.3,{x:.1,y:.1,z:.1})
+    //       gsap.to(E.Shadow.scale,.3,{x:.1,y:.1,z:.1})
+    //       this.scene.remove(E.StringLine02)
+    //       gsap.delayedCall(.2,()=>{
+    //         this.BOOP(E.BoxBody.position.x,E.BoxBody.position.y,E.BoxBody.position.z);
+    //         this.scene.remove(E.Box3d);
+    //         this.scene.remove(E.Shadow);
+    //         this.world03.remove(E.BoxBody);
+    //         this.world03.remove(E.BoxTopBody);
+    //       })
+    //     };
+    //   }
+    // });
+
+    E.BoxBody.angularDamping = angularDamping;
+    E.BoxBody.linearDamping = linearDamping;
+
+
+    // Balloon Constraint
+    var c = new CANNON.PointToPointConstraint(E.BalloonBody,new CANNON.Vec3(0,.15,0),E.GBBody,new CANNON.Vec3(0,-.15,0));
+    this.world03.addConstraint(c);
+
+    // Box Constraint
+    E.BoxConstraint = new CANNON.LockConstraint(E.BoxBody, E.BalloonBody);
+    this.world03.addConstraint(E.BoxConstraint);
+
+
+    // Create Line2 (First Line)
     E.LinePoints01 = [];
-    for(var i=0;i<E.Lines01.length;i++){
-      E.LinePoints01.push(E.Lines01[i].position.x,E.Lines01[i].position.y,E.Lines01[i].position.z);
-    }
+
+    E.LinePoints01.push(Px,Py-.2,Pz,Px,Py-1,Pz);
+
     
     E.StringPoints01 = new LineGeometry();
     E.StringPoints01.setPositions(E.LinePoints01);
@@ -2691,40 +2876,317 @@ export class welcomeService {
     )
     this.scene.add(E.StringLine01)
 
-    // // LINES
-    // this.LetterArray[i].Line = new THREE.Line(geo);
-    // // this.scene.add(this.LetterArray[i].Line);
-    // this.Lines.push(this.LetterArray[i].Line);
+    // Normal Line (to cut)
+    E.NormalGeo = new THREE.Geometry();
+    E.NormalGeo.vertices.push(
+      E.BalloonAttach.position,
+      E.BoxAttach.position
+    )
+    E.NormalLine = new THREE.Line(E.NormalGeo,new THREE.LineBasicMaterial({color:0x0000ff}));
+
+    this.Lines.push(E.NormalLine);
+    // this.scene.add(E.NormalLine);
 
 
+    var adp = .3;
+    var ldp = .3;
+    // Create Lines01
+    for (var i = 0; i < 4; i++) {
+      let body = new CANNON.Body({ mass: i == 0 ? 20 : 1});
+      body.addShape(new CANNON.Box(new CANNON.Vec3(.01, .01, .01)));
 
-    gsap.delayedCall(2,()=>{
-      // gsap.to(E.BalloonBody.rotation,10,{x:-8,ease:"none"});
-      gsap.to(E.BalloonBody.position,5,{x:-8,ease:"none"});
+      body.angularDamping = adp;
+      body.linearDamping = ldp;
+
+      E.Lines01.push(body);
+    }
+    E.Catmull01 = new THREE.CatmullRomCurve3([
+      new THREE.Vector3(Px,Py,Pz),new THREE.Vector3(Px,Py-.5,Pz),new THREE.Vector3(Px,Py-1,Pz),new THREE.Vector3(Px,Py-1,Pz)
+    ])
+
+    // Create Lines02
+    for (var i = 0; i < 4; i++) {
+      let body = new CANNON.Body({ mass: i == 0 ? .1 : .1});
+      body.addShape(new CANNON.Box(new CANNON.Vec3(.01, .01, .01)));
+
+      body.angularDamping = adp;
+      body.linearDamping = ldp;
+
+      E.Lines02.push(body);
+    }
+    E.Catmull02 = new THREE.CatmullRomCurve3([
+      new THREE.Vector3(Px,Py,Pz),new THREE.Vector3(Px,Py-.5,Pz),new THREE.Vector3(Px,Py-1,Pz),new THREE.Vector3(Px,Py-1,Pz)
+    ])
+
+
+    // SHADOW
+    var texture = this.textureLoader.load('assets/shadow/Gift02.png');
+
+    let uniforms = {
+      tShadow:{value:texture},
+      uShadowColor:{value:new THREE.Color("#c0a68e")},
+      uAlpha:{value:1}
+    }
+    let material = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms,depthWrite:false,
+      vertexShader:document.getElementById('vertexShader').textContent,
+      fragmentShader:document.getElementById('fragmentShader').textContent})
+      
+    E.Shadow = new THREE.Mesh(new THREE.PlaneGeometry(1.2,1.2),material);
+    E.Shadow.rotation.set(-Math.PI/2,0,0)
+    E.Shadow.position.set(Px,Py,Pz);
+
+    this.scene.add(E.Shadow);
+
+    gsap.delayedCall(Math.random()*2,()=>{
+      gsap.to(E.GBBody.position,1.8,{x:"+=.3",ease:"power1.in"});
+      gsap.to(E.GBBody.position,1.8,{x:"+=.3",ease:"power1.out",delay:1.5});
+      gsap.to(E.GBBody.position,1.8,{z:"+=.15",ease:"power1.in"});
+      gsap.to(E.GBBody.position,1.8,{z:"-=.15",ease:"power1.out",delay:1.5});
+
+      gsap.to(E.GBBody.position,0,{repeat:15,repeatDelay:3,
+        onRepeat:()=>{
+          // gsap.to(E.GB.position,2,{x:"+=.4",ease:"power1.in"});
+          // gsap.to(E.GB.position,2,{x:"+=.4",ease:"power1.out",delay:2,});
+          if(!E.State){
+            gsap.to(E.GBBody.position,1.8,{x:"+=.3",ease:"power1.in"});
+            gsap.to(E.GBBody.position,1.8,{x:"+=.3",ease:"power1.out",delay:1.5});
+            gsap.to(E.GBBody.position,1.8,{z:"+=.15",ease:"power1.in"});
+            gsap.to(E.GBBody.position,1.8,{z:"-=.15",ease:"power1.out",delay:1.5});
+            console.log('repeat')
+          }
+        }});
     })
   }
 
   ThirdSceneRender(){
-    this.world03.step(1 / this.fps);
-    // this.debugger03.update();
-    for (var i = 0; i < this.meshes03.length; i++) {
-      this.meshes03[i].position.copy(this.bodies03[i].position);
-      this.meshes03[i].quaternion.copy(this.bodies03[i].quaternion);
-    }
+    // this.islandSea.verticesNeedUpdate=true;
+    // this.raycaster.setFromCamera(this.mouse,this.camera);
+    // var intersects = this.raycaster.intersectObjects(this.Lines,true)
+    // // for(var j=0;j<intersect.length;j++){
+    // //   // intersect[""+j+""].object.material=Ma;
+    // //   // this.Cutletter(intersect[""+j+""].object.id,intersect[""+j+""].point);
+    // //   console.log('cut',intersect[""+j+""].object)
+    // // }
+    // if ( intersects.length > 0 ) {
+    //   this.sphereInter.visible = true;
+    //   console.log('cuttttt')
+    //   console.log(intersects)
+    //   this.sphereInter.position.copy( intersects[ 0 ].point );
+    // } else {
+    //   this.sphereInter.visible = false;
+    // }
 
-    // Line
+    this.world03.step(1 / this.fps);
+    this.RenderMouseCursor();
+    // this.debugger03.update();
+    // for (var i = 0; i < this.meshes03.length; i++) {
+    //   this.meshes03[i].position.copy(this.bodies03[i].position);
+    //   this.meshes03[i].quaternion.copy(this.bodies03[i].quaternion);
+    // }
+    // for (var i = 0; i < this.Remeshes03.length; i++) {
+    //   this.Rebodies03[i].position.copy(this.Remeshes03[i].position);
+    //   this.Rebodies03[i].quaternion.copy(this.Remeshes03[i].quaternion);
+    // }
+
+    // GiftBalloon
     for(var i=0;i<this.GiftBalloonArray.length;i++){
-      this.GiftBalloonArray[i].LinePoints01 = [];
-      for(var j=0;j<this.GiftBalloonArray[i].Lines01.length;j++){
-        this.GiftBalloonArray[i].LinePoints01.push(
-          this.GiftBalloonArray[i].Lines01[j].position.x,
-          this.GiftBalloonArray[i].Lines01[j].position.y,
-          this.GiftBalloonArray[i].Lines01[j].position.z);
+      // Base Position
+      this.GiftBalloonArray[i].Balloon3d.position.copy(this.GiftBalloonArray[i].BalloonBody.position);
+      this.GiftBalloonArray[i].Balloon3d.quaternion.copy(this.GiftBalloonArray[i].BalloonBody.quaternion);
+      this.GiftBalloonArray[i].Box3d.position.copy(this.GiftBalloonArray[i].BoxBody.position);
+      this.GiftBalloonArray[i].Box3d.quaternion.copy(this.GiftBalloonArray[i].BoxBody.quaternion);
+
+      // Shadow Position
+      this.GiftBalloonArray[i].Shadow.position.set(this.GiftBalloonArray[i].Box3d.position.x,
+        this.GiftBalloonArray[i].Box3d.position.y -.15,this.GiftBalloonArray[i].Box3d.position.z)
+      this.GiftBalloonArray[i].Shadow.material.uniforms.uAlpha.value = 
+        (.35 - this.GiftBalloonArray[i].Box3d.position.y)*8;
+      
+      // Attach Position
+      var Po = new THREE.Vector3();
+      Po.setFromMatrixPosition(this.GiftBalloonArray[i].BalloonAttach.matrixWorld);
+      var Po2 = new THREE.Vector3();
+      Po2.setFromMatrixPosition(this.GiftBalloonArray[i].BoxAttach.matrixWorld);
+      
+      if(!this.GiftBalloonArray[i].State){
+        // String Line
+        this.GiftBalloonArray[i].LinePoints01 = [];
+        this.GiftBalloonArray[i].LinePoints01.push(Po.x,Po.y,Po.z,Po2.x,Po2.y,Po2.z);
+        this.GiftBalloonArray[i].StringPoints01.setPositions(this.GiftBalloonArray[i].LinePoints01);
+  
+        // Normal Line
+        this.GiftBalloonArray[i].NormalGeo.vertices[0] = Po
+        this.GiftBalloonArray[i].NormalGeo.vertices[1] = Po2
+        this.GiftBalloonArray[i].NormalGeo.verticesNeedUpdate=true;
+        this.GiftBalloonArray[i].NormalLine.geometry.computeBoundingSphere();
+      } else {
+        // Top Line
+        for(var j=0;j<4;j++){
+          this.GiftBalloonArray[i].Catmull01.points[j].copy(this.GiftBalloonArray[i].Lines01[j].position);
+        }
+
+        this.GiftBalloonArray[i].CurvePoint = this.GiftBalloonArray[i].Catmull01.getPoints(9);
+        this.GiftBalloonArray[i].LinePoints01 = [];
+        for(var j=0;j<10;j++){
+          this.GiftBalloonArray[i].LinePoints01.push(this.GiftBalloonArray[i].CurvePoint[j].x,this.GiftBalloonArray[i].CurvePoint[j].y,this.GiftBalloonArray[i].CurvePoint[j].z);
+        }
+        this.GiftBalloonArray[i].StringPoints01.setPositions(this.GiftBalloonArray[i].LinePoints01);
+
+        // Bottom Line
+        for(var j=0;j<4;j++){
+          this.GiftBalloonArray[i].Catmull02.points[j].copy(this.GiftBalloonArray[i].Lines02[j].position);
+        }
+
+        this.GiftBalloonArray[i].CurvePoint = this.GiftBalloonArray[i].Catmull02.getPoints(9);
+        this.GiftBalloonArray[i].LinePoints02 = [];
+        for(var j=0;j<10;j++){
+          this.GiftBalloonArray[i].LinePoints02.push(this.GiftBalloonArray[i].CurvePoint[j].x,this.GiftBalloonArray[i].CurvePoint[j].y,this.GiftBalloonArray[i].CurvePoint[j].z);
+        }
+        this.GiftBalloonArray[i].StringPoints02.setPositions(this.GiftBalloonArray[i].LinePoints02);
       }
-      this.GiftBalloonArray[i].StringPoints01.setPositions(this.GiftBalloonArray[i].LinePoints01);
-      this.GiftBalloonArray[i].StringLine01.geometry = this.GiftBalloonArray[i].StringPoints01;
     }
   }
+
+  CursorBegin() {
+    this.FirstCursor.set(this.pos.x, this.pos.y, this.pos.z);
+    this.LastCursor.set(this.pos.x, this.pos.y, this.pos.z);
+    this.mouseF.copy(this.mouse);
+    this.mouseL.copy(this.mouse);
+  }
+
+  CheckIntersect() {
+    var LineCurve2 = new THREE.LineCurve(this.mouseF,this.mouseL);
+    var dis = this.distanceVec2(this.mouseF.x,this.mouseF.y,this.mouseL.x,this.mouseL.y);
+    var Points = LineCurve2.getPoints(Math.floor(dis/0.005));
+    var Ma = new THREE.MeshBasicMaterial({color:0x000000})
+    var intersect;
+    for(var i=0;i<Points.length;i++){
+      this.raycaster.setFromCamera(Points[i],this.camera);
+      intersect = this.raycaster.intersectObjects(this.Lines,true)
+      for(var j=0;j<intersect.length;j++){
+        this.CutGB(intersect[""+j+""].object.id,intersect[""+j+""].point);
+      }
+    }
+  }
+
+  CutGB(id,Ipoint:THREE.Vector3){
+    for(var i=0;i<this.GiftBalloonArray.length;i++){
+      if(this.GiftBalloonArray[i].NormalLine.id==id && !this.GiftBalloonArray[i].State){
+        this.GiftBalloonArray[i].State=true;
+
+        var Po = new THREE.Vector3();
+        Po.setFromMatrixPosition(this.GiftBalloonArray[i].BalloonAttach.matrixWorld);
+        var Po2 = new THREE.Vector3();
+        Po2.setFromMatrixPosition(this.GiftBalloonArray[i].BoxAttach.matrixWorld);
+
+        // Setup top line
+        this.GiftBalloonArray[i].Curve = new THREE.LineCurve3(Po,Ipoint);
+
+        this.GiftBalloonArray[i].CurvePoint = this.GiftBalloonArray[i].Curve.getPoints(3);
+
+        var distance = this.distance(Ipoint.x, Ipoint.y, Ipoint.z,
+          Po.x, Po.y, Po.z);
+
+        for(var j=0;j<4;j++){
+          this.GiftBalloonArray[i].Lines01[j].position.copy(this.GiftBalloonArray[i].CurvePoint[j]);
+          this.world03.addBody(this.GiftBalloonArray[i].Lines01[j]);
+        }
+
+        // Lock Constraint
+        this.GiftBalloonArray[i].LockConstrain01
+         = new CANNON.LockConstraint(this.GiftBalloonArray[i].Lines01[0],this.GiftBalloonArray[i].BalloonBody);
+        this.world03.addConstraint(this.GiftBalloonArray[i].LockConstrain01);
+
+        // Distance Constraint
+        for(var j=0;j<3;j++){
+          var c = new CANNON.DistanceConstraint(this.GiftBalloonArray[i].Lines01[j],this.GiftBalloonArray[i].Lines01[j+1],distance/4);
+          // var c = new CANNON.LockConstraint(this.GiftBalloonArray[i].Lines01[j],this.GiftBalloonArray[i].Lines01[j+1]);
+          this.GiftBalloonArray[i].DisConstrain01.push(c);
+          this.world03.addConstraint(c);
+        }
+
+        // Remove old Line2
+        this.scene.remove(this.GiftBalloonArray[i].StringLine01)
+
+        // Replace Catmull points
+        for(var j=0;j<4;j++){
+          this.GiftBalloonArray[i].Catmull01.points[j].copy(this.GiftBalloonArray[i].Lines01[j].position);
+        }
+
+        // get Points to create LineGeometry
+        this.GiftBalloonArray[i].CurvePoint = this.GiftBalloonArray[i].Catmull01.getPoints(9);
+        this.GiftBalloonArray[i].LinePoints01 = [];
+
+        for(var j=0;j<10;j++){
+          this.GiftBalloonArray[i].LinePoints01.push(this.GiftBalloonArray[i].CurvePoint[j].x,this.GiftBalloonArray[i].CurvePoint[j].y,this.GiftBalloonArray[i].CurvePoint[j].z);
+        }
+
+        // Create new Line2 
+        this.GiftBalloonArray[i].StringPoints01 = new LineGeometry();
+        this.GiftBalloonArray[i].StringPoints01.setPositions(this.GiftBalloonArray[i].LinePoints01);
+        this.GiftBalloonArray[i].StringLine01 = new Line2(this.GiftBalloonArray[i].StringPoints01,this.StringM)
+        this.scene.add(this.GiftBalloonArray[i].StringLine01)
+        
+        this.world03.removeConstraint(this.GiftBalloonArray[i].BoxConstraint);
+
+
+        // Setup bottom line
+        this.GiftBalloonArray[i].Curve = new THREE.LineCurve3(Po2,Ipoint);
+
+        this.GiftBalloonArray[i].CurvePoint = this.GiftBalloonArray[i].Curve.getPoints(3);
+
+        var distance = this.distance(Ipoint.x, Ipoint.y, Ipoint.z,
+          Po2.x, Po2.y, Po2.z);
+
+        for(var j=0;j<4;j++){
+          this.GiftBalloonArray[i].Lines02[j].position.copy(this.GiftBalloonArray[i].CurvePoint[j]);
+          this.world03.addBody(this.GiftBalloonArray[i].Lines02[j]);
+        }
+
+        // Lock Constraint
+        this.GiftBalloonArray[i].LockConstrain02
+         = new CANNON.LockConstraint(this.GiftBalloonArray[i].Lines02[0],this.GiftBalloonArray[i].BoxBody);
+        this.world03.addConstraint(this.GiftBalloonArray[i].LockConstrain02);
+
+        // Distance Constraint
+        for(var j=0;j<3;j++){
+          var c = new CANNON.DistanceConstraint(this.GiftBalloonArray[i].Lines02[j],this.GiftBalloonArray[i].Lines02[j+1],distance/4);
+          this.GiftBalloonArray[i].DisConstrain02.push(c);
+          this.world03.addConstraint(c);
+        }
+
+        // Replace Catmull points
+        for(var j=0;j<4;j++){
+          this.GiftBalloonArray[i].Catmull02.points[j].copy(this.GiftBalloonArray[i].Lines02[j].position);
+        }
+
+        // get Points to create LineGeometry
+        this.GiftBalloonArray[i].CurvePoint = this.GiftBalloonArray[i].Catmull02.getPoints(9);
+        this.GiftBalloonArray[i].LinePoints02 = [];
+
+        for(var j=0;j<10;j++){
+          this.GiftBalloonArray[i].LinePoints02.push(this.GiftBalloonArray[i].CurvePoint[j].x,this.GiftBalloonArray[i].CurvePoint[j].y,this.GiftBalloonArray[i].CurvePoint[j].z);
+        }
+
+        // Create new Line2
+        this.GiftBalloonArray[i].StringPoints02 = new LineGeometry();
+        this.GiftBalloonArray[i].StringPoints02.setPositions(this.GiftBalloonArray[i].LinePoints02);
+        this.GiftBalloonArray[i].StringLine02 = new Line2(this.GiftBalloonArray[i].StringPoints02,this.StringM)
+        this.scene.add(this.GiftBalloonArray[i].StringLine02)
+        
+        this.world03.removeConstraint(this.GiftBalloonArray[i].BoxConstraint);
+
+        gsap.to(this.GiftBalloonArray[i].GBBody.position,2,{y:"+=2",ease:"power1.in"});
+
+        var k = i;
+        // gsap.delayedCall(2,()=>{          
+        //   this.ScoreFunction(this.GiftBalloonArray[k].BoxBody.position);
+        //   this.scene.remove(this.GiftBalloonArray[k].Box3d);
+        // })
+      }
+    }
+  }
+
   
   createTestString(){
     let Center = new THREE.Object3D();
@@ -3705,28 +4167,6 @@ export class welcomeService {
     }
   }
 
-  CursorBegin() {
-    this.FirstCursor.set(this.pos.x, this.pos.y, this.pos.z);
-    this.LastCursor.set(this.pos.x, this.pos.y, this.pos.z);
-    this.mouseF.copy(this.mouse);
-    this.mouseL.copy(this.mouse);
-  }
-
-  // CheckLetterIntersect() {
-  //   var LineCurve2 = new THREE.LineCurve(this.mouseF,this.mouseL);;
-  //   var dis = this.distanceVec2(this.mouseF.x,this.mouseF.y,this.mouseL.x,this.mouseL.y);
-  //   var Points = LineCurve2.getPoints(Math.floor(dis/0.004));
-  //   var Ma = new THREE.MeshBasicMaterial({color:0x000000})
-  //   var intersect;
-  //   for(var i=0;i<Points.length;i++){
-  //     this.raycaster.setFromCamera(Points[i],this.camera);
-  //     intersect = this.raycaster.intersectObjects(this.Lines,false)
-  //     for(var j=0;j<intersect.length;j++){
-  //       intersect[""+j+""].object.material=Ma;
-  //       this.Cutletter(intersect[""+j+""].object.id,intersect[""+j+""].point);
-  //     }
-  //   }
-  // }
 
   // Cutletter(Iid,Ipoint:THREE.Vector3){
   //   for (var i = 0; i < this.LetterArray.length; i++) {
@@ -3953,11 +4393,6 @@ export class welcomeService {
   //     new THREE.SphereBufferGeometry(.068),
   //     this.smoke);
   //   this.smokeThree.castShadow = true;
-
-  //   let boopMat = new THREE.MeshBasicMaterial({ color: 0xff6262 });
-
-  //   this.boop = new THREE.Mesh(new THREE.BoxBufferGeometry(.1, .025, .025),
-  //     boopMat)
 
   //   let stuff02 = {
   //     color: "#ff6262"
@@ -4457,59 +4892,6 @@ export class welcomeService {
   //   }, 500)
   // }
 
-
-  // BOOP(Ox: number, Oy: number, Oz: number) {
-  //   Oy += .1;
-  //   // 1 
-  //   let box = this.boop.clone();
-  //   box.position.set(Ox, Oy, Oz);
-  //   box.rotation.set(0, Math.PI / 2, 0);
-  //   this.scene.add(box);
-  //   TweenLite.to(box.position, 0.5, { z: box.position.z - .1 });
-  //   TweenLite.to(box.scale, 1, { x: .1, y: .1, z: .1 });
-
-  //   // 2
-  //   let box02 = this.boop.clone();
-  //   box02.position.set(Ox, Oy, Oz);
-  //   box02.rotation.set(0, 15 * Math.PI / 180, 0);
-  //   this.scene.add(box02);
-  //   TweenLite.to(box02.position, 0.5, { x: box02.position.x + .095, z: box02.position.z - .03 });
-  //   TweenLite.to(box02.scale, 1, { x: .1, y: .1, z: .1 });
-
-  //   // 3
-  //   let box03 = this.boop.clone();
-  //   box03.position.set(Ox, Oy, Oz);
-  //   box03.rotation.set(0, 125 * Math.PI / 180, 0);
-  //   this.scene.add(box03);
-  //   TweenLite.to(box03.position, 0.5, { x: box03.position.x + .058, z: box03.position.z + .08 });
-  //   TweenLite.to(box03.scale, 1, { x: .1, y: .1, z: .1 });
-
-  //   // 4
-  //   let box04 = this.boop.clone();
-  //   box04.position.set(Ox, Oy, Oz);
-  //   box04.rotation.set(0, 55 * Math.PI / 180, 0);
-  //   this.scene.add(box04);
-  //   TweenLite.to(box04.position, 0.5, { x: box04.position.x - .058, z: box04.position.z + .08 });
-  //   TweenLite.to(box04.scale, 1, { x: .1, y: .1, z: .1 });
-
-
-  //   // 5
-  //   let box05 = this.boop.clone();
-  //   box05.position.set(Ox, Oy, Oz);
-  //   box05.rotation.set(0, 160 * Math.PI / 180, 0);
-  //   this.scene.add(box05);
-  //   TweenLite.to(box05.position, 0.5, { x: box05.position.x - .095, z: box05.position.z - .03 });
-  //   TweenLite.to(box05.scale, 1, { x: .1, y: .1, z: .1 });
-
-  //   setTimeout(() => {
-  //     this.scene.remove(box);
-  //     this.scene.remove(box02);
-  //     this.scene.remove(box03);
-  //     this.scene.remove(box04);
-  //     this.scene.remove(box05);
-  //   }, 1000);
-  // }
-
   // CreateFirstDirectionPipe() {
   //   // DIRECTION PIPE
   //   this.directionPipe = new CANNON.Body({ mass: 5 });
@@ -4610,7 +4992,7 @@ export class welcomeService {
   }
 
   resize() {
-    var PixelRatio = 2;
+    var PixelRatio = 1;
 
     let width = window.innerWidth * PixelRatio;
     let height = window.innerHeight * PixelRatio;
@@ -4842,864 +5224,3 @@ CannonDebugRenderer.prototype = {
   }
 };
 
-
-function TrailRenderer( scene, orientToMovement ) {
-
-	THREE.Object3D.call( this );
-
-	this.active = false;
-
-	this.orientToMovement = false;
-	if ( orientToMovement ) this.orientToMovement = true;
-
-	this.scene = scene;
-
-	this.geometry = null;
-	this.mesh = null;
-	this.nodeCenters = null;
-
-	this.lastNodeCenter = null;
-	this.currentNodeCenter = null;
-	this.lastOrientationDir = null;
-	this.nodeIDs = null;
-	this.currentLength = 0;
-	this.currentEnd = 0;
-	this.currentNodeID = 0;
-
-}
-
-TrailRenderer.prototype = Object.create( THREE.Object3D.prototype );
-TrailRenderer.prototype.constructor = TrailRenderer;
-
-TrailRenderer.MaxHeadVertices = 128;
-TrailRenderer.LocalOrientationTangent = new THREE.Vector3( 1, 0, 0 );
-TrailRenderer.LocalOrientationDirection = new THREE.Vector3( 0, 0, -1 );
-TrailRenderer.LocalHeadOrigin = new THREE.Vector3( 0, 0, 0 );
-TrailRenderer.PositionComponentCount = 3;
-TrailRenderer.UVComponentCount = 2;
-TrailRenderer.IndicesPerFace = 3;
-TrailRenderer.FacesPerQuad = 2;
-
-
-TrailRenderer.Shader = <any>{};
-
-TrailRenderer.Shader.BaseVertexVars = [
-
-	"attribute float nodeID;",
-	"attribute float nodeVertexID;",
-	"attribute vec3 nodeCenter;",
-
-	"uniform float minID;",
-	"uniform float maxID;",
-	"uniform float trailLength;",
-	"uniform float maxTrailLength;",
-	"uniform float verticesPerNode;",
-	"uniform vec2 textureTileFactor;",
-
-	"uniform vec4 headColor;",
-	"uniform vec4 tailColor;",
-
-	"varying vec4 vColor;",
-
-].join( "\n" );
-
-TrailRenderer.Shader.TexturedVertexVars = [
-
-	TrailRenderer.Shader.BaseVertexVars, 
-	"varying vec2 vUV;",
-	"uniform float dragTexture;",
-
-].join( "\n" );
-
-TrailRenderer.Shader.BaseFragmentVars = [
-
-	"varying vec4 vColor;",
-	"uniform sampler2D texture;",
-
-].join( "\n" );
-
-TrailRenderer.Shader.TexturedFragmentVars = [
-
-	TrailRenderer.Shader.BaseFragmentVars,
-	"varying vec2 vUV;"
-
-].join( "\n" );
-
-
-TrailRenderer.Shader.VertexShaderCore = [
-
-	"float fraction = ( maxID - nodeID ) / ( maxID - minID );",
-	"vColor = ( 1.0 - fraction ) * headColor + fraction * tailColor;",
-	"vec4 realPosition = vec4( ( 1.0 - fraction ) * position.xyz + fraction * nodeCenter.xyz, 1.0 ); ", 
-
-].join( "\n" );
-
-TrailRenderer.Shader.BaseVertexShader = [
-
-	TrailRenderer.Shader.BaseVertexVars,
-
-	"void main() { ",
-
-		TrailRenderer.Shader.VertexShaderCore,
-		"gl_Position = projectionMatrix * viewMatrix * realPosition;",
-
-	"}"
-
-].join( "\n" );
-
-TrailRenderer.Shader.BaseFragmentShader = [
-
-	TrailRenderer.Shader.BaseFragmentVars,
-
-	"void main() { ",
-
-		"gl_FragColor = vColor;",
-
-	"}"
-
-].join( "\n" );
-
-TrailRenderer.Shader.TexturedVertexShader = [
-
-	TrailRenderer.Shader.TexturedVertexVars,
-
-	"void main() { ",
-
-		TrailRenderer.Shader.VertexShaderCore,
-		"float s = 0.0;",
-		"float t = 0.0;",
-		"if ( dragTexture == 1.0 ) { ",
-		"   s = fraction *  textureTileFactor.s; ",
-		" 	t = ( nodeVertexID / verticesPerNode ) * textureTileFactor.t;",
-		"} else { ",
-		"	s = nodeID / maxTrailLength * textureTileFactor.s;",
-		" 	t = ( nodeVertexID / verticesPerNode ) * textureTileFactor.t;",
-		"}",
-		"vUV = vec2( s, t ); ",
-		"gl_Position = projectionMatrix * viewMatrix * realPosition;",
-
-	"}"
-
-].join( "\n" );
-
-TrailRenderer.Shader.TexturedFragmentShader = [
-
-	TrailRenderer.Shader.TexturedFragmentVars,
-
-	"void main() { ",
-
-	    "vec4 textureColor = texture2D( texture, vUV );",
-		"gl_FragColor = vColor * textureColor;",
-
-	"}"
-
-].join( "\n" );
-
-TrailRenderer.createMaterial = function( vertexShader, fragmentShader, customUniforms ) {
-
-	customUniforms = customUniforms || {};
-
-	customUniforms.trailLength = { type: "f", value: null };
-	customUniforms.verticesPerNode = { type: "f", value: null };
-	customUniforms.minID = { type: "f", value: null };
-	customUniforms.maxID = { type: "f", value: null };
-	customUniforms.dragTexture = { type: "f", value: null };
-	customUniforms.maxTrailLength = { type: "f", value: null };
-	customUniforms.textureTileFactor = { type: "v2", value: null };
-
-	customUniforms.headColor = { type: "v4", value: new THREE.Vector4() };
-	customUniforms.tailColor = { type: "v4", value: new THREE.Vector4() };
-
-	vertexShader = vertexShader || TrailRenderer.Shader.BaseVertexShader;
-	fragmentShader = fragmentShader || TrailRenderer.Shader.BaseFragmentShader;
-
-	return new THREE.ShaderMaterial(
-	{
-		uniforms: customUniforms,
-		vertexShader: vertexShader,
-		fragmentShader: fragmentShader,
-
-		transparent: true,
-		alphaTest: 0.5,
-
-		blending : THREE.CustomBlending,
-		blendSrc : THREE.SrcAlphaFactor,
-		blendDst : THREE.OneMinusSrcAlphaFactor,
-		blendEquation : THREE.AddEquation,
-
-		depthTest: true,
-		depthWrite: false,
-
-		side: THREE.DoubleSide
-	} );
-
-}
-
-TrailRenderer.createBaseMaterial = function( customUniforms ) {
-
-	return this.createMaterial( TrailRenderer.Shader.BaseVertexShader, TrailRenderer.Shader.BaseFragmentShader, customUniforms );
-
-}
-
-TrailRenderer.createTexturedMaterial = function( customUniforms ) {
-
-	customUniforms = {};
-	customUniforms.texture = { type: "t", value: null };
-
-	return this.createMaterial( TrailRenderer.Shader.TexturedVertexShader, TrailRenderer.Shader.TexturedFragmentShader, customUniforms );
-
-}
-
-TrailRenderer.prototype.initialize = function( material, length, dragTexture, localHeadWidth, localHeadGeometry, targetObject ) {
-
-		this.deactivate();
-		this.destroyMesh();
-
-		this.length = ( length > 0 ) ? length + 1 : 0;
-		this.dragTexture = ( ! dragTexture ) ? 0 : 1;
-		this.targetObject = targetObject;
-
-		this.initializeLocalHeadGeometry( localHeadWidth, localHeadGeometry );
-
-		this.nodeIDs = [];
-		this.nodeCenters = [];
-
-		for (var i = 0; i < this.length; i ++ ) {
-
-			this.nodeIDs[ i ] = -1;
-			this.nodeCenters[ i ] = new THREE.Vector3();
-
-		}
-
-		this.material = material;
-
-		this.initializeGeometry();
-		this.initializeMesh();
-
-		this.material.uniforms.trailLength.value = 0;
-		this.material.uniforms.minID.value = 0;
-		this.material.uniforms.maxID.value = 0;
-		this.material.uniforms.dragTexture.value = this.dragTexture;
-		this.material.uniforms.maxTrailLength.value = this.length;
-		this.material.uniforms.verticesPerNode.value = this.VerticesPerNode;
-		this.material.uniforms.textureTileFactor.value = new THREE.Vector2( 1.0, 1.0 );
-
-		this.reset();
-
-}
-
-TrailRenderer.prototype.initializeLocalHeadGeometry = function( localHeadWidth, localHeadGeometry ) {
-
-	this.localHeadGeometry = [];
-
-	if ( ! localHeadGeometry ) {
-
-		var halfWidth = localHeadWidth || 1.0;
-		halfWidth = halfWidth / 2.0;
-
-		this.localHeadGeometry.push( new THREE.Vector3( -halfWidth, 0, 0 ) );
-		this.localHeadGeometry.push( new THREE.Vector3( halfWidth, 0, 0 ) );
-
-		this.VerticesPerNode = 2;
-
-	} else {
-
-		this.VerticesPerNode = 0;
-		for ( var i = 0; i < localHeadGeometry.length && i < TrailRenderer.MaxHeadVertices; i ++ ) {
-
-			var vertex = localHeadGeometry[ i ];
-
-			if ( vertex && vertex instanceof THREE.Vector3 ) {
-
-				var vertexCopy = new THREE.Vector3();
-
-				vertexCopy.copy( vertex );
-
-				this.localHeadGeometry.push( vertexCopy );
-				this.VerticesPerNode ++;
-
-			}
-
-		}
-
-	}
-
-	this.FacesPerNode = ( this.VerticesPerNode - 1 ) * 2;
-	this.FaceIndicesPerNode = this.FacesPerNode * 3;
-
-}
-
-TrailRenderer.prototype.initializeGeometry = function() {
-
-	this.vertexCount = this.length * this.VerticesPerNode;
-	this.faceCount = this.length * this.FacesPerNode;
-
-	var geometry = new THREE.BufferGeometry();
-
-	var nodeIDs = new Float32Array( this.vertexCount );
-	var nodeVertexIDs = new Float32Array( this.vertexCount * this.VerticesPerNode );
-	var positions = new Float32Array( this.vertexCount * TrailRenderer.PositionComponentCount );
-	var nodeCenters = new Float32Array( this.vertexCount * TrailRenderer.PositionComponentCount );
-	var uvs = new Float32Array( this.vertexCount * TrailRenderer.UVComponentCount );
-	var indices = new Uint32Array( this.faceCount * TrailRenderer.IndicesPerFace );
-
-	var nodeIDAttribute = new THREE.BufferAttribute( nodeIDs, 1 );
-	nodeIDAttribute.setDynamic( true );
-	geometry.addAttribute( 'nodeID', nodeIDAttribute );
-
-	var nodeVertexIDAttribute = new THREE.BufferAttribute( nodeVertexIDs, 1 );
-	nodeVertexIDAttribute.setDynamic( true );
-	geometry.addAttribute( 'nodeVertexID', nodeVertexIDAttribute );
-
-	var nodeCenterAttribute = new THREE.BufferAttribute( nodeCenters, TrailRenderer.PositionComponentCount );
-	nodeCenterAttribute.setDynamic( true );
-	geometry.addAttribute( 'nodeCenter', nodeCenterAttribute );
-
-	var positionAttribute = new THREE.BufferAttribute( positions, TrailRenderer.PositionComponentCount );
-	positionAttribute.setDynamic( true );
-	geometry.addAttribute( 'position', positionAttribute );
-
-	var uvAttribute = new THREE.BufferAttribute( uvs, TrailRenderer.UVComponentCount );
-	uvAttribute.setDynamic( true );
-	geometry.addAttribute( 'uv', uvAttribute );
-
-	var indexAttribute = new THREE.BufferAttribute( indices, 1 );
-	indexAttribute.setDynamic( true );
-	geometry.setIndex( indexAttribute );
-
-	this.geometry = geometry;
-
-}
-
-TrailRenderer.prototype.zeroVertices = function( ) {
-
-	var positions = this.geometry.getAttribute( 'position' );
-
-	for ( var i = 0; i < this.vertexCount; i ++ ) {
-
-		var index = i * 3;
-
-		positions.array[ index ] = 0;
-		positions.array[ index + 1 ] = 0;
-		positions.array[ index + 2 ] = 0;
-
-	}
-
-	positions.needsUpdate = true;
-	positions.updateRange.count = - 1;
-
-}
-
-TrailRenderer.prototype.zeroIndices = function( ) {
-
-	var indices = this.geometry.getIndex();
-
-	for ( var i = 0; i < this.faceCount; i ++ ) {
-
-		var index = i * 3;
-
-		indices.array[ index ] = 0;
-		indices.array[ index + 1 ] = 0;
-		indices.array[ index + 2 ] = 0;
-
-	}
-
-	indices.needsUpdate = true;
-	indices.updateRange.count = - 1;
-
-}
-
-TrailRenderer.prototype.formInitialFaces = function() {
-
-	this.zeroIndices();
-
-	var indices = this.geometry.getIndex();
-
-	for ( var i = 0; i < this.length - 1; i ++ ) {
-
-		this.connectNodes( i, i + 1 );
-
-	}
-
-	indices.needsUpdate = true;
-	indices.updateRange.count = - 1;
-
-}
-
-TrailRenderer.prototype.initializeMesh = function() {
-
-	this.mesh = new THREE.Mesh( this.geometry, this.material );
-	this.mesh.dynamic = true;
-	this.mesh.matrixAutoUpdate = false;
-
-}
-
-TrailRenderer.prototype.destroyMesh = function() {
-
-	if ( this.mesh ) {
-
-		this.scene.remove( this.mesh );
-		this.mesh = null;
-
-	}
-
-}
-
-TrailRenderer.prototype.reset = function() {
-
-	this.currentLength = 0;
-	this.currentEnd = -1;
-
-	this.lastNodeCenter = null;
-	this.currentNodeCenter = null;
-	this.lastOrientationDir = null;
-
-	this.currentNodeID = 0;
-
-	this.formInitialFaces();
-	this.zeroVertices();
-
-	this.geometry.setDrawRange( 0, 0 );
-
-}
-
-TrailRenderer.prototype.updateUniforms = function() {
-
-	if ( this.currentLength < this.length ) {
-		
-		this.material.uniforms.minID.value = 0;
-
-	} else {
-
-		this.material.uniforms.minID.value = this.currentNodeID - this.length;
-
-	}
-	this.material.uniforms.maxID.value = this.currentNodeID;
-	this.material.uniforms.trailLength.value = this.currentLength;
-	this.material.uniforms.maxTrailLength.value = this.length;
-	this.material.uniforms.verticesPerNode.value = this.VerticesPerNode;
-
-}
-
-TrailRenderer.prototype.advance = function() {
-
-	var orientationTangent = new THREE.Vector3();
-	var position = new THREE.Vector3();
-	var offset = new THREE.Vector3();
-	var tempMatrix4 = new THREE.Matrix4();
-
-	return function advance() {
-
-		this.targetObject.updateMatrixWorld();
-		tempMatrix4.copy( this.targetObject.matrixWorld );
-
-		this.advanceWithTransform( tempMatrix4 );
-		
-		this.updateUniforms();
-	}
-
-}();
-
-TrailRenderer.prototype.advanceWithPositionAndOrientation = function( nextPosition, orientationTangent ) {
-
-	this.advanceGeometry( { position : nextPosition, tangent : orientationTangent }, null );
-
-}
-
-TrailRenderer.prototype.advanceWithTransform = function( transformMatrix ) {
-
-	this.advanceGeometry( null, transformMatrix );
-
-}
-
-TrailRenderer.prototype.advanceGeometry = function() { 
-
-	var direction = new THREE.Vector3();
-	var tempPosition = new THREE.Vector3();
-
-	return function advanceGeometry( positionAndOrientation, transformMatrix ) {
-
-		var nextIndex = this.currentEnd + 1 >= this.length ? 0 : this.currentEnd + 1; 
-
-		if( transformMatrix ) {
-
-			this.updateNodePositionsFromTransformMatrix( nextIndex, transformMatrix );
-
-		} else {
-
-			this.updateNodePositionsFromOrientationTangent( nextIndex, positionAndOrientation.position, positionAndOrientation.tangent );
-		}
-
-		if ( this.currentLength >= 1 ) {
-
-			var connectRange = this.connectNodes( this.currentEnd , nextIndex );
-			var disconnectRange = null;
-
-			if( this.currentLength >= this.length ) {
-
-				var disconnectIndex  = this.currentEnd + 1  >= this.length ? 0 : this.currentEnd + 1;
-				disconnectRange = this.disconnectNodes( disconnectIndex );
-
-			}
-
-		}
-
-		if( this.currentLength < this.length ) {
-
-			this.currentLength ++;
-
-		}
-
-		this.currentEnd ++;
-		if ( this.currentEnd >= this.length ) {
-
-			this.currentEnd = 0;
-
-		}
-
-		if ( this.currentLength >= 1 ) {
-
-			if( this.currentLength < this.length ) {
-
-				this.geometry.setDrawRange( 0, ( this.currentLength - 1 ) * this.FaceIndicesPerNode);
-
-			} else {
-
-				this.geometry.setDrawRange( 0, this.currentLength * this.FaceIndicesPerNode);
-
-			}
-
-		}
-		
-		this.updateNodeID( this.currentEnd,  this.currentNodeID );
-		this.currentNodeID ++;
-	}
-
-}();
-
-TrailRenderer.prototype.updateHead = function() {
-
-	var tempMatrix4 = new THREE.Matrix4();
-
-	return function advance() {
-
-		if( this.currentEnd < 0 ) return;
-
-		this.targetObject.updateMatrixWorld();
-		tempMatrix4.copy( this.targetObject.matrixWorld );
-
-		this.updateNodePositionsFromTransformMatrix( this.currentEnd, tempMatrix4 );
-	}
-
-}();
-
-TrailRenderer.prototype.updateNodeID = function( nodeIndex, id ) { 
-
-	this.nodeIDs[ nodeIndex ] = id;
-
-	var nodeIDs = this.geometry.getAttribute( 'nodeID' );
-	var nodeVertexIDs = this.geometry.getAttribute( 'nodeVertexID' );
-
-	for ( var i = 0; i < this.VerticesPerNode; i ++ ) {
-
-		var baseIndex = nodeIndex * this.VerticesPerNode + i ;
-		nodeIDs.array[ baseIndex ] = id;
-		nodeVertexIDs.array[ baseIndex ] = i;
-
-	}	
-
-	nodeIDs.needsUpdate = true;
-	nodeVertexIDs.needsUpdate = true;
-
-	nodeIDs.updateRange.offset = nodeIndex * this.VerticesPerNode; 
-	nodeIDs.updateRange.count = this.VerticesPerNode;
-
-	nodeVertexIDs.updateRange.offset = nodeIndex * this.VerticesPerNode;
-	nodeVertexIDs.updateRange.count = this.VerticesPerNode;
-
-}
-
-TrailRenderer.prototype.updateNodeCenter = function( nodeIndex, nodeCenter ) { 
-
-	this.lastNodeCenter = this.currentNodeCenter;
-
-	this.currentNodeCenter = this.nodeCenters[ nodeIndex ];
-	this.currentNodeCenter.copy( nodeCenter );
-
-	var nodeCenters = this.geometry.getAttribute( 'nodeCenter' );
-
-	for ( var i = 0; i < this.VerticesPerNode; i ++ ) {
-
-		var baseIndex = ( nodeIndex * this.VerticesPerNode + i ) * 3;
-		nodeCenters.array[ baseIndex ] = nodeCenter.x;
-		nodeCenters.array[ baseIndex + 1 ] = nodeCenter.y;
-		nodeCenters.array[ baseIndex + 2 ] = nodeCenter.z;
-
-	}	
-
-	nodeCenters.needsUpdate = true;
-
-	nodeCenters.updateRange.offset = nodeIndex * this.VerticesPerNode * TrailRenderer.PositionComponentCount; 
-	nodeCenters.updateRange.count = this.VerticesPerNode * TrailRenderer.PositionComponentCount; 
-
-}
-
-TrailRenderer.prototype.updateNodePositionsFromOrientationTangent = function() { 
-
-	var tempMatrix4 = new THREE.Matrix4();
-	var tempQuaternion = new THREE.Quaternion();
-	var tempOffset = new THREE.Vector3();
-	var tempLocalHeadGeometry = [];
-
-	for ( var i = 0; i < TrailRenderer.MaxHeadVertices; i ++ ) {
-
-		var vertex = new THREE.Vector3();
-		tempLocalHeadGeometry.push( vertex );
-
-	}
-
-	return function updateNodePositionsFromOrientationTangent( nodeIndex, nodeCenter, orientationTangent  ) {
-
-		var positions = this.geometry.getAttribute( 'position' );
-
-		this.updateNodeCenter( nodeIndex, nodeCenter );
-
-		tempOffset.copy( nodeCenter );
-		tempOffset.sub( TrailRenderer.LocalHeadOrigin );
-		tempQuaternion.setFromUnitVectors( TrailRenderer.LocalOrientationTangent, orientationTangent );
-		
-		for ( var i = 0; i < this.localHeadGeometry.length; i ++ ) {
-
-			var vertex = tempLocalHeadGeometry[ i ];
-			vertex.copy( this.localHeadGeometry[ i ] );
-			vertex.applyQuaternion( tempQuaternion );
-			vertex.add( tempOffset );
-		}
-
-		for ( var i = 0; i <  this.localHeadGeometry.length; i ++ ) {
-
-			var positionIndex = ( ( this.VerticesPerNode * nodeIndex ) + i ) * TrailRenderer.PositionComponentCount;
-			var transformedHeadVertex = tempLocalHeadGeometry[ i ];
-
-			positions.array[ positionIndex ] = transformedHeadVertex.x;
-			positions.array[ positionIndex + 1 ] = transformedHeadVertex.y;
-			positions.array[ positionIndex + 2 ] = transformedHeadVertex.z;
-
-		}
-
-		positions.needsUpdate = true;
-
-	}
-
-}();
-
-TrailRenderer.prototype.updateNodePositionsFromTransformMatrix = function() { 
-
-	var tempMatrix4 = new THREE.Matrix4();
-	var tempMatrix3 = new THREE.Matrix3();
-	var tempQuaternion = new THREE.Quaternion();
-	var tempPosition = new THREE.Vector3();
-	var tempOffset = new THREE.Vector3();
-	var worldOrientation = new THREE.Vector3();
-	var tempDirection = new THREE.Vector3();
-
-	var tempLocalHeadGeometry = [];
-	for ( var i = 0; i < TrailRenderer.MaxHeadVertices; i ++ ) {
-
-		var vertex = new THREE.Vector3();
-		tempLocalHeadGeometry.push( vertex );
-
-	}
-
-	function getMatrix3FromMatrix4( matrix3, matrix4) {
-
-		var e = matrix4.elements;
-		matrix3.set( e[0], e[1], e[2],
-					 e[4], e[5], e[6],
-					 e[8], e[9], e[10] );
-
-	}
-
-	return function updateNodePositionsFromTransformMatrix( nodeIndex, transformMatrix ) {
-
-		var positions = this.geometry.getAttribute( 'position' );
-
-		tempPosition.set( 0, 0, 0 );
-		tempPosition.applyMatrix4( transformMatrix );
-		this.updateNodeCenter( nodeIndex, tempPosition );
-
-		for ( var i = 0; i < this.localHeadGeometry.length; i ++ ) {
-
-			var vertex = tempLocalHeadGeometry[ i ];
-			vertex.copy( this.localHeadGeometry[ i ] );
-
-		}
-
-		for ( var i = 0; i < this.localHeadGeometry.length; i ++ ) {
-
-			var vertex = tempLocalHeadGeometry[ i ];
-			vertex.applyMatrix4( transformMatrix );
-
-		}
-		
-		if( this.lastNodeCenter && this.orientToMovement ) {
-
-			getMatrix3FromMatrix4( tempMatrix3, transformMatrix );
-			worldOrientation.set( 0, 0, -1 );
-			worldOrientation.applyMatrix3( tempMatrix3 );
-
-			tempDirection.copy( this.currentNodeCenter );
-			tempDirection.sub( this.lastNodeCenter );
-			tempDirection.normalize();
-
-			if( tempDirection.lengthSq() <= .0001 && this.lastOrientationDir ) {
-				
-				tempDirection.copy( this.lastOrientationDir );
-			}
-
-			if( tempDirection.lengthSq() > .0001 ) {
-
-				if( ! this.lastOrientationDir ) this.lastOrientationDir = new THREE.Vector3();
-
-				tempQuaternion.setFromUnitVectors( worldOrientation, tempDirection );
-
-				tempOffset.copy( this.currentNodeCenter );
-
-				for ( var i = 0; i < this.localHeadGeometry.length; i ++ ) {
-
-					var vertex = tempLocalHeadGeometry[ i ];
-					vertex.sub( tempOffset );
-					vertex.applyQuaternion( tempQuaternion );
-					vertex.add( tempOffset );
-
-				}
-			}
-
-		}
-	
-		for ( var i = 0; i < this.localHeadGeometry.length; i ++ ) {
-
-			var positionIndex = ( ( this.VerticesPerNode * nodeIndex ) + i ) * TrailRenderer.PositionComponentCount;
-			var transformedHeadVertex = tempLocalHeadGeometry[ i ];
-
-			positions.array[ positionIndex ] = transformedHeadVertex.x;
-			positions.array[ positionIndex + 1 ] = transformedHeadVertex.y;
-			positions.array[ positionIndex + 2 ] = transformedHeadVertex.z;
-
-		}
-		
-		positions.needsUpdate = true;
-
-		positions.updateRange.offset = nodeIndex * this.VerticesPerNode * TrailRenderer.PositionComponentCount; 
-		positions.updateRange.count = this.VerticesPerNode * TrailRenderer.PositionComponentCount; 
-	}
-
-}();
-
-TrailRenderer.prototype.connectNodes = function() {
-
-	var returnObj = {
-
-			"attribute" : null,
-			"offset" : 0,
-			"count" : - 1
-
-		};
-
-	return function connectNodes( srcNodeIndex, destNodeIndex ) {
-
-		var indices = this.geometry.getIndex();
-
-		for ( var i = 0; i < this.localHeadGeometry.length - 1; i ++ ) {
-
-			var srcVertexIndex = ( this.VerticesPerNode * srcNodeIndex ) + i;
-			var destVertexIndex = ( this.VerticesPerNode * destNodeIndex ) + i;
-
-			var faceIndex = ( ( srcNodeIndex * this.FacesPerNode ) + ( i * TrailRenderer.FacesPerQuad  ) ) * TrailRenderer.IndicesPerFace;
-
-			indices.array[ faceIndex ] = srcVertexIndex;
-			indices.array[ faceIndex + 1 ] = destVertexIndex;
-			indices.array[ faceIndex + 2 ] = srcVertexIndex + 1;
-
-			indices.array[ faceIndex + 3 ] = destVertexIndex;
-			indices.array[ faceIndex + 4 ] = destVertexIndex + 1;
-			indices.array[ faceIndex + 5 ] = srcVertexIndex + 1;
-
-		}
-
-		indices.needsUpdate = true;
-		indices.updateRange.count = - 1;
-
-		returnObj.attribute = indices;
-		returnObj.offset =  srcNodeIndex * this.FacesPerNode * TrailRenderer.IndicesPerFace;
-		returnObj.count = this.FacesPerNode * TrailRenderer.IndicesPerFace;
-
-		return returnObj;
-
-	}
-}();
-
-TrailRenderer.prototype.disconnectNodes = function( srcNodeIndex ) {
-
-	var returnObj = {
-
-			"attribute" : null,
-			"offset" : 0,
-			"count" : - 1
-
-		};
-
-	return function disconnectNodes( srcNodeIndex ) {
-
-		var indices = this.geometry.getIndex();
-
-		for ( var i = 0; i < this.localHeadGeometry.length - 1; i ++ ) {
-
-			var srcVertexIndex = ( this.VerticesPerNode * srcNodeIndex ) + i;
-
-			var faceIndex = ( ( srcNodeIndex * this.FacesPerNode ) + ( i * TrailRenderer.FacesPerQuad ) ) * TrailRenderer.IndicesPerFace;
-
-			indices.array[ faceIndex ] = 0;
-			indices.array[ faceIndex + 1 ] = 0;
-			indices.array[ faceIndex + 2 ] = 0;
-
-			indices.array[ faceIndex + 3 ] = 0;
-			indices.array[ faceIndex + 4 ] = 0;
-			indices.array[ faceIndex + 5 ] = 0;
-
-		}
-
-		indices.needsUpdate = true;
-		indices.updateRange.count = - 1;
-
-		returnObj.attribute = indices;
-		returnObj.offset = srcNodeIndex * this.FacesPerNode * TrailRenderer.IndicesPerFace;
-		returnObj.count = this.FacesPerNode * TrailRenderer.IndicesPerFace;
-
-		return returnObj;
-
-	}
-
-}();
-
-TrailRenderer.prototype.deactivate = function() {
-
-	if ( this.isActive ) {
-
-		this.scene.remove( this.mesh );
-		this.isActive = false;
-
-	}
-
-}
-
-TrailRenderer.prototype.activate = function() {
-
-	if ( ! this.isActive ) {
-
-		this.scene.add( this.mesh );
-		this.isActive = true;
-
-	}
-
-}
