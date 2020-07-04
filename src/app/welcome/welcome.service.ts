@@ -243,7 +243,7 @@ export class welcomeService {
     // this.camera.position.set(0,1,6);
 
     // this.camera.position.set(0, 2.4, 8);
-    this.camera.position.set(0, 3, 8);
+    this.camera.position.set(0, 2.5, 7.5);
 
     this.scene.add(this.camera);
 
@@ -332,6 +332,9 @@ export class welcomeService {
     this.wood = this.textureLoader.load('assets/matcaps/wood.png',()=>{
       this.wood.encoding=THREE.sRGBEncoding;
     });
+    this.red = this.textureLoader.load('assets/matcaps/03/EE4D51.png',()=>{
+      this.red.encoding=THREE.sRGBEncoding;
+    });
   }
 
   private blue01; 
@@ -340,6 +343,7 @@ export class welcomeService {
   private pink;
   private green01;
   private wood;
+  private red;
   
   private Train;
   private FerrisWheel;
@@ -2498,7 +2502,7 @@ export class welcomeService {
     this.CreateGiftBalloon(-2,2.7,0);
     this.CreateGiftBalloon(2,2.5,1);
 
-    this.CreateIsland();
+    this.CreateIsland(0,-0.075,-.5);
     // this.CreateGiftBalloon(-1,2.7,0);
     // this.CreateGiftBalloon(1,2.5,1);
     // this.CreateGiftBalloon(-2.5,2.7,0);
@@ -2506,7 +2510,7 @@ export class welcomeService {
   }
 
   private islandSea: THREE.PlaneGeometry
-  CreateIsland(){
+  CreateIsland(Ix,Iy,Iz){
     // Material
     let tent01 = this.textureLoader.load('assets/matcaps/03/tent01.png',()=>{
       tent01.encoding=THREE.sRGBEncoding;
@@ -2529,73 +2533,79 @@ export class welcomeService {
     let white = this.textureLoader.load('assets/matcaps/03/white.png',()=>{
       white.encoding=THREE.sRGBEncoding;
     });
+    let yellow = this.textureLoader.load('assets/matcaps/03/FFEB40.png',()=>{
+      yellow.encoding=THREE.sRGBEncoding;
+    });
 
+
+
+    var mateOpacity = 1;
 
     this.loader.load(
-      'assets/model/Island.glb',
+      'assets/model/Island02.glb',
       (gltf) => {
         var s = gltf.scene;
         s.scale.set(1.75,1.75,1.75);
         s.rotation.set(0,0*Math.PI/180,0)
-        s.position.set(0,-0.075,-1)
+        s.position.set(Ix,Iy,Iz);
         console.log(s)
         for(var i=0;i<s.children.length;i++){
           if(s.children[""+i+""].name=="Land"){
             let mate01 = new THREE.MeshMatcapMaterial({
-              color:0xffffff,side:2,matcap:land
+              color:0xffffff,side:2,matcap:land,transparent:true,opacity:mateOpacity,
             });
             s.children[""+i+""].children[0].material=mate01;
             let mate02 = new THREE.MeshMatcapMaterial({
-              color:0xffffff,side:2,matcap:tree
+              color:0xffffff,side:2,matcap:tree,transparent:true,opacity:mateOpacity,
             });
             s.children[""+i+""].children[1].material=mate02;
           } else if(s.children[""+i+""].name=="Tent"){
             let mate01 = new THREE.MeshMatcapMaterial({
-              color:0xffffff,side:2,matcap:tent01
+              color:0xffffff,side:2,matcap:tent01,transparent:true,opacity:mateOpacity,
             });
             s.children[""+i+""].children[0].material=mate01;
             let mate02 = new THREE.MeshMatcapMaterial({
-              color:0xffffff,side:2,matcap:tent02
+              color:0xffffff,side:2,matcap:tent02,transparent:true,opacity:mateOpacity,
             });
             s.children[""+i+""].children[1].material=mate02;
           } else if(s.children[""+i+""].name=="Tree"){
             let mate01 = new THREE.MeshMatcapMaterial({
-              color:0xffffff,side:2,matcap:tree
+              color:0xffffff,side:2,matcap:tree,transparent:true,opacity:mateOpacity,
             });
             s.children[""+i+""].children[0].material=mate01;
             let mate02 = new THREE.MeshMatcapMaterial({
-              color:0xffffff,side:2,matcap:wood
+              color:0xffffff,side:2,matcap:wood,transparent:true,opacity:mateOpacity,
             });
             s.children[""+i+""].children[1].material=mate02;
           } else if(s.children[""+i+""].name=="Mail"){
             let mate01 = new THREE.MeshMatcapMaterial({
-              color:0xffffff,side:2,matcap:wood
+              color:0xffffff,side:2,matcap:wood,transparent:true,opacity:mateOpacity,
             });
             s.children[""+i+""].children[0].material=mate01;
             let mate02 = new THREE.MeshMatcapMaterial({
-              color:0xcccccc,side:2,matcap:wood
+              color:0xcccccc,side:2,matcap:wood,transparent:true,opacity:mateOpacity,
             });
             s.children[""+i+""].children[1].material=mate02;
           } else if(s.children[""+i+""].name=="Pillar"){
             let mate01 = new THREE.MeshMatcapMaterial({
-              color:0xffffff,side:2,matcap:wood
+              color:0xffffff,side:2,matcap:wood,transparent:true,opacity:mateOpacity,
             });
             s.children[""+i+""].material=mate01;
           } else if(s.children[""+i+""].name=="Rope"){
             let mate01 = new THREE.MeshMatcapMaterial({
-              color:0xffffff,side:2,matcap:wood
+              color:0xffffff,side:2,matcap:wood,transparent:true,opacity:mateOpacity,
             });
             s.children[""+i+""].material=mate01;
           } else if(s.children[""+i+""].name=="Rock"){
             let mate01 = new THREE.MeshMatcapMaterial({
-              color:0xffffff,side:2,matcap:white
+              color:0xffffff,side:2,matcap:white,transparent:true,opacity:mateOpacity,
             });
             s.children[""+i+""].material=mate01;
           } else if(s.children[""+i+""].name=="Sea"){
             
-            var seaMate = new THREE.MeshBasicMaterial({color:0x94d2e3});
+            var seaMate = new THREE.MeshBasicMaterial({color:0x81d2e8});
             let bgparams = {
-              sea: "#94d2e3",
+              sea: "#81d2e8",
             }
           
             var bg = this.gui.addFolder("Sea Inner");
@@ -2605,8 +2615,28 @@ export class welcomeService {
                 seaMate.color.set(new THREE.Color(bgparams.sea));
               });
             s.children[""+i+""].material=seaMate;
-          }
+            s.children[""+i+""].scale.set(1.1,1.1,1.1);
+            // s.children[""+i+""].position.y=.2
+
+            // gsap.fromTo(s.children[""+i+""].rotation,1.5,{z:.02},{z:-.02,repeat:-1,yoyo:true,ease:"power1.inOut"});
+            gsap.fromTo(s.children[""+i+""].position,1.5,{y:"+=.07"},{y:"-=.07",repeat:-1,yoyo:true,ease:"power1.inOut"});
+          } else if(s.children[""+i+""].name=="OuterSea"){
+            
+            var seaMate = new THREE.MeshBasicMaterial({color:0x81d2e8});
+            let bgparams = {
+              sea: "#81d2e8",
+            }
           
+            var bg = this.gui.addFolder("Sea Outer");
+
+            bg.addColor(bgparams, "sea")
+              .onChange(() => {
+                seaMate.color.set(new THREE.Color(bgparams.sea));
+              });
+            s.children[""+i+""].material=seaMate;
+            // s.children[""+i+""].scale.set(1.1,1.1,1.1);
+            gsap.fromTo(s.children[""+i+""].scale,1.5,{x:1.1,z:1.1},{x:1.18,z:1.18,repeat:-1,yoyo:true,ease:"power1.inOut"});
+          }
         }
 
         this.scene.add(s);
@@ -2628,16 +2658,16 @@ export class welcomeService {
       
     let shadow = new THREE.Mesh(new THREE.PlaneGeometry(6*1.75,6*1.75),material);
     shadow.rotation.set(-Math.PI/2,0,0)
-    shadow.position.set(0,.19,-.99);
+    shadow.position.set(Ix+0,Iy+.27,Iz+.01);
 
     this.scene.add(shadow);
     
     
-    // // Moving Sea
-    // this.islandSea = new THREE.PlaneGeometry(10,10,5,5);
-    // var seaMater = new THREE.MeshBasicMaterial({color:0x3a74b4});
+    // Moving Sea
+    // this.islandSea = new THREE.PlaneGeometry(6,6,5,5);
+    // var seaMater = new THREE.MeshBasicMaterial({color:0x94d2e3});
     // let bgparams = {
-    //   sea: "#3a74b4",
+    //   sea: "#94d2e3",
     // }
   
     // var bg = this.gui.addFolder("Sea");
@@ -2649,7 +2679,7 @@ export class welcomeService {
 
     // let planeMesh = new THREE.Mesh(this.islandSea,seaMater);
     // planeMesh.rotation.set(-Math.PI/2,0,0);
-    // planeMesh.position.set(0,0,-1.5);
+    // planeMesh.position.set(0,0.2,-1);
 
     // this.scene.add(planeMesh);
 
@@ -2680,23 +2710,99 @@ export class welcomeService {
     // })
     // groundMirror.rotateX(-Math.PI/2);
     // this.scene.add(groundMirror);
+
+    // CANNON 
+    var something = new THREE.Mesh();
+    something.rotation.set(0,0,0);
+    var quat = new CANNON.Quaternion();
+    quat.set(something.quaternion.x,something.quaternion.y,something.quaternion.z,something.quaternion.w);
+    // Tree
+    let BodyTree = new CANNON.Body({mass:0});
+    BodyTree.addShape(new CANNON.Sphere(.38),new CANNON.Vec3(0,1.1,0));
+    BodyTree.addShape(new CANNON.Sphere(.38),new CANNON.Vec3(0,.9,0));
+    BodyTree.addShape(new CANNON.Box(new CANNON.Vec3(.07,.15,.07)),new CANNON.Vec3(0,.35,0));
+    BodyTree.position.set(Ix-1.62,Iy+.08,Iz-.8);
+    this.world03.addBody(BodyTree);
+
+    let BodyTree02 = new CANNON.Body({mass:0});
+    BodyTree02.addShape(new CANNON.Sphere(.42),new CANNON.Vec3(0,1.2,0));
+    BodyTree02.addShape(new CANNON.Sphere(.42),new CANNON.Vec3(0,1,0));
+    BodyTree02.addShape(new CANNON.Box(new CANNON.Vec3(.07,.15,.07)),new CANNON.Vec3(0,.35,0));
+    BodyTree02.position.set(Ix+1.46,Iy+.08,Iz-2.1);
+    this.world03.addBody(BodyTree02);
+
+    // Tent 
+    let BodyTent = new CANNON.Body({mass:0});
+    var quat = new CANNON.Quaternion();
+
+    something.rotation.set(0,0,42.5*Math.PI/180);
+    quat.set(something.quaternion.x,something.quaternion.y,something.quaternion.z,something.quaternion.w);
+    BodyTent.addShape(new CANNON.Box(new CANNON.Vec3(.04,.7,.88)),new CANNON.Vec3(.45,1,-.35),quat);
+
+    something.rotation.set(0,0,-42.5*Math.PI/180);
+    quat.set(something.quaternion.x,something.quaternion.y,something.quaternion.z,something.quaternion.w);
+    BodyTent.addShape(new CANNON.Box(new CANNON.Vec3(.04,.7,.88)),new CANNON.Vec3(-.45,1,-.35),quat);
+
+    something.rotation.set(0,0,-45*Math.PI/180);
+    quat.set(something.quaternion.x,something.quaternion.y,something.quaternion.z,something.quaternion.w);
+    BodyTent.addShape(new CANNON.Box(new CANNON.Vec3(.65,.65,.88)),new CANNON.Vec3(0,0.47,-.35),quat);
+
+    // Pillar
+    something.rotation.set(15*Math.PI/180,0,-15*Math.PI/180);
+    quat.set(something.quaternion.x,something.quaternion.y,something.quaternion.z,something.quaternion.w);
+    BodyTent.addShape(new CANNON.Box(new CANNON.Vec3(.06,.1,.06)),new CANNON.Vec3(1.1,0.3,0.6),quat);
+
+    something.rotation.set(-15*Math.PI/180,0,-15*Math.PI/180);
+    quat.set(something.quaternion.x,something.quaternion.y,something.quaternion.z,something.quaternion.w);
+    BodyTent.addShape(new CANNON.Box(new CANNON.Vec3(.06,.1,.06)),new CANNON.Vec3(1.08,0.3,-1.3),quat);
+
+    something.rotation.set(15*Math.PI/180,0,15*Math.PI/180);
+    quat.set(something.quaternion.x,something.quaternion.y,something.quaternion.z,something.quaternion.w);
+    BodyTent.addShape(new CANNON.Box(new CANNON.Vec3(.06,.1,.06)),new CANNON.Vec3(-1.08,0.3,0.58),quat);
+
+    something.rotation.set(-15*Math.PI/180,0,15*Math.PI/180);
+    quat.set(something.quaternion.x,something.quaternion.y,something.quaternion.z,something.quaternion.w);
+    BodyTent.addShape(new CANNON.Box(new CANNON.Vec3(.06,.1,.06)),new CANNON.Vec3(-1.08,0.3,-1.3),quat);
+
+    // MailBox
+    BodyTent.addShape(new CANNON.Box(new CANNON.Vec3(.03,.2,.03)),new CANNON.Vec3(-.69,0.47,.88))
+    BodyTent.addShape(new CANNON.Box(new CANNON.Vec3(.13,.06,.07)),new CANNON.Vec3(-.69,0.6,.97))
+
+    this.world03.addBody(BodyTent)
+    BodyTent.position.set(Ix,Iy,Iz)
+
+    something.rotation.set(-Math.PI/2,0,0);
+    quat.set(something.quaternion.x,something.quaternion.y,something.quaternion.z,something.quaternion.w);
+    // Land
+    let BodyLand = new CANNON.Body({mass:0,material: this.LandMaterial});
+    BodyLand.addShape(new CANNON.Cylinder(2.95,2.95,.2,16),new CANNON.Vec3(0.05,.163,-.45),quat);
+
+    BodyLand.addShape(new CANNON.Cylinder(3.05,3.05,.2,16),new CANNON.Vec3(0.05,.11,-.45),quat);
+
+    this.world03.addBody(BodyLand);
+    BodyLand.position.set(Ix,Iy,Iz);
   }
 
+  private LandMaterial: CANNON.Material
+  private GiftMaterial:CANNON.Material
   InitThirdWorld(): void {
     this.world03 = new CANNON.World();
     this.world03.gravity.set(0, 0, 0);
 
-    gsap.delayedCall(2,()=>{
-      this.world03.gravity.set(0, -5, 0);
+    gsap.delayedCall(1,()=>{
+      this.world03.gravity.set(0, -5.5, 0);
     })
 
     this.debugger03 = new CannonDebugRenderer(this.scene, this.world03);
-    // this.BalloonMaterial = new CANNON.Material("BalloonMaterial");
-    // let Contact02 = new CANNON.ContactMaterial(this.BalloonMaterial,this.BalloonMaterial,{
-    //   restitution:0.5,
-    // })
-    // this.world02.addContactMaterial(Contact02);
     this.PlaneMaterial = new CANNON.Material("PlaneMaterial");
+    this.LandMaterial = new CANNON.Material("LandMaterial");
+    this.GiftMaterial = new CANNON.Material("GiftMaterial");
+
+    let c = new CANNON.ContactMaterial(this.GiftMaterial,this.LandMaterial,{
+      restitution:0.1,
+      friction:0.1,
+    });
+    this.world03.addContactMaterial(c);
 
     let shape = new CANNON.Plane();
     let plane = new CANNON.Body({ mass: 0, material: this.PlaneMaterial});
@@ -2707,9 +2813,10 @@ export class welcomeService {
 
   }
 
+
   CreateGiftBalloon(Px,Py,Pz){
     let E = new GiftBalloon;
-    this.GiftBalloonArray.push(E)
+    this.GiftBalloonArray.push(E);
 
     // false: uncut, true: cut
     E.State=false;
@@ -2727,7 +2834,7 @@ export class welcomeService {
       side:2,
       transparent:true,
       opacity:1,
-      matcap:this.blue02
+      matcap:this.red
     })
     let mate03 = new THREE.MeshMatcapMaterial({
       color:0xfefefe,
@@ -2736,12 +2843,10 @@ export class welcomeService {
       opacity:1,
       matcap:this.white
     })
-    let mate02 = new THREE.MeshMatcapMaterial({
+    let mate02 = new THREE.MeshBasicMaterial({
       color:0xffffff,
-      side:2,
       transparent:true,
-      opacity:1,
-      matcap:this.pink
+      opacity:0,
     })
 
 
@@ -2757,7 +2862,7 @@ export class welcomeService {
       'assets/model/balloon01.glb',
       (gltf) => {
         var s = gltf.scene;
-        s.scale.set(1.4,1.4,1.4)
+        s.scale.set(1.15,1.15,1.15)
         s.children["0"].position.set(0,0,0);
         s.children["0"].material=mate01;
         E.Balloon3d.add(s);
@@ -2766,7 +2871,7 @@ export class welcomeService {
 
     // Balloon Attach
     E.BalloonAttach = new THREE.Mesh(new THREE.BoxBufferGeometry(.02,.02,.02),mate02)
-    E.BalloonAttach.position.set(0,-.2,0);
+    E.BalloonAttach.position.set(0,-.16,0);
     E.Balloon3d.add(E.BalloonAttach);
     E.Balloon3d.position.set(0,0,0);
     this.scene.add(E.Balloon3d);
@@ -2776,86 +2881,117 @@ export class welcomeService {
 
     // Balloon body
     E.BalloonBody = new CANNON.Body({ mass: 10});
-    E.BalloonBody.addShape(new CANNON.Sphere(.18),new CANNON.Vec3(0,0.07,0));
+    E.BalloonBody.addShape(new CANNON.Sphere(.15),new CANNON.Vec3(0,0.06,0));
+    E.BalloonBody.angularDamping = angularDamping;
+    E.BalloonBody.linearDamping = linearDamping;
     this.world03.addBody(E.BalloonBody);
 
     E.BalloonBody.position.set( Px, Py-.3, Pz);
+    
+    // Balloon Constraint
+    var c = new CANNON.PointToPointConstraint(E.BalloonBody,new CANNON.Vec3(0,.15,0),E.GBBody,new CANNON.Vec3(0,-.15,0));
+    this.world03.addConstraint(c);
 
-    E.BalloonBody.angularDamping = angularDamping;
-    E.BalloonBody.linearDamping = linearDamping;
 
     // Box 
     E.Box3d = new THREE.Object3D();
     this.loader.load(
-      'assets/model/Gift.glb',
+      'assets/model/Box.glb',
       (gltf) => {
         var s = gltf.scene;
-        s.scale.set(1.5,1.5,1.5)
-        s.position.set(0,-.13,0);
+        s.scale.set(1.25,1.25,1.25)
+        s.position.set(0,0,0);
         s.children["0"].children[0].material=mate03;
         s.children["0"].children[1].material=mate01;
-        s.children["1"].children[0].material=mate03;
-        s.children["1"].children[1].material=mate01;
+        E.Box3d.add(s);
+      }
+    );
+    this.loader.load(
+      'assets/model/Lid.glb',
+      (gltf) => {
+        var s = gltf.scene;
+        s.scale.set(1.25,1.25,1.25)
+        s.position.set(0,0,0);
+        s.children["0"].children[0].material=mate03;
+        s.children["0"].children[1].material=mate01;
         E.Box3d.add(s);
       }
     );
 
     E.BoxAttach = new THREE.Mesh(new THREE.BoxBufferGeometry(.02,.02,.02),mate02)
-    E.BoxAttach.position.set(0,.16,0);
+    E.BoxAttach.position.set(0,.12,0);
     E.Box3d.add(E.BoxAttach);
     this.scene.add(E.Box3d);
 
-    E.BoxBody = new CANNON.Body({ mass: 5 });
-    E.BoxBody.addShape(new CANNON.Box(new CANNON.Vec3(.15,.1,.15)),new CANNON.Vec3(0,-.03,0));
-    E.BoxBody.position.set(Px, Py-1, Pz);
+    E.BoxBody = new CANNON.Body({ mass: 10,material:this.GiftMaterial });
+    E.BoxBody.addShape(new CANNON.Box(new CANNON.Vec3(.125,.08,.125)),new CANNON.Vec3(0,-.025,0));
     this.world03.addBody(E.BoxBody);
 
-    E.BoxTopBody = new CANNON.Body({ mass: 5 });
-    E.BoxTopBody.addShape(new CANNON.Box(new CANNON.Vec3(.165,.04,.165)),new CANNON.Vec3(0,0.095,0));
+    E.BoxTopBody = new CANNON.Body({ mass: 2 });
+    E.BoxTopBody.addShape(new CANNON.Box(new CANNON.Vec3(.135,.033,.135)),new CANNON.Vec3(0,0.08,0));
 
-    var something = new THREE.Mesh();
-    something.rotation.set(0,0,40*Math.PI/180);
-    var quat = new CANNON.Quaternion();
-    quat.set(something.quaternion.x,something.quaternion.y,something.quaternion.z,something.quaternion.w);
+    // Bowtie
+    // var something = new THREE.Mesh();
+    // something.rotation.set(0,0,40*Math.PI/180);
+    // var quat = new CANNON.Quaternion();
+    // quat.set(something.quaternion.x,something.quaternion.y,something.quaternion.z,something.quaternion.w);
 
-    E.BoxTopBody.addShape(new CANNON.Box(new CANNON.Vec3(.05,.04,.04)),new CANNON.Vec3(0.12,0.18,0),quat);
+    // E.BoxTopBody.addShape(new CANNON.Box(new CANNON.Vec3(.04,.035,.035)),new CANNON.Vec3(0.1,0.15,0),quat);
 
-    var something = new THREE.Mesh();
-    something.rotation.set(0,0,-40*Math.PI/180);
-    var quat = new CANNON.Quaternion();
-    quat.set(something.quaternion.x,something.quaternion.y,something.quaternion.z,something.quaternion.w);
-    E.BoxTopBody.addShape(new CANNON.Box(new CANNON.Vec3(.05,.04,.04)),new CANNON.Vec3(-0.12,0.18,0),quat);
-    E.BoxTopBody.position.set(Px, Py-1, Pz);
+    // var something = new THREE.Mesh();
+    // something.rotation.set(0,0,-40*Math.PI/180);
+    // var quat = new CANNON.Quaternion();
+    // quat.set(something.quaternion.x,something.quaternion.y,something.quaternion.z,something.quaternion.w);
+    // E.BoxTopBody.addShape(new CANNON.Box(new CANNON.Vec3(.04,.035,.035)),new CANNON.Vec3(-0.1,0.15,0),quat);
     this.world03.addBody(E.BoxTopBody);
+
+    // Gift Box Position
+    E.BoxBody.position.set(Px, Py-.9, Pz);
+    E.BoxTopBody.position.set(Px, Py-.9, Pz);
+    
     var b = new CANNON.LockConstraint(E.BoxBody,E.BoxTopBody);
     b.collideConnected=false;
     this.world03.addConstraint(b)
 
-    // E.BoxBody.addEventListener('collide',(e)=>{
-    //   if(e.body.material){
-    //     if(e.body.material.name=="PlaneMaterial"&&!E.Boop){
-    //       E.Boop=true;
-    //       gsap.to(E.Box3d.scale,.3,{x:.1,y:.1,z:.1})
-    //       gsap.to(E.Shadow.scale,.3,{x:.1,y:.1,z:.1})
-    //       this.scene.remove(E.StringLine02)
-    //       gsap.delayedCall(.2,()=>{
-    //         this.BOOP(E.BoxBody.position.x,E.BoxBody.position.y,E.BoxBody.position.z);
-    //         this.scene.remove(E.Box3d);
-    //         this.scene.remove(E.Shadow);
-    //         this.world03.remove(E.BoxBody);
-    //         this.world03.remove(E.BoxTopBody);
-    //       })
-    //     };
-    //   }
-    // });
+    E.BoxBody.addEventListener('collide',(e)=>{
+      if(e.body.material){
+        if(e.body.material.name=="PlaneMaterial"&&!E.Boop){
+          E.Boop=true;
+          gsap.to(E.Box3d.scale,.3,{x:.1,y:.1,z:.1})
+          gsap.to(E.Shadow.scale,.3,{x:.1,y:.1,z:.1})
+          this.scene.remove(E.StringLine02)
+          gsap.delayedCall(.2,()=>{
+            this.BOOP(E.BoxBody.position.x,E.BoxBody.position.y,E.BoxBody.position.z);
+            this.scene.remove(E.Box3d);
+            this.scene.remove(E.Shadow);
+            this.world03.remove(E.BoxBody);
+            this.world03.remove(E.BoxTopBody);
+          })
+        };
+      }
+    });
+
+    E.BoxTopBody.addEventListener('collide',(e)=>{
+      if(e.body.material){
+        if(e.body.material.name=="LandMaterial"&&!E.Boop){
+          E.Boop=true;
+          gsap.to(E.Box3d.scale,.3,{x:.1,y:.1,z:.1})
+          gsap.to(E.Shadow.scale,.3,{x:.1,y:.1,z:.1})
+          this.scene.remove(E.StringLine02)
+          gsap.delayedCall(.2,()=>{
+            this.BOOP(E.BoxBody.position.x,E.BoxBody.position.y,E.BoxBody.position.z);
+            this.scene.remove(E.Box3d);
+            this.scene.remove(E.Shadow);
+            this.world03.remove(E.BoxBody);
+            this.world03.remove(E.BoxTopBody);
+          })
+        };
+      }
+    });
 
     E.BoxBody.angularDamping = angularDamping;
     E.BoxBody.linearDamping = linearDamping;
 
-
-    // Balloon Constraint
-    var c = new CANNON.PointToPointConstraint(E.BalloonBody,new CANNON.Vec3(0,.15,0),E.GBBody,new CANNON.Vec3(0,-.15,0));
-    this.world03.addConstraint(c);
 
     // Box Constraint
     E.BoxConstraint = new CANNON.LockConstraint(E.BoxBody, E.BalloonBody);
@@ -2892,7 +3028,7 @@ export class welcomeService {
     var ldp = .3;
     // Create Lines01
     for (var i = 0; i < 4; i++) {
-      let body = new CANNON.Body({ mass: i == 0 ? 20 : 1});
+      let body = new CANNON.Body({ mass: i == 0 ? 20 : .1});
       body.addShape(new CANNON.Box(new CANNON.Vec3(.01, .01, .01)));
 
       body.angularDamping = adp;
@@ -2937,22 +3073,21 @@ export class welcomeService {
 
     this.scene.add(E.Shadow);
 
-    gsap.delayedCall(Math.random()*2,()=>{
-      gsap.to(E.GBBody.position,1.8,{x:"+=.3",ease:"power1.in"});
-      gsap.to(E.GBBody.position,1.8,{x:"+=.3",ease:"power1.out",delay:1.5});
-      gsap.to(E.GBBody.position,1.8,{z:"+=.15",ease:"power1.in"});
-      gsap.to(E.GBBody.position,1.8,{z:"-=.15",ease:"power1.out",delay:1.5});
+    gsap.delayedCall(Math.random()*1+1,()=>{
+      gsap.to(E.GBBody.position,1.8,{x:"+=.4",ease:"power1.in"});
+      gsap.to(E.GBBody.position,1.8,{x:"+=.4",ease:"power1.out",delay:1.5});
+      gsap.to(E.GBBody.position,1.8,{z:"+=.2",ease:"power1.in"});
+      gsap.to(E.GBBody.position,1.8,{z:"-=.2",ease:"power1.out",delay:1.5});
 
       gsap.to(E.GBBody.position,0,{repeat:15,repeatDelay:3,
         onRepeat:()=>{
           // gsap.to(E.GB.position,2,{x:"+=.4",ease:"power1.in"});
           // gsap.to(E.GB.position,2,{x:"+=.4",ease:"power1.out",delay:2,});
           if(!E.State){
-            gsap.to(E.GBBody.position,1.8,{x:"+=.3",ease:"power1.in"});
-            gsap.to(E.GBBody.position,1.8,{x:"+=.3",ease:"power1.out",delay:1.5});
-            gsap.to(E.GBBody.position,1.8,{z:"+=.15",ease:"power1.in"});
-            gsap.to(E.GBBody.position,1.8,{z:"-=.15",ease:"power1.out",delay:1.5});
-            console.log('repeat')
+            gsap.to(E.GBBody.position,1.8,{x:"+=.4",ease:"power1.in"});
+            gsap.to(E.GBBody.position,1.8,{x:"+=.4",ease:"power1.out",delay:1.5});
+            gsap.to(E.GBBody.position,1.8,{z:"+=.2",ease:"power1.in"});
+            gsap.to(E.GBBody.position,1.8,{z:"-=.2",ease:"power1.out",delay:1.5});
           }
         }});
     })
@@ -2978,7 +3113,7 @@ export class welcomeService {
 
     this.world03.step(1 / this.fps);
     this.RenderMouseCursor();
-    // this.debugger03.update();
+    this.debugger03.update();
     // for (var i = 0; i < this.meshes03.length; i++) {
     //   this.meshes03[i].position.copy(this.bodies03[i].position);
     //   this.meshes03[i].quaternion.copy(this.bodies03[i].quaternion);
@@ -2998,9 +3133,10 @@ export class welcomeService {
 
       // Shadow Position
       this.GiftBalloonArray[i].Shadow.position.set(this.GiftBalloonArray[i].Box3d.position.x,
-        this.GiftBalloonArray[i].Box3d.position.y -.15,this.GiftBalloonArray[i].Box3d.position.z)
+        this.GiftBalloonArray[i].Box3d.position.y -.1,this.GiftBalloonArray[i].Box3d.position.z)
       this.GiftBalloonArray[i].Shadow.material.uniforms.uAlpha.value = 
-        (.35 - this.GiftBalloonArray[i].Box3d.position.y)*8;
+        (.6 - this.GiftBalloonArray[i].Box3d.position.y)*4;
+
       
       // Attach Position
       var Po = new THREE.Vector3();
@@ -3057,7 +3193,7 @@ export class welcomeService {
   CheckIntersect() {
     var LineCurve2 = new THREE.LineCurve(this.mouseF,this.mouseL);
     var dis = this.distanceVec2(this.mouseF.x,this.mouseF.y,this.mouseL.x,this.mouseL.y);
-    var Points = LineCurve2.getPoints(Math.floor(dis/0.005));
+    var Points = LineCurve2.getPoints(Math.floor(dis/0.004));
     var Ma = new THREE.MeshBasicMaterial({color:0x000000})
     var intersect;
     for(var i=0;i<Points.length;i++){
@@ -3177,6 +3313,8 @@ export class welcomeService {
         this.world03.removeConstraint(this.GiftBalloonArray[i].BoxConstraint);
 
         gsap.to(this.GiftBalloonArray[i].GBBody.position,2,{y:"+=2",ease:"power1.in"});
+        
+        // this.GiftBalloonArray[i].BoxBody.velocity.y=-1;
 
         var k = i;
         // gsap.delayedCall(2,()=>{          
