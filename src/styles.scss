@@ -1,9 +1,60 @@
 /* You can add global styles to this file, and also import other style files */
 html{
     overflow: hidden;
-    
+    font-family: 'Quicksand', sans-serif;
 }
 body{
     margin:0;
     // cursor: none !important;
 }
+
+$color: #000;
+.plus1{
+    font-family: Quicksand;
+    font-weight: 700;
+    font-size: 18px;
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+    top:500px;
+    left:400px;
+    color: #fcf34c;
+    letter-spacing: 2px;
+    // text-shadow: 0 0 4px #000;
+    text-shadow: 2px 0 0 $color, -2px 0 0 $color, 0 2px 0 $color, 0 -2px 0 $color, 1px 1px $color, -1px -1px 0 $color, 1px -1px 0 $color, -1px 1px 0 $color;
+}
+
+.star{
+    position: absolute;
+    opacity: 1;
+    pointer-events: none;
+    top:500px;
+    left:400px;
+    width: 40px;
+    height: 40px;
+    transform: scale(.7);
+    path{
+        fill:url(#StarGradient);
+    }
+}
+
+.leaf{
+    position: absolute;
+    opacity: 1;
+    pointer-events: none;
+    top:500px;
+    left:400px;
+    width: 27px;
+    height: 20px;
+    border-top-right-radius: 30px;
+    border-bottom-left-radius: 30px;
+    background: linear-gradient(to right,#bed9ae 0%, #99BB87 100%);
+}
+
+
+// @font-face {
+//     font-family: Quicksand;
+//     src: url(assets/fonts/Quicksand-Bold.ttf);
+//     font-weight: 700;
+// }
+  

@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import * as CANNON from 'cannon';
-import { TimelineMax,TimelineLite,TweenLite,Power0,Power1,Power2,gsap } from 'gsap';
+import { TimelineMax,TimelineLite,TweenLite,Power0,Power1,Power2,gsap, random } from 'gsap';
 import * as OrbitControls from 'three-orbitcontrols';
 import GLTFLoader from 'three-gltf-loader';
 // import thisWork from 'three-dragcontrols';
@@ -26,6 +26,8 @@ class GiftBalloon{
   Box3d: THREE.Object3D
   BoxBody: CANNON.Body
   BoxTopBody: CANNON.Body
+  BoxThree: THREE.Scene
+  BoxLid: THREE.Scene
   BoxAttach: THREE.Mesh
   BoxConstraint: CANNON.LockConstraint
 
@@ -335,6 +337,9 @@ export class welcomeService {
     this.red = this.textureLoader.load('assets/matcaps/03/EE4D51.png',()=>{
       this.red.encoding=THREE.sRGBEncoding;
     });
+    this.yellow = this.textureLoader.load('assets/matcaps/03/FFEB40.png',()=>{
+      this.yellow.encoding=THREE.sRGBEncoding;
+    });
   }
 
   private blue01; 
@@ -344,6 +349,7 @@ export class welcomeService {
   private green01;
   private wood;
   private red;
+  private yellow;
   
   private Train;
   private FerrisWheel;
@@ -1374,7 +1380,7 @@ export class welcomeService {
     this.times.push(this.now);
     this.fps = this.times.length;
 
-    this.FirstSceneRender();
+    // this.FirstSceneRender();
     // this.MiniGolfRender();
     this.ThirdSceneRender();
 
@@ -1703,62 +1709,171 @@ export class welcomeService {
     }
   }
 
-  // 6 for each time function is call, 3 material , 5 usage at the same time.
-  private ScoreMax = 6*3*5;
+  // 24 for each function call,3 material, 4 usage at the same time.
+  private ScoreMax = 6*3*4;
   private ScoreCurrent = 0;
   private ScoreLast = 0;
+  private CoinArray=[];
+  private CoinCurrent = 0;
   CreateScoreMaterial(){
-
     // Score
-    let Score01 = new THREE.Mesh(new THREE.CylinderBufferGeometry(.04,.04,.02,8,1),
-    new THREE.MeshMatcapMaterial({color:0xffffff,matcap:this.white,transparent:true}));
+    let Score01 = new THREE.Mesh(new THREE.BoxBufferGeometry(.05,.08,.005),
+      new THREE.MeshMatcapMaterial({color:0xffffff,matcap:this.blue02,transparent:true}));
+    let Score02 = new THREE.Mesh(new THREE.BoxBufferGeometry(.08,.05,.005),
+      new THREE.MeshMatcapMaterial({color:0xffffff,matcap:this.red,transparent:true}));
+    let Score03 = new THREE.Mesh(new THREE.BoxBufferGeometry(.05,.08,.005),
+      new THREE.MeshMatcapMaterial({color:0xffffff,matcap:this.yellow,transparent:true}));
     Score01.position.set(0,5,0)
-    this.GolfScore.push(Score01);
-    for(var i=0;i<this.ScoreMax/3;i++){
+    Score02.position.set(0,5,0)
+    Score03.position.set(0,5,0)
+    for (var i=0;i<this.ScoreMax/3;i++){
       let mesh = Score01.clone();
       this.scene.add(mesh);
       this.GolfScore.push(mesh);
+      
+      let mesh02 = Score02.clone();
+      this.scene.add(mesh02);
+      this.GolfScore.push(mesh02);
+
+      let mesh03 = Score03.clone();
+      this.scene.add(mesh03);
+      this.GolfScore.push(mesh03);
     }
-    let Score02 = new THREE.Mesh(new THREE.CylinderBufferGeometry(.04,.04,.02,8,1),
-      new THREE.MeshMatcapMaterial({color:0xffffff,matcap:this.blue02,transparent:true}));
-    Score02.position.set(0,5,0)
-    for(var i=0;i<this.ScoreMax/3;i++){
-      let mesh = Score02.clone();
-      this.scene.add(mesh);
-      this.GolfScore.push(mesh);
-    }
-    let Score03 = new THREE.Mesh(new THREE.CylinderBufferGeometry(.04,.04,.02,8,1),
-      new THREE.MeshMatcapMaterial({color:0xffffff,matcap:this.pink,transparent:true}));
-    Score03.position.set(0,5,0)
-    for(var i=0;i<this.ScoreMax/3;i++){
-      let mesh = Score03.clone();
-      this.scene.add(mesh);
-      this.GolfScore.push(mesh);
-    }
+    // let Score02 = new THREE.Mesh(new THREE.CylinderBufferGeometry(.04,.04,.02,8,1),
+    //   new THREE.MeshMatcapMaterial({color:0xffffff,matcap:this.blue02,transparent:true}));
+    // Score02.position.set(0,5,0)
+    // for(var i=0;i<this.ScoreMax/3;i++){
+    //   let mesh = Score02.clone();
+    //   this.scene.add(mesh);
+    //   this.GolfScore.push(mesh);
+    // }
+    // let Score03 = new THREE.Mesh(new THREE.CylinderBufferGeometry(.04,.04,.02,8,1),
+    //   new THREE.MeshMatcapMaterial({color:0xffffff,matcap:this.pink,transparent:true}));
+    // Score03.position.set(0,5,0)
+    // for(var i=0;i<this.ScoreMax/3;i++){
+    //   let mesh = Score03.clone();
+    //   this.scene.add(mesh);
+    //   this.GolfScore.push(mesh);
+    // }
+
+    // let yellow = this.textureLoader.load('assets/matcaps/03/FFEB40.png',()=>{
+    //   yellow.encoding=THREE.sRGBEncoding;
+    // });
+    this.loader.load(
+      'assets/model/Coin.glb',
+      (gltf) => {
+        let coin = new THREE.Object3D();
+
+        gltf.scene.scale.set(2.75,2.75,2.75)
+        gltf.scene.position.set(0,0,0);
+        gltf.scene.rotation.set(40*Math.PI/180,0,20*Math.PI/180)
+
+        coin.add(gltf.scene);
+
+        for(var i=0;i<4;i++){
+          let mesh = coin.clone();
+          mesh.name="Coin";
+          let mate01 = new THREE.MeshMatcapMaterial({
+            color:0xffffff,
+            side:2,
+            transparent:true,
+            opacity:1,
+            matcap:this.yellow
+          })
+          let mate02 = new THREE.MeshMatcapMaterial({
+            color:0xeeeeee,
+            side:2,
+            transparent:true,
+            opacity:1,
+            matcap:this.yellow
+          })
+
+          mesh.children["0"].children[0].children[0].material=mate01;
+          mesh.children["0"].children[0].children[1].material=mate02;
+
+          
+          // Shadow
+          let texture = this.textureLoader.load('assets/shadow/Coin.png');
+
+          let uniforms = {
+            tShadow:{value:texture},
+            uShadowColor:{value:new THREE.Color("#78b75e")},
+            uAlpha:{value:0}
+          }
+          let material = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms,depthWrite:false,
+            vertexShader:document.getElementById('vertexShader').textContent,
+            fragmentShader:document.getElementById('fragmentShader').textContent})
+      
+          let shadow = new THREE.Mesh(new THREE.PlaneGeometry(2.8,2.8),material);
+          shadow.renderOrder = 1
+  
+          shadow.rotation.set(-Math.PI/2,0,0)
+          shadow.position.set(-0.01,-0.085,0.01);
+          mesh.add(shadow);
+
+          this.ThirdSceneObject.push(mesh.children["0"]);
+          this.scene.add(mesh);
+          this.CoinArray.push(mesh);
+        }
+      });
   }
 
+  private ScoreDistance = .25;
   ScoreFunction(Po:CANNON.Vec3){
     if(this.ScoreCurrent >= this.ScoreMax){
-      this.ScoreCurrent=6*3;
+      this.ScoreCurrent=24;
       this.ScoreLast=0;
+      this.CoinCurrent=0;
     } else {
-      this.ScoreCurrent+=6*3;
+      this.ScoreCurrent+=24;
     }
 
+    var j=0;
     for(var i=this.ScoreLast;i<this.ScoreCurrent;i++){
-      // Position
-      gsap.fromTo(this.GolfScore[i].position,1,{x:Po.x,z:Po.z},{x:Po.x+Math.random()*1.4-.7,z:Po.z+Math.random()*1.4-.7,});
-      gsap.fromTo(this.GolfScore[i].position,.35,{y:Po.y},{ease:"power1.out",y:Math.random()*.5+.6})
-      gsap.to(this.GolfScore[i].position,.4,{ease:"power1.in",delay:.35,y:0})
 
-      // Rotation
-      gsap.fromTo(this.GolfScore[i].rotation,1,{x:0,y:0,z:0},{x:Math.random()*10,y:Math.random()*10,z:Math.random()*10});
+      var ranX = Po.x + Math.random()*1.2-.6;
+      var ranZ = Po.z + Math.random()*1.2-.6;
 
-      // Scale
-      gsap.set(this.GolfScore[i].scale,{x:Math.random()*.3+.7,y:Math.random()*.3+.7,z:Math.random()*.3+.7});
-      gsap.to(this.GolfScore[i].scale,1,{delay:.6,x:.1,y:.1,z:.1})
+      var distance = this.distanceVec2(ranX,ranZ,Po.x,Po.z);
+      if(distance>this.ScoreDistance){
+        var randomDelay = j;
+        j+=.01;
+
+        // Distance duration
+        var DD = (distance - this.ScoreDistance);
+
+        var PoDuration = .35 + DD;
+        
+        // Position
+        gsap.fromTo(this.GolfScore[i].position,PoDuration,
+          {x:Po.x,z:Po.z},
+          {x:ranX,z:ranZ,delay:randomDelay,ease:"power1.out"});
+
+
+        gsap.fromTo(this.GolfScore[i].position,PoDuration/2,{y:Po.y},{ease:"power1.out",y:DD+.4,delay:randomDelay})
+        gsap.to(this.GolfScore[i].position,PoDuration/2,{ease:"power1.in",delay:(PoDuration/2)+randomDelay,y:0.28})
+
+        // Rotation
+        gsap.fromTo(this.GolfScore[i].rotation,PoDuration,{x:0,y:0,z:0},{x:Math.random()*24-12,y:Math.random()*24-12,z:Math.random()*24-12,delay:randomDelay,ease:"none"});
+
+        // Scale
+        // gsap.set(this.GolfScore[i].scale,{x:Math.random()*.3+.7,y:Math.random()*.3+.7,z:Math.random()*.3+.7});
+        gsap.to(this.GolfScore[i].scale,PoDuration,{delay:PoDuration+.1,x:.1,y:.1,z:.1})
+      } else {
+        i--;
+      }
     }
     this.ScoreLast = this.ScoreCurrent;
+
+    // Coin
+    this.CoinArray[this.CoinCurrent].position.set(Po.x,Po.y,Po.z);
+    gsap.fromTo(this.CoinArray[this.CoinCurrent].position,.35,{y:Po.y},{delay:0,ease:"power1.out",y:"+=.6"})
+    gsap.to(this.CoinArray[this.CoinCurrent].position,.35,{ease:"power1.in",delay:.35,y:0.28})
+
+    // Opacity
+    gsap.to(this.CoinArray[this.CoinCurrent].children[1].material.uniforms.uAlpha,
+      .3,{value:.6,delay:.6})
+    this.CoinCurrent+=1;
   }
 
   BOOPArray=[];
@@ -2500,16 +2615,18 @@ export class welcomeService {
     this.BOOPMaterial();
     this.CreateGiftBalloon(-5,3,-1);
     this.CreateGiftBalloon(-2,2.7,0);
-    this.CreateGiftBalloon(2,2.5,1);
+    this.CreateGiftBalloon(2,2.5,.5);
 
     this.CreateIsland(0,-0.075,-.5);
-    // this.CreateGiftBalloon(-1,2.7,0);
-    // this.CreateGiftBalloon(1,2.5,1);
-    // this.CreateGiftBalloon(-2.5,2.7,0);
-    // this.CreateGiftBalloon(2.5,2.5,1);
+    this.canvas.addEventListener("click", throttle(
+      () => {
+      this.ThirdClickEvent();
+      },600));
   }
 
-  private islandSea: THREE.PlaneGeometry
+
+  private IslandRock:THREE.Object3D;
+  private Island:THREE.Object3D;
   CreateIsland(Ix,Iy,Iz){
     // Material
     let tent01 = this.textureLoader.load('assets/matcaps/03/tent01.png',()=>{
@@ -2542,66 +2659,67 @@ export class welcomeService {
     var mateOpacity = 1;
 
     this.loader.load(
-      'assets/model/Island02.glb',
+      'assets/model/Island04.glb',
       (gltf) => {
-        var s = gltf.scene;
-        s.scale.set(1.75,1.75,1.75);
-        s.rotation.set(0,0*Math.PI/180,0)
-        s.position.set(Ix,Iy,Iz);
-        console.log(s)
-        for(var i=0;i<s.children.length;i++){
-          if(s.children[""+i+""].name=="Land"){
+        this.Island = gltf.scene;
+        this.Island.scale.set(1.75,1.75,1.75);
+        this.Island.rotation.set(0,0*Math.PI/180,0)
+        this.Island.position.set(Ix,Iy,Iz);
+
+        for(var i=0;i<this.Island.children.length;i++){
+          if(this.Island.children[""+i+""].name=="Land"){
             let mate01 = new THREE.MeshMatcapMaterial({
               color:0xffffff,side:2,matcap:land,transparent:true,opacity:mateOpacity,
             });
-            s.children[""+i+""].children[0].material=mate01;
+            this.Island.children[""+i+""].children[0].material=mate01;
             let mate02 = new THREE.MeshMatcapMaterial({
               color:0xffffff,side:2,matcap:tree,transparent:true,opacity:mateOpacity,
             });
-            s.children[""+i+""].children[1].material=mate02;
-          } else if(s.children[""+i+""].name=="Tent"){
+            this.Island.children[""+i+""].children[1].material=mate02;
+          } else if(this.Island.children[""+i+""].name=="Tent"){
             let mate01 = new THREE.MeshMatcapMaterial({
               color:0xffffff,side:2,matcap:tent01,transparent:true,opacity:mateOpacity,
             });
-            s.children[""+i+""].children[0].material=mate01;
+            this.Island.children[""+i+""].children[0].material=mate01;
             let mate02 = new THREE.MeshMatcapMaterial({
               color:0xffffff,side:2,matcap:tent02,transparent:true,opacity:mateOpacity,
             });
-            s.children[""+i+""].children[1].material=mate02;
-          } else if(s.children[""+i+""].name=="Tree"){
+            this.Island.children[""+i+""].children[1].material=mate02;
+          } else if(this.Island.children[""+i+""].name=="Tree"||this.Island.children[""+i+""].name=="Tree02"){
             let mate01 = new THREE.MeshMatcapMaterial({
               color:0xffffff,side:2,matcap:tree,transparent:true,opacity:mateOpacity,
             });
-            s.children[""+i+""].children[0].material=mate01;
+            this.Island.children[""+i+""].children[0].material=mate01;
             let mate02 = new THREE.MeshMatcapMaterial({
               color:0xffffff,side:2,matcap:wood,transparent:true,opacity:mateOpacity,
             });
-            s.children[""+i+""].children[1].material=mate02;
-          } else if(s.children[""+i+""].name=="Mail"){
+            this.Island.children[""+i+""].children[1].material=mate02;
+            this.ThirdSceneObject.push(this.Island.children[""+i+""]);
+          } else if(this.Island.children[""+i+""].name=="Mail"){
             let mate01 = new THREE.MeshMatcapMaterial({
               color:0xffffff,side:2,matcap:wood,transparent:true,opacity:mateOpacity,
             });
-            s.children[""+i+""].children[0].material=mate01;
+            this.Island.children[""+i+""].children[0].material=mate01;
             let mate02 = new THREE.MeshMatcapMaterial({
               color:0xcccccc,side:2,matcap:wood,transparent:true,opacity:mateOpacity,
             });
-            s.children[""+i+""].children[1].material=mate02;
-          } else if(s.children[""+i+""].name=="Pillar"){
+            this.Island.children[""+i+""].children[1].material=mate02;
+          } else if(this.Island.children[""+i+""].name=="Pillar"){
             let mate01 = new THREE.MeshMatcapMaterial({
               color:0xffffff,side:2,matcap:wood,transparent:true,opacity:mateOpacity,
             });
-            s.children[""+i+""].material=mate01;
-          } else if(s.children[""+i+""].name=="Rope"){
+            this.Island.children[""+i+""].material=mate01;
+          } else if(this.Island.children[""+i+""].name=="Rope"){
             let mate01 = new THREE.MeshMatcapMaterial({
               color:0xffffff,side:2,matcap:wood,transparent:true,opacity:mateOpacity,
             });
-            s.children[""+i+""].material=mate01;
-          } else if(s.children[""+i+""].name=="Rock"){
+            this.Island.children[""+i+""].material=mate01;
+          } else if(this.Island.children[""+i+""].name=="Rock"){
             let mate01 = new THREE.MeshMatcapMaterial({
               color:0xffffff,side:2,matcap:white,transparent:true,opacity:mateOpacity,
             });
-            s.children[""+i+""].material=mate01;
-          } else if(s.children[""+i+""].name=="Sea"){
+            this.Island.children[""+i+""].material=mate01;
+          } else if(this.Island.children[""+i+""].name=="Sea"){
             
             var seaMate = new THREE.MeshBasicMaterial({color:0x81d2e8});
             let bgparams = {
@@ -2614,13 +2732,13 @@ export class welcomeService {
               .onChange(() => {
                 seaMate.color.set(new THREE.Color(bgparams.sea));
               });
-            s.children[""+i+""].material=seaMate;
-            s.children[""+i+""].scale.set(1.1,1.1,1.1);
-            // s.children[""+i+""].position.y=.2
+            this.Island.children[""+i+""].material=seaMate;
+            this.Island.children[""+i+""].scale.set(1.1,1.1,1.1);
+            // this.Island.children[""+i+""].position.y=.2
 
-            // gsap.fromTo(s.children[""+i+""].rotation,1.5,{z:.02},{z:-.02,repeat:-1,yoyo:true,ease:"power1.inOut"});
-            gsap.fromTo(s.children[""+i+""].position,1.5,{y:"+=.07"},{y:"-=.07",repeat:-1,yoyo:true,ease:"power1.inOut"});
-          } else if(s.children[""+i+""].name=="OuterSea"){
+            // gsap.fromTo(this.Island.children[""+i+""].rotation,1.5,{z:.02},{z:-.02,repeat:-1,yoyo:true,ease:"power1.inOut"});
+            gsap.fromTo(this.Island.children[""+i+""].position,1.5,{y:"+=.07"},{y:"-=.07",repeat:-1,yoyo:true,ease:"power1.inOut"});
+          } else if(this.Island.children[""+i+""].name=="OuterSea"){
             
             var seaMate = new THREE.MeshBasicMaterial({color:0x81d2e8});
             let bgparams = {
@@ -2633,84 +2751,69 @@ export class welcomeService {
               .onChange(() => {
                 seaMate.color.set(new THREE.Color(bgparams.sea));
               });
-            s.children[""+i+""].material=seaMate;
-            // s.children[""+i+""].scale.set(1.1,1.1,1.1);
-            gsap.fromTo(s.children[""+i+""].scale,1.5,{x:1.1,z:1.1},{x:1.18,z:1.18,repeat:-1,yoyo:true,ease:"power1.inOut"});
+            this.Island.children[""+i+""].material=seaMate;
+            // this.Island.children[""+i+""].scale.set(1.1,1.1,1.1);
+            gsap.fromTo(this.Island.children[""+i+""].scale,1.5,{x:1.1,z:1.1},{x:1.18,z:1.18,repeat:-1,yoyo:true,ease:"power1.inOut"});
           }
         }
 
-        this.scene.add(s);
+        this.scene.add(this.Island);
       }
     );
 
     // Shadow
     var texture = this.textureLoader.load('assets/shadow/Island.png');
 
-    let uniforms = {
+    var uniforms = {
       tShadow:{value:texture},
       uShadowColor:{value:new THREE.Color("#78b75e")},
       uAlpha:{value:.75}
     }
-    let material = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms,depthWrite:false,
+    var material = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms,depthWrite:false,
       vertexShader:document.getElementById('vertexShader').textContent,
       fragmentShader:document.getElementById('fragmentShader').textContent})
 
-      
-    let shadow = new THREE.Mesh(new THREE.PlaneGeometry(6*1.75,6*1.75),material);
+    var shadow = new THREE.Mesh(new THREE.PlaneGeometry(6*1.75,6*1.75),material);
     shadow.rotation.set(-Math.PI/2,0,0)
-    shadow.position.set(Ix+0,Iy+.27,Iz+.01);
+    shadow.position.set(Ix+0,Iy+.263,Iz+.01);
 
     this.scene.add(shadow);
     
+    // Rock
+    this.loader.load(
+      'assets/model/Rock.glb',
+      (gltf)=>{
+        this.IslandRock = gltf.scene;
+        this.IslandRock.scale.set(1.75,1.75,1.75)
+        this.IslandRock.position.set(Ix+1.9,Iy,Iz-.5);
+        let mate01 = new THREE.MeshMatcapMaterial({
+          color:0xe6e6e6,side:2,matcap:white,transparent:true,opacity:mateOpacity,
+        });
+        this.IslandRock.children["0"].material=mate01;
+        this.ThirdSceneObject.push(this.IslandRock.children["0"]);
+
+        this.scene.add(this.IslandRock)
+
+        let texture = this.textureLoader.load('assets/shadow/Rock.png');
+
+        let uniforms = {
+          tShadow:{value:texture},
+          uShadowColor:{value:new THREE.Color("#78b75e")},
+          uAlpha:{value:.75}
+        }
+        let material = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms,depthWrite:false,
+          vertexShader:document.getElementById('vertexShader').textContent,
+          fragmentShader:document.getElementById('fragmentShader').textContent})
     
-    // Moving Sea
-    // this.islandSea = new THREE.PlaneGeometry(6,6,5,5);
-    // var seaMater = new THREE.MeshBasicMaterial({color:0x94d2e3});
-    // let bgparams = {
-    //   sea: "#94d2e3",
-    // }
-  
-    // var bg = this.gui.addFolder("Sea");
+        let shadow = new THREE.Mesh(new THREE.PlaneGeometry(2.05,2.05),material);
+        shadow.renderOrder = 1
 
-    // bg.addColor(bgparams, "sea")
-    //   .onChange(() => {
-    //     seaMater.color.set(new THREE.Color(bgparams.sea));
-    //   });
-
-    // let planeMesh = new THREE.Mesh(this.islandSea,seaMater);
-    // planeMesh.rotation.set(-Math.PI/2,0,0);
-    // planeMesh.position.set(0,0.2,-1);
-
-    // this.scene.add(planeMesh);
-
-    // Static Sea
-    // var mirror = new THREE.CubeCamera()
-
-    // let mesh = new THREE.Mesh(new THREE.PlaneGeometry(40,30),seaMater);
-    // mesh.rotation.set(-Math.PI/2,0,0);
-    // mesh.position.set(0,-.01,-1.5);
-    // this.scene.add(mesh);
-
-    // for(var i=0;i<this.islandSea.vertices.length;i++){
-    //   let mesh = new THREE.Mesh(new THREE.BoxBufferGeometry(.1,.1,.1),mate01);
-    //   mesh.position.set(this.islandSea.vertices[i].x,this.islandSea.vertices[i].z+.3,this.islandSea.vertices[i].y);
-    //   this.scene.add(mesh);
-    // }
-
-    // gsap.to(this.islandSea.vertices[27],1.4,{z:.2,yoyo:true,repeat:-1});
-
-
-    // Mirror
-    // var geometry = new THREE.PlaneBufferGeometry(10,10,5,5);
-    // var groundMirror = new Reflector(geometry,{
-    //   clipBias: 0.003,
-		// 	textureWidth: window.innerWidth,
-		// 	textureHeight: window.innerHeight,
-		// 	color: 0x777777
-    // })
-    // groundMirror.rotateX(-Math.PI/2);
-    // this.scene.add(groundMirror);
-
+        shadow.rotation.set(-Math.PI/2,0,0)
+        shadow.position.set(0,.155,0.01);
+        this.IslandRock.add(shadow);
+      }
+    )
+    
     // CANNON 
     var something = new THREE.Mesh();
     something.rotation.set(0,0,0);
@@ -2810,287 +2913,485 @@ export class welcomeService {
     plane.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -Math.PI / 2);
     plane.position.set(0, 0, 0);
     this.world03.addBody(plane);
-
   }
 
-
+  private ThirdSceneObject = [];
   CreateGiftBalloon(Px,Py,Pz){
-    let E = new GiftBalloon;
-    this.GiftBalloonArray.push(E);
-
-    // false: uncut, true: cut
-    E.State=false;
-    // false: The gift hasn't broken
-    E.Boop=false;
-        
-    E.Lines01=[];
-    E.Lines02=[];
-    E.DisConstrain01=[];
-    E.DisConstrain02=[];
-
-    // Material
-    let mate01 = new THREE.MeshMatcapMaterial({
-      color:0xffffff,
-      side:2,
-      transparent:true,
-      opacity:1,
-      matcap:this.red
-    })
-    let mate03 = new THREE.MeshMatcapMaterial({
-      color:0xfefefe,
-      side:2,
-      transparent:true,
-      opacity:1,
-      matcap:this.white
-    })
-    let mate02 = new THREE.MeshBasicMaterial({
-      color:0xffffff,
-      transparent:true,
-      opacity:0,
-    })
-
-
-    // GB (top force)
-    E.GBBody = new CANNON.Body({mass:0});
-    E.GBBody.addShape(new CANNON.Sphere(.02));
-    E.GBBody.position.set(Px,Py,Pz);
-    this.world03.addBody(E.GBBody);
-
-    // Balloon 3d
-    E.Balloon3d = new THREE.Object3D();
-    this.loader.load(
-      'assets/model/balloon01.glb',
-      (gltf) => {
-        var s = gltf.scene;
-        s.scale.set(1.15,1.15,1.15)
-        s.children["0"].position.set(0,0,0);
-        s.children["0"].material=mate01;
-        E.Balloon3d.add(s);
-      }
-    );
-
-    // Balloon Attach
-    E.BalloonAttach = new THREE.Mesh(new THREE.BoxBufferGeometry(.02,.02,.02),mate02)
-    E.BalloonAttach.position.set(0,-.16,0);
-    E.Balloon3d.add(E.BalloonAttach);
-    E.Balloon3d.position.set(0,0,0);
-    this.scene.add(E.Balloon3d);
-
-    var linearDamping = .3;
-    var angularDamping = .3;
-
-    // Balloon body
-    E.BalloonBody = new CANNON.Body({ mass: 10});
-    E.BalloonBody.addShape(new CANNON.Sphere(.15),new CANNON.Vec3(0,0.06,0));
-    E.BalloonBody.angularDamping = angularDamping;
-    E.BalloonBody.linearDamping = linearDamping;
-    this.world03.addBody(E.BalloonBody);
-
-    E.BalloonBody.position.set( Px, Py-.3, Pz);
-    
-    // Balloon Constraint
-    var c = new CANNON.PointToPointConstraint(E.BalloonBody,new CANNON.Vec3(0,.15,0),E.GBBody,new CANNON.Vec3(0,-.15,0));
-    this.world03.addConstraint(c);
-
-
-    // Box 
-    E.Box3d = new THREE.Object3D();
-    this.loader.load(
-      'assets/model/Box.glb',
-      (gltf) => {
-        var s = gltf.scene;
-        s.scale.set(1.25,1.25,1.25)
-        s.position.set(0,0,0);
-        s.children["0"].children[0].material=mate03;
-        s.children["0"].children[1].material=mate01;
-        E.Box3d.add(s);
-      }
-    );
-    this.loader.load(
-      'assets/model/Lid.glb',
-      (gltf) => {
-        var s = gltf.scene;
-        s.scale.set(1.25,1.25,1.25)
-        s.position.set(0,0,0);
-        s.children["0"].children[0].material=mate03;
-        s.children["0"].children[1].material=mate01;
-        E.Box3d.add(s);
-      }
-    );
-
-    E.BoxAttach = new THREE.Mesh(new THREE.BoxBufferGeometry(.02,.02,.02),mate02)
-    E.BoxAttach.position.set(0,.12,0);
-    E.Box3d.add(E.BoxAttach);
-    this.scene.add(E.Box3d);
-
-    E.BoxBody = new CANNON.Body({ mass: 10,material:this.GiftMaterial });
-    E.BoxBody.addShape(new CANNON.Box(new CANNON.Vec3(.125,.08,.125)),new CANNON.Vec3(0,-.025,0));
-    this.world03.addBody(E.BoxBody);
-
-    E.BoxTopBody = new CANNON.Body({ mass: 2 });
-    E.BoxTopBody.addShape(new CANNON.Box(new CANNON.Vec3(.135,.033,.135)),new CANNON.Vec3(0,0.08,0));
-
-    // Bowtie
-    // var something = new THREE.Mesh();
-    // something.rotation.set(0,0,40*Math.PI/180);
-    // var quat = new CANNON.Quaternion();
-    // quat.set(something.quaternion.x,something.quaternion.y,something.quaternion.z,something.quaternion.w);
-
-    // E.BoxTopBody.addShape(new CANNON.Box(new CANNON.Vec3(.04,.035,.035)),new CANNON.Vec3(0.1,0.15,0),quat);
-
-    // var something = new THREE.Mesh();
-    // something.rotation.set(0,0,-40*Math.PI/180);
-    // var quat = new CANNON.Quaternion();
-    // quat.set(something.quaternion.x,something.quaternion.y,something.quaternion.z,something.quaternion.w);
-    // E.BoxTopBody.addShape(new CANNON.Box(new CANNON.Vec3(.04,.035,.035)),new CANNON.Vec3(-0.1,0.15,0),quat);
-    this.world03.addBody(E.BoxTopBody);
-
-    // Gift Box Position
-    E.BoxBody.position.set(Px, Py-.9, Pz);
-    E.BoxTopBody.position.set(Px, Py-.9, Pz);
-    
-    var b = new CANNON.LockConstraint(E.BoxBody,E.BoxTopBody);
-    b.collideConnected=false;
-    this.world03.addConstraint(b)
-
-    E.BoxBody.addEventListener('collide',(e)=>{
-      if(e.body.material){
-        if(e.body.material.name=="PlaneMaterial"&&!E.Boop){
-          E.Boop=true;
-          gsap.to(E.Box3d.scale,.3,{x:.1,y:.1,z:.1})
-          gsap.to(E.Shadow.scale,.3,{x:.1,y:.1,z:.1})
-          this.scene.remove(E.StringLine02)
-          gsap.delayedCall(.2,()=>{
-            this.BOOP(E.BoxBody.position.x,E.BoxBody.position.y,E.BoxBody.position.z);
-            this.scene.remove(E.Box3d);
-            this.scene.remove(E.Shadow);
-            this.world03.remove(E.BoxBody);
-            this.world03.remove(E.BoxTopBody);
-          })
-        };
-      }
-    });
-
-    E.BoxTopBody.addEventListener('collide',(e)=>{
-      if(e.body.material){
-        if(e.body.material.name=="LandMaterial"&&!E.Boop){
-          E.Boop=true;
-          gsap.to(E.Box3d.scale,.3,{x:.1,y:.1,z:.1})
-          gsap.to(E.Shadow.scale,.3,{x:.1,y:.1,z:.1})
-          this.scene.remove(E.StringLine02)
-          gsap.delayedCall(.2,()=>{
-            this.BOOP(E.BoxBody.position.x,E.BoxBody.position.y,E.BoxBody.position.z);
-            this.scene.remove(E.Box3d);
-            this.scene.remove(E.Shadow);
-            this.world03.remove(E.BoxBody);
-            this.world03.remove(E.BoxTopBody);
-          })
-        };
-      }
-    });
-
-    E.BoxBody.angularDamping = angularDamping;
-    E.BoxBody.linearDamping = linearDamping;
-
-
-    // Box Constraint
-    E.BoxConstraint = new CANNON.LockConstraint(E.BoxBody, E.BalloonBody);
-    this.world03.addConstraint(E.BoxConstraint);
-
-
-    // Create Line2 (First Line)
-    E.LinePoints01 = [];
-
-    E.LinePoints01.push(Px,Py-.2,Pz,Px,Py-1,Pz);
-
-    
-    E.StringPoints01 = new LineGeometry();
-    E.StringPoints01.setPositions(E.LinePoints01);
-
-    E.StringLine01 = new Line2(
-      E.StringPoints01,this.StringM
-    )
-    this.scene.add(E.StringLine01)
-
-    // Normal Line (to cut)
-    E.NormalGeo = new THREE.Geometry();
-    E.NormalGeo.vertices.push(
-      E.BalloonAttach.position,
-      E.BoxAttach.position
-    )
-    E.NormalLine = new THREE.Line(E.NormalGeo,new THREE.LineBasicMaterial({color:0x0000ff}));
-
-    this.Lines.push(E.NormalLine);
-    // this.scene.add(E.NormalLine);
-
-
-    var adp = .3;
-    var ldp = .3;
-    // Create Lines01
-    for (var i = 0; i < 4; i++) {
-      let body = new CANNON.Body({ mass: i == 0 ? 20 : .1});
-      body.addShape(new CANNON.Box(new CANNON.Vec3(.01, .01, .01)));
-
-      body.angularDamping = adp;
-      body.linearDamping = ldp;
-
-      E.Lines01.push(body);
-    }
-    E.Catmull01 = new THREE.CatmullRomCurve3([
-      new THREE.Vector3(Px,Py,Pz),new THREE.Vector3(Px,Py-.5,Pz),new THREE.Vector3(Px,Py-1,Pz),new THREE.Vector3(Px,Py-1,Pz)
-    ])
-
-    // Create Lines02
-    for (var i = 0; i < 4; i++) {
-      let body = new CANNON.Body({ mass: i == 0 ? .1 : .1});
-      body.addShape(new CANNON.Box(new CANNON.Vec3(.01, .01, .01)));
-
-      body.angularDamping = adp;
-      body.linearDamping = ldp;
-
-      E.Lines02.push(body);
-    }
-    E.Catmull02 = new THREE.CatmullRomCurve3([
-      new THREE.Vector3(Px,Py,Pz),new THREE.Vector3(Px,Py-.5,Pz),new THREE.Vector3(Px,Py-1,Pz),new THREE.Vector3(Px,Py-1,Pz)
-    ])
-
-
-    // SHADOW
-    var texture = this.textureLoader.load('assets/shadow/Gift02.png');
-
-    let uniforms = {
-      tShadow:{value:texture},
-      uShadowColor:{value:new THREE.Color("#c0a68e")},
-      uAlpha:{value:1}
-    }
-    let material = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms,depthWrite:false,
-      vertexShader:document.getElementById('vertexShader').textContent,
-      fragmentShader:document.getElementById('fragmentShader').textContent})
+    if(this.GiftBalloonArray.length>4){
       
-    E.Shadow = new THREE.Mesh(new THREE.PlaneGeometry(1.2,1.2),material);
-    E.Shadow.rotation.set(-Math.PI/2,0,0)
-    E.Shadow.position.set(Px,Py,Pz);
+    } else {
+      let E = new GiftBalloon;
+      this.GiftBalloonArray.push(E);
+  
+      // false: uncut, true: cut
+      E.State=false;
+      // false: The gift hasn't broken
+      E.Boop=false;
+          
+      E.Lines01=[];
+      E.Lines02=[];
+      E.DisConstrain01=[];
+      E.DisConstrain02=[];
+  
+      // Material
+      let mate02 = new THREE.MeshBasicMaterial({
+        color:0xffffff,
+        transparent:true,
+        opacity:0,
+      })
+  
+  
+      // GB (top force)
+      E.GBBody = new CANNON.Body({mass:0});
+      E.GBBody.addShape(new CANNON.Sphere(.02));
+      E.GBBody.position.set(Px,Py,Pz);
+      this.world03.addBody(E.GBBody);
+  
+      // Balloon 3d
+      E.Balloon3d = new THREE.Object3D();
+      this.loader.load(
+        'assets/model/balloon01.glb',
+        (gltf) => {
+          var s = gltf.scene;
+          s.scale.set(1.15,1.15,1.15)
+          s.children["0"].position.set(0,0,0);
+          let mate01 = new THREE.MeshMatcapMaterial({
+            color:0xffffff,
+            side:2,
+            transparent:true,
+            opacity:1,
+            matcap:this.red
+          })
+          s.children["0"].material=mate01;
+          E.Balloon3d.add(s);
+        }
+      );
+  
+      // Balloon Attach
+      E.BalloonAttach = new THREE.Mesh(new THREE.BoxBufferGeometry(.02,.02,.02),mate02)
+      E.BalloonAttach.position.set(0,-.16,0);
+      E.Balloon3d.add(E.BalloonAttach);
+      E.Balloon3d.position.set(0,0,0);
+      this.scene.add(E.Balloon3d);
+  
+      var linearDamping = .3;
+      var angularDamping = .3;
+  
+      // Balloon body
+      E.BalloonBody = new CANNON.Body({ mass: 10});
+      E.BalloonBody.addShape(new CANNON.Sphere(.15),new CANNON.Vec3(0,0.06,0));
+      E.BalloonBody.angularDamping = angularDamping;
+      E.BalloonBody.linearDamping = linearDamping;
+      this.world03.addBody(E.BalloonBody);
+  
+      E.BalloonBody.position.set( Px, Py-.3, Pz);
+      
+      // Balloon Constraint
+      var c = new CANNON.PointToPointConstraint(E.BalloonBody,new CANNON.Vec3(0,.15,0),E.GBBody,new CANNON.Vec3(0,-.15,0));
+      this.world03.addConstraint(c);
+  
+  
+      // Box 
+      E.Box3d = new THREE.Object3D();
+      this.loader.load(
+        'assets/model/Box02.glb',
+        (gltf) => {
+          E.BoxThree = gltf.scene;
+          E.BoxThree.scale.set(1.25,1.25,1.25)
+          E.BoxThree.position.set(0,0,0);
+          let mate01 = new THREE.MeshMatcapMaterial({
+            color:0xffffff,
+            side:2,
+            transparent:true,
+            opacity:1,
+            matcap:this.red
+          })
+          let mate03 = new THREE.MeshMatcapMaterial({
+            color:0xfefefe,
+            side:2,
+            transparent:true,
+            opacity:1,
+            matcap:this.white
+          })
+          E.BoxThree.children["0"].children[0].material=mate03;
+          E.BoxThree.children["0"].children[1].material=mate01;
+          E.Box3d.add(E.BoxThree);
+        }
+      );
+      
 
-    this.scene.add(E.Shadow);
 
-    gsap.delayedCall(Math.random()*1+1,()=>{
-      gsap.to(E.GBBody.position,1.8,{x:"+=.4",ease:"power1.in"});
-      gsap.to(E.GBBody.position,1.8,{x:"+=.4",ease:"power1.out",delay:1.5});
-      gsap.to(E.GBBody.position,1.8,{z:"+=.2",ease:"power1.in"});
-      gsap.to(E.GBBody.position,1.8,{z:"-=.2",ease:"power1.out",delay:1.5});
+      this.loader.load(
+        'assets/model/Lid.glb',
+        (gltf) => {
+          E.BoxLid = gltf.scene;
+          E.BoxLid.scale.set(1.25,1.25,1.25)
+          E.BoxLid.position.set(0,0,0);
+          let mate01 = new THREE.MeshMatcapMaterial({
+            color:0xffffff,
+            side:2,
+            transparent:true,
+            opacity:1,
+            matcap:this.red
+          })
+          let mate03 = new THREE.MeshMatcapMaterial({
+            color:0xfefefe,
+            side:2,
+            transparent:true,
+            opacity:1,
+            matcap:this.white
+          })
+          E.BoxLid.children["0"].children[0].material=mate03;
+          E.BoxLid.children["0"].children[1].material=mate01;
+          E.Box3d.add(E.BoxLid);
+        }
+      );
+      
+  
+      E.BoxAttach = new THREE.Mesh(new THREE.BoxBufferGeometry(.02,.02,.02),mate02)
+      E.BoxAttach.position.set(0,.12,0);
+      E.Box3d.add(E.BoxAttach);
+      this.scene.add(E.Box3d);
 
-      gsap.to(E.GBBody.position,0,{repeat:15,repeatDelay:3,
-        onRepeat:()=>{
-          // gsap.to(E.GB.position,2,{x:"+=.4",ease:"power1.in"});
-          // gsap.to(E.GB.position,2,{x:"+=.4",ease:"power1.out",delay:2,});
-          if(!E.State){
-            gsap.to(E.GBBody.position,1.8,{x:"+=.4",ease:"power1.in"});
-            gsap.to(E.GBBody.position,1.8,{x:"+=.4",ease:"power1.out",delay:1.5});
-            gsap.to(E.GBBody.position,1.8,{z:"+=.2",ease:"power1.in"});
-            gsap.to(E.GBBody.position,1.8,{z:"-=.2",ease:"power1.out",delay:1.5});
+      console.log(E.Box3d)
+  
+      E.BoxBody = new CANNON.Body({ mass: 6,material:this.GiftMaterial });
+      E.BoxBody.addShape(new CANNON.Box(new CANNON.Vec3(.125,.08,.125)),new CANNON.Vec3(0,-.025,0));
+      this.world03.addBody(E.BoxBody);
+  
+      E.BoxTopBody = new CANNON.Body({ mass: 2 });
+      E.BoxTopBody.addShape(new CANNON.Box(new CANNON.Vec3(.135,.033,.135)),new CANNON.Vec3(0,0.08,0));
+  
+      // Bowtie
+      // var something = new THREE.Mesh();
+      // something.rotation.set(0,0,40*Math.PI/180);
+      // var quat = new CANNON.Quaternion();
+      // quat.set(something.quaternion.x,something.quaternion.y,something.quaternion.z,something.quaternion.w);
+  
+      // E.BoxTopBody.addShape(new CANNON.Box(new CANNON.Vec3(.04,.035,.035)),new CANNON.Vec3(0.1,0.15,0),quat);
+  
+      // var something = new THREE.Mesh();
+      // something.rotation.set(0,0,-40*Math.PI/180);
+      // var quat = new CANNON.Quaternion();
+      // quat.set(something.quaternion.x,something.quaternion.y,something.quaternion.z,something.quaternion.w);
+      // E.BoxTopBody.addShape(new CANNON.Box(new CANNON.Vec3(.04,.035,.035)),new CANNON.Vec3(-0.1,0.15,0),quat);
+      this.world03.addBody(E.BoxTopBody);
+  
+      // Gift Box Position
+      E.BoxBody.position.set(Px, Py-.9, Pz);
+      E.BoxTopBody.position.set(Px, Py-.9, Pz);
+      
+      var b = new CANNON.LockConstraint(E.BoxBody,E.BoxTopBody);
+      b.collideConnected=false;
+      this.world03.addConstraint(b)
+  
+      E.BoxBody.addEventListener('collide',(e)=>{
+        if(e.body.material){
+          if(e.body.material.name=="PlaneMaterial"&&!E.Boop){
+            E.Boop=true;
+            gsap.to(E.Box3d.scale,.3,{x:.1,y:.1,z:.1})
+            gsap.to(E.Shadow.scale,.3,{x:.1,y:.1,z:.1})
+            this.scene.remove(E.StringLine02)
+            gsap.delayedCall(.2,()=>{
+              this.BOOP(E.BoxBody.position.x,E.BoxBody.position.y,E.BoxBody.position.z);
+              this.scene.remove(E.Box3d);
+              this.scene.remove(E.Shadow);
+              this.world03.remove(E.BoxBody);
+              this.world03.remove(E.BoxTopBody);
+              for(var i=0;i<E.Lines02.length;i++){
+                this.world03.remove(E.Lines02[i])
+              }
+            })
+          };
+        }
+      });
+  
+      E.BoxTopBody.addEventListener('collide',(e)=>{
+        if(e.body.material){
+          if(e.body.material.name=="LandMaterial"&&!E.Boop){
+            E.Boop=true;
+            gsap.to(E.Box3d.scale,.3,{x:.1,y:.1,z:.1})
+            gsap.to(E.Shadow.scale,.3,{x:.1,y:.1,z:.1})
+            this.scene.remove(E.StringLine02)
+            gsap.delayedCall(.2,()=>{
+              this.BOOP(E.BoxBody.position.x,E.BoxBody.position.y,E.BoxBody.position.z);
+              this.scene.remove(E.Box3d);
+              this.scene.remove(E.Shadow);
+              this.world03.remove(E.BoxBody);
+              this.world03.remove(E.BoxTopBody);
+              for(var i=0;i<E.Lines02.length;i++){
+                this.world03.remove(E.Lines02[i])
+              }
+            })
+          };
+        }
+      });
+  
+      E.BoxBody.angularDamping = angularDamping;
+      E.BoxBody.linearDamping = linearDamping;
+  
+  
+      // Box Constraint
+      E.BoxConstraint = new CANNON.LockConstraint(E.BoxBody, E.BalloonBody);
+      this.world03.addConstraint(E.BoxConstraint);
+  
+  
+      // Create Line2 (First Line)
+      E.LinePoints01 = [];
+  
+      E.LinePoints01.push(Px,Py-.2,Pz,Px,Py-1,Pz);
+  
+      
+      E.StringPoints01 = new LineGeometry();
+      E.StringPoints01.setPositions(E.LinePoints01);
+  
+      E.StringLine01 = new Line2(
+        E.StringPoints01,this.StringM
+      )
+      this.scene.add(E.StringLine01)
+  
+      // Normal Line (to cut)
+      E.NormalGeo = new THREE.Geometry();
+      E.NormalGeo.vertices.push(
+        E.BalloonAttach.position,
+        E.BoxAttach.position
+      )
+      E.NormalLine = new THREE.Line(E.NormalGeo,new THREE.LineBasicMaterial({color:0x0000ff}));
+  
+      this.Lines.push(E.NormalLine);
+      // this.scene.add(E.NormalLine);
+  
+  
+      var adp = .3;
+      var ldp = .3;
+      // Create Lines01
+      for (var i = 0; i < 4; i++) {
+        let body = new CANNON.Body({ mass: i == 0 ? 20 : .1});
+        body.addShape(new CANNON.Box(new CANNON.Vec3(.01, .01, .01)));
+  
+        body.angularDamping = adp;
+        body.linearDamping = ldp;
+  
+        E.Lines01.push(body);
+      }
+      E.Catmull01 = new THREE.CatmullRomCurve3([
+        new THREE.Vector3(Px,Py,Pz),new THREE.Vector3(Px,Py-.5,Pz),new THREE.Vector3(Px,Py-1,Pz),new THREE.Vector3(Px,Py-1,Pz)
+      ])
+  
+      // Create Lines02
+      for (var i = 0; i < 4; i++) {
+        let body = new CANNON.Body({ mass: i == 0 ? .1 : .1});
+        body.addShape(new CANNON.Box(new CANNON.Vec3(.01, .01, .01)));
+  
+        body.angularDamping = adp;
+        body.linearDamping = ldp;
+  
+        E.Lines02.push(body);
+      }
+      E.Catmull02 = new THREE.CatmullRomCurve3([
+        new THREE.Vector3(Px,Py,Pz),new THREE.Vector3(Px,Py-.5,Pz),new THREE.Vector3(Px,Py-1,Pz),new THREE.Vector3(Px,Py-1,Pz)
+      ])
+  
+  
+      // SHADOW
+      var texture = this.textureLoader.load('assets/shadow/Gift.png');
+  
+      let uniforms = {
+        tShadow:{value:texture},
+        uShadowColor:{value:new THREE.Color("#78b75e")},
+        uAlpha:{value:.75}
+      }
+      let material = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms,depthWrite:false,
+        vertexShader:document.getElementById('vertexShader').textContent,
+        fragmentShader:document.getElementById('fragmentShader').textContent})
+        
+      E.Shadow = new THREE.Mesh(new THREE.PlaneGeometry(1.2,1.2),material);
+      E.Shadow.rotation.set(-Math.PI/2,0,0)
+      
+      E.Shadow.position.set(Px,Py,Pz);
+  
+      this.scene.add(E.Shadow);
+  
+      gsap.delayedCall(Math.random()*1+1,()=>{
+        gsap.to(E.GBBody.position,1.8,{x:"+=.4",ease:"power1.in"});
+        gsap.to(E.GBBody.position,1.8,{x:"+=.4",ease:"power1.out",delay:1.5});
+        gsap.to(E.GBBody.position,1.8,{z:"+=.2",ease:"power1.in"});
+        gsap.to(E.GBBody.position,1.8,{z:"-=.2",ease:"power1.out",delay:1.5});
+  
+        gsap.to(E.GBBody.position,0,{repeat:15,repeatDelay:3,
+          onRepeat:()=>{
+            // gsap.to(E.GB.position,2,{x:"+=.4",ease:"power1.in"});
+            // gsap.to(E.GB.position,2,{x:"+=.4",ease:"power1.out",delay:2,});
+            if(!E.State){
+              gsap.to(E.GBBody.position,1.8,{x:"+=.4",ease:"power1.in"});
+              gsap.to(E.GBBody.position,1.8,{x:"+=.4",ease:"power1.out",delay:1.5});
+              gsap.to(E.GBBody.position,1.8,{z:"+=.2",ease:"power1.in"});
+              gsap.to(E.GBBody.position,1.8,{z:"-=.2",ease:"power1.out",delay:1.5});
+            }
+          }});
+      })
+    }
+    
+  }
+
+  ThirdRaycaster(){
+    this.raycaster.setFromCamera(this.mouse,this.camera);
+    var intersect = this.raycaster.intersectObjects(this.ThirdSceneObject,true)
+    let outer = document.querySelector('.cursor .outer');
+    let inner = document.querySelector('.cursor .inner');
+    if(intersect.length>0){
+      gsap.to(outer,.2,{attr:{r:22}});
+      gsap.to(inner,.2,{attr:{r:19}});
+    } else {
+      gsap.to(outer,.2,{attr:{r:13}});
+      gsap.to(inner,.2,{attr:{r:0}});
+    }
+  }
+
+  private RockClickNum:number=0;
+  ThirdClickEvent(){
+    this.raycaster.setFromCamera(this.mouse,this.camera);
+    var intersect = this.raycaster.intersectObjects(this.ThirdSceneObject,true)
+    if(intersect.length>0){
+      console.log(intersect[0])
+      switch (intersect[0].object.name) {
+        case "Rock":
+          var Vector = new THREE.Vector3();
+          Vector.setFromMatrixPosition(intersect[0].object.matrixWorld);
+
+          // Coin && Rock
+          if(this.CoinCurrent<4 && this.RockClickNum<3){
+            // Rock
+            gsap.to(intersect[0].object.parent.position,.3,{x:"+=.1",z:"-=.1",ease:"out"});
+            gsap.to(intersect[0].object.parent.position,.3,{x:"-=.1",z:"+=.1",ease:"in",delay:.3});
+
+            // scale
+            gsap.fromTo(this.CoinArray[this.CoinCurrent].scale,.3,{x:.2,y:.2,z:.2},{x:1,y:1,z:1})
+            // Opacity
+            gsap.to(this.CoinArray[this.CoinCurrent].children[1].material.uniforms.uAlpha,
+              .3,{value:.6,delay:.6})
+
+            // X Z
+            if(this.RockClickNum==0){
+              gsap.fromTo(this.CoinArray[this.CoinCurrent].position,1,{x:Vector.x,z:Vector.z},{x:"+=.45",z:"+=.45",ease:"power1.out"});
+            } else if (this.RockClickNum==1){
+              gsap.fromTo(this.CoinArray[this.CoinCurrent].position,1,{x:Vector.x,z:Vector.z},{x:"+=0",z:"+=.45",ease:"power1.out"});
+            } else  {
+              gsap.fromTo(this.CoinArray[this.CoinCurrent].position,1,{x:Vector.x,z:Vector.z},{x:"-=.45",z:"+=.45",ease:"power1.out"});
+            }
+            this.RockClickNum++;
+
+            // Y
+            gsap.fromTo(this.CoinArray[this.CoinCurrent].position,.3,{y:Vector.y},{ease:"power1.out",y:"+=.6"})
+            gsap.to(this.CoinArray[this.CoinCurrent].position,.3,{ease:"power1.in",delay:.3,y:0.28})
+
+            gsap.to(this.CoinArray[this.CoinCurrent].position,.2,{delay:0.6,ease:"power1.out",y:"+=.12"})
+            gsap.to(this.CoinArray[this.CoinCurrent].position,.2,{ease:"power1.in",delay:.8,y:0.28})
+
+            this.CoinCurrent+=1;
           }
-        }});
-    })
+
+          // Star 
+          Vector.y+=.3;
+          Vector.x-=.1;
+          Vector.project(this.camera);
+          var Px = (Vector.x+1)*window.innerWidth/2;
+          var Py = - (Vector.y-1)*window.innerHeight/2;
+
+          for(var i=0;i<3;i++){
+            var xmlns = "http://www.w3.org/2000/svg";
+            var star = document.createElementNS(xmlns,'svg');
+            star.setAttributeNS(null,"viewBox","-20 -20 40 40");
+            star.setAttribute("class", "star");
+  
+            var path = document.createElementNS(xmlns,"path");
+            path.setAttributeNS(null, "d", "M6,-4C20,0 20,0 6,4C6,19 6,19 -2,7C-16,12 -16,12 -8,0C-16,-12 -16,-12 -2,-7C6,-19 6,-19 6,-4");
+  
+            document.getElementById('welcome').appendChild(star);
+            star.appendChild(path);
+  
+            // Set Position, rotate
+            gsap.set(star,{css:{left:Px,top:Py}});
+            gsap.set(star,{css:{rotate:Math.random()*90}});
+            //
+            gsap.to(star,.25,{css:{opacity:0},delay:.4,ease:"in"})
+            gsap.to(star,.5,{css:{rotate:"-=180"},ease:"power1.out"})
+            if(i==0){
+              gsap.set(star,{css:{scale:.8}});
+              var rL = 20 + Math.random()*10-5;
+              var rT = 70 + Math.random()*10-5;
+              gsap.to(star,.25,{ease:"out",css:{left:"-="+rL,top:"-="+rT}});
+              gsap.to(star,.2,{ease:"none",delay:.25,css:{left:"-=15",top:"+=15"}});
+            } else if (i==1){
+              gsap.set(star,{css:{scale:1.1}});
+              var rL = 65 + Math.random()*14-7;
+              var rT = 65 + Math.random()*14-7;
+              gsap.to(star,.25,{ease:"out",css:{left:"-="+rL,top:"-="+rT}});
+              gsap.to(star,.2,{ease:"none",delay:.25,css:{left:"-=15",top:"+=15"}});
+            } else {
+              var rL = 70 + Math.random()*10-5;
+              var rT = 20 + Math.random()*10-5;
+              gsap.to(star,.25,{ease:"out",css:{left:"-="+rL,top:"-="+rT}});
+              gsap.to(star,.2,{ease:"none",delay:.25,css:{left:"-=15",top:"+=15"}});
+            }
+          }
+          break;
+      }
+      switch (intersect[0].object.parent.name){
+        case "Tree":
+        case "Tree02":
+          var Vector = new THREE.Vector3();
+          Vector.setFromMatrixPosition(intersect[0].object.matrixWorld);
+
+          // Leaf
+          for(var i=0;i<5;i++){
+            var leaf = document.createElement('div');
+            leaf.className = "leaf";
+            document.getElementById('welcome').appendChild(leaf);
+
+            Vector.setFromMatrixPosition(intersect[0].object.parent.matrixWorld);
+            Vector.project(this.camera);
+            var Px = (Vector.x+1)*window.innerWidth/2;
+            var Py = - (Vector.y-1)*window.innerHeight/2;
+            Vector.y+=.2;
+            gsap.fromTo(leaf,.4,{css:{left:Px,top:Py}},{css:{top:"-=20"}});
+            console.log('asdf')
+          }
+          break;
+        case "Coin":
+          // Coin
+          gsap.to(intersect[0].object.parent.parent.position,.4,{y:"+=.3",ease:"none"});
+          gsap.to(intersect[0].object.parent.parent.scale,.4,{delay:.2,x:.1,y:.1,z:.1,ease:"none"});
+          gsap.to(intersect[0].object.parent.parent.parent.children["1"].material.uniforms.uAlpha,
+            .4,{value:0,delay:.1})
+
+          // +1
+          var plus1 = document.createElement('div');
+          plus1.innerHTML = "+1";
+          plus1.className = "plus1";
+          document.getElementById('welcome').appendChild(plus1);
+
+          var Vector = new THREE.Vector3()
+          Vector.setFromMatrixPosition(intersect[0].object.matrixWorld);
+
+          Vector.project(this.camera);
+          
+          var Px = (Vector.x+1)*window.innerWidth/2;
+          var Py = - (Vector.y-1)*window.innerHeight/2;
+          Vector.y+=.2;
+          var Py2 = - (Vector.y-1)*window.innerHeight/2;
+          gsap.set(plus1,{css:{left:Px}})
+          gsap.fromTo(plus1,.8,{css:{top:Py}},{css:{top:Py2},ease:"power1.out"})
+          gsap.to(plus1,.4,{css:{opacity:1},delay:.1})
+          gsap.to(plus1,.8,{css:{opacity:0},delay:.6})
+          
+          gsap.delayedCall(1,()=>{
+            document.getElementById('welcome').removeChild(plus1);
+            this.scene.remove(intersect[0].object.parent.parent.parent);
+          })
+          break;
+      }
+    }
   }
 
   ThirdSceneRender(){
@@ -3111,9 +3412,10 @@ export class welcomeService {
     //   this.sphereInter.visible = false;
     // }
 
+    this.ThirdRaycaster();
     this.world03.step(1 / this.fps);
     this.RenderMouseCursor();
-    this.debugger03.update();
+    // this.debugger03.update();
     // for (var i = 0; i < this.meshes03.length; i++) {
     //   this.meshes03[i].position.copy(this.bodies03[i].position);
     //   this.meshes03[i].quaternion.copy(this.bodies03[i].quaternion);
@@ -3135,7 +3437,7 @@ export class welcomeService {
       this.GiftBalloonArray[i].Shadow.position.set(this.GiftBalloonArray[i].Box3d.position.x,
         this.GiftBalloonArray[i].Box3d.position.y -.1,this.GiftBalloonArray[i].Box3d.position.z)
       this.GiftBalloonArray[i].Shadow.material.uniforms.uAlpha.value = 
-        (.6 - this.GiftBalloonArray[i].Box3d.position.y)*4;
+        (.6 - this.GiftBalloonArray[i].Box3d.position.y)*1.5;
 
       
       // Attach Position
@@ -3317,10 +3619,41 @@ export class welcomeService {
         // this.GiftBalloonArray[i].BoxBody.velocity.y=-1;
 
         var k = i;
-        // gsap.delayedCall(2,()=>{          
-        //   this.ScoreFunction(this.GiftBalloonArray[k].BoxBody.position);
-        //   this.scene.remove(this.GiftBalloonArray[k].Box3d);
-        // })
+        gsap.delayedCall(2,()=>{
+          if(!this.GiftBalloonArray[k].Boop){
+            // Success Animation
+            gsap.to(this.GiftBalloonArray[k].Box3d.scale,.25,{x:.9,y:.9,z:.9,ease:"power1.out"});
+            gsap.to(this.GiftBalloonArray[k].BoxLid.position,.25,{y:"-=.05",ease:"power1.out"});
+            gsap.to(this.GiftBalloonArray[k].BoxThree.position,.25,{y:"-=.05",ease:"power1.out"});
+
+            gsap.to(this.GiftBalloonArray[k].Box3d.scale,.25,{x:1,y:1,z:1,delay:.25,ease:"power1.in"});
+            gsap.to(this.GiftBalloonArray[k].BoxLid.position,.25,{y:"+=.05",delay:.25,ease:"power1.in"});
+            gsap.to(this.GiftBalloonArray[k].BoxThree.position,.25,{y:"+=.05",delay:.25,ease:"power1.in"});
+            
+            gsap.to(this.GiftBalloonArray[k].BoxLid.position,.2,{y:"+=.1",x:"+=.1",z:"-=.1",delay:.4,ease:"power1.in"})
+            gsap.to(this.GiftBalloonArray[k].BoxLid.rotation,.2,{x:"-=.35",z:"-=.35",delay:.4,ease:"power1.in"})
+            gsap.to(this.GiftBalloonArray[k].BoxLid.children[0].children[0].material,.1,{opacity:0,delay:.7,ease:"power1.in"})
+            gsap.to(this.GiftBalloonArray[k].BoxLid.children[0].children[1].material,.1,{opacity:0,delay:.7,ease:"power1.in"})
+            
+            gsap.delayedCall(.6,()=>{
+              this.ScoreFunction(this.GiftBalloonArray[k].BoxBody.position);
+              gsap.to(this.GiftBalloonArray[k].BoxThree.children[0].children[0].material,.3,{opacity:0,delay:.4,ease:"power1.in"})
+              gsap.to(this.GiftBalloonArray[k].BoxThree.children[0].children[1].material,.3,{opacity:0,delay:.4,ease:"power1.in"})
+            })
+            gsap.delayedCall(1,()=>{
+              this.scene.remove(this.GiftBalloonArray[k].Box3d);
+              this.scene.remove(this.GiftBalloonArray[k].Shadow);
+            })
+
+            // remove stuff
+            this.scene.remove(this.GiftBalloonArray[k].StringLine02)
+            this.world03.remove(this.GiftBalloonArray[k].BoxBody);
+            this.world03.remove(this.GiftBalloonArray[k].BoxTopBody);
+            for(var j=0;j<this.GiftBalloonArray[k].Lines02.length;j++){
+              this.world03.remove(this.GiftBalloonArray[k].Lines02[j])
+            }
+          }
+        })
       }
     }
   }
