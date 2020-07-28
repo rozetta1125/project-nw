@@ -334,10 +334,10 @@ export class welcomeService {
     this.wood = this.textureLoader.load('assets/matcaps/wood.png',()=>{
       this.wood.encoding=THREE.sRGBEncoding;
     });
-    this.red = this.textureLoader.load('assets/matcaps/03/EE4D51.png',()=>{
+    this.red = this.textureLoader.load('assets/matcaps/03/balloon.png',()=>{
       this.red.encoding=THREE.sRGBEncoding;
     });
-    this.yellow = this.textureLoader.load('assets/matcaps/03/FFEB40.png',()=>{
+    this.yellow = this.textureLoader.load('assets/matcaps/03/coin.png',()=>{
       this.yellow.encoding=THREE.sRGBEncoding;
     });
   }
@@ -366,35 +366,6 @@ export class welcomeService {
   private FerrisShadow = new THREE.Object3D();
   private FerrisShadows = [];
   CreateParkObject() {
-    let white = this.textureLoader.load('assets/matcaps/white.png',()=>{
-      white.encoding=THREE.sRGBEncoding;
-    });
-    let blue = this.textureLoader.load('assets/matcaps/A4BCEC05.png',()=>{
-      blue.encoding=THREE.sRGBEncoding;
-    });
-    let pink = this.textureLoader.load('assets/matcaps/E7B9BE05.png',()=>{
-      pink.encoding=THREE.sRGBEncoding;
-    });
-    // white
-    let mate01 = new THREE.MeshMatcapMaterial({
-      color:0xffffff,
-      side:2,
-      matcap:white
-    })
-    // blue
-    let mate02 = new THREE.MeshMatcapMaterial({
-      color:0xffffff,
-      side:2,
-      matcap:blue
-    })
-    // pink
-    let mate03 = new THREE.MeshMatcapMaterial({
-      color:0xffffff,
-      side:2,
-      matcap:pink
-    })
-
-
     this.loader.load('assets/model/Swing.glb',
       (gltf)=>{
         this.Swing=gltf.scene;
@@ -443,9 +414,24 @@ export class welcomeService {
 
         for(var i=0;i<gltf.scene.children.length;i++){
           if(gltf.scene.children[i].name=="Swing01"){
+            let mate01 = new THREE.MeshMatcapMaterial({
+              color:0xffffff,
+              side:2,
+              matcap:this.white
+            })
+            let mate02 = new THREE.MeshMatcapMaterial({
+              color:0xffffff,
+              side:2,
+              matcap:this.blue01
+            })
+            let mate03 = new THREE.MeshMatcapMaterial({
+              color:0xffffff,
+              side:2,
+              matcap:this.white
+            })
             gltf.scene.children[""+i+""].children[0].material=mate01;
             gltf.scene.children[""+i+""].children[1].material=mate02;
-            gltf.scene.children[""+i+""].children[2].material=mate01;
+            gltf.scene.children[""+i+""].children[2].material=mate03;
             this.SwingS.push(gltf.scene.children[""+i+""]);
 
             this.SwingTween.pause();
@@ -477,8 +463,18 @@ export class welcomeService {
             this.SwingTween.to(gltf.scene.children[""+i+""].rotation,.3,{ease:Power1.easeInOut,y:-.5*Math.PI/180})
             this.SwingTween.to(gltf.scene.children[""+i+""].rotation,.2,{ease:Power1.easeInOut,y:0*Math.PI/180})
           } else if (gltf.scene.children[i].name=="Star02") {
-            gltf.scene.children[""+i+""].material=mate02;
+            let mate01 = new THREE.MeshMatcapMaterial({
+              color:0xffffff,
+              side:2,
+              matcap:this.blue01
+            })
+            gltf.scene.children[""+i+""].material=mate01;
           } else {
+            let mate01 = new THREE.MeshMatcapMaterial({
+              color:0xffffff,
+              side:2,
+              matcap:this.white
+            })
             gltf.scene.children[""+i+""].material=mate01;
           }
         }
@@ -500,9 +496,24 @@ export class welcomeService {
         // Carnival
         for(var i=0;i<this.Carnival.children.length;i++){
           if(this.Carnival.children[i].name=="Carnival02"){
+            let mate01 = new THREE.MeshMatcapMaterial({
+              color:0xffffff,
+              side:2,
+              matcap:this.white
+            })
+            let mate02 = new THREE.MeshMatcapMaterial({
+              color:0xffffff,
+              side:2,
+              matcap:this.blue01
+            })
             this.Carnival.children[i].children[0].material=mate02;
             this.Carnival.children[i].children[1].material=mate01;
           } else {
+            let mate01 = new THREE.MeshMatcapMaterial({
+              color:0xffffff,
+              side:2,
+              matcap:this.white
+            })
             this.Carnival.children[i].material=mate01
           }
         }
@@ -578,10 +589,25 @@ export class welcomeService {
             
             for(var i=0;i<2;i++){
               if(gltf.scene.children[i].name=="CarnivalPlane00"){
+                let mate01 = new THREE.MeshMatcapMaterial({
+                  color:0xffffff,
+                  side:2,
+                  matcap:this.blue01
+                })
+                let mate02 = new THREE.MeshMatcapMaterial({
+                  color:0xffffff,
+                  side:2,
+                  matcap:this.pink
+                })
                 PlanePart = gltf.scene.children[i].clone();
-                PlanePart.children["0"].material=mate02;
-                PlanePart.children["1"].material=mate03;
+                PlanePart.children["0"].material=mate01;
+                PlanePart.children["1"].material=mate02;
               } else {
+                let mate02 = new THREE.MeshMatcapMaterial({
+                  color:0xffffff,
+                  side:2,
+                  matcap:this.blue01
+                })
                 gltf.scene.children[""+i+""].material=mate02;
                 Fan = gltf.scene.children[i].clone();
               }
@@ -695,12 +721,27 @@ export class welcomeService {
         
         for(var i=0;i<this.FerrisWheel.children.length;i++){
           if(this.FerrisWheel.children[i].name=="Star"){
+            let mate02 = new THREE.MeshMatcapMaterial({
+              color:0xffffff,
+              side:2,
+              matcap:this.blue01
+            })
             this.FerrisWheel.children[i].material=mate02
           } else if(this.FerrisWheel.children[i].name=="FerrisWheel00") {
+            let mate01 = new THREE.MeshMatcapMaterial({
+              color:0xffffff,
+              side:2,
+              matcap:this.white
+            })
             this.FerrisWheel.children[i].material=mate01
             shadow01.position.x=gltf.scene.children[i].position.x-.003
             shadow01.position.z=gltf.scene.children[i].position.z+.08
           } else {
+            let mate01 = new THREE.MeshMatcapMaterial({
+              color:0xffffff,
+              side:2,
+              matcap:this.white
+            })
             this.FerrisWheel.children[i].material=mate01
           }
         }
@@ -730,6 +771,16 @@ export class welcomeService {
                 this.TweenF01.to(this.Ferris.scene.children[i].rotation,1,{z:.7})
                 this.TweenF01.to(this.Ferris.scene.children[i].rotation,2,{z:-.7});
                 this.TweenF01.to(this.Ferris.scene.children[i].rotation,1,{z:0});
+                let mate01 = new THREE.MeshMatcapMaterial({
+                  color:0xffffff,
+                  side:2,
+                  matcap:this.white
+                })
+                let mate03 = new THREE.MeshMatcapMaterial({
+                  color:0xffffff,
+                  side:2,
+                  matcap:this.pink
+                })
                 this.Ferris.scene.children[i].children[1].material=mate03
                 this.Ferris.scene.children[i].children[0].material=mate01
               } else if (this.Ferris.scene.children[i].name=="F02") {
@@ -737,6 +788,16 @@ export class welcomeService {
                 this.TweenF02.to(this.Ferris.scene.children[i].rotation,1,{z:.7})
                 this.TweenF02.to(this.Ferris.scene.children[i].rotation,2,{z:-.7});
                 this.TweenF02.to(this.Ferris.scene.children[i].rotation,1,{z:0});
+                let mate01 = new THREE.MeshMatcapMaterial({
+                  color:0xffffff,
+                  side:2,
+                  matcap:this.white
+                })
+                let mate02 = new THREE.MeshMatcapMaterial({
+                  color:0xffffff,
+                  side:2,
+                  matcap:this.blue01
+                })
                 this.Ferris.scene.children[i].children[1].material=mate02
                 this.Ferris.scene.children[i].children[0].material=mate01
               } else if (this.Ferris.scene.children[i].name=="F03") {
@@ -744,6 +805,16 @@ export class welcomeService {
                 this.TweenF03.to(this.Ferris.scene.children[i].rotation,1,{z:.7})
                 this.TweenF03.to(this.Ferris.scene.children[i].rotation,2,{z:-.7});
                 this.TweenF03.to(this.Ferris.scene.children[i].rotation,1,{z:0});
+                let mate01 = new THREE.MeshMatcapMaterial({
+                  color:0xffffff,
+                  side:2,
+                  matcap:this.white
+                })
+                let mate03 = new THREE.MeshMatcapMaterial({
+                  color:0xffffff,
+                  side:2,
+                  matcap:this.pink
+                })
                 this.Ferris.scene.children[i].children[1].material=mate03
                 this.Ferris.scene.children[i].children[0].material=mate01
               } else if (this.Ferris.scene.children[i].name=="F04") {
@@ -751,6 +822,16 @@ export class welcomeService {
                 this.TweenF04.to(this.Ferris.scene.children[i].rotation,1,{z:.7})
                 this.TweenF04.to(this.Ferris.scene.children[i].rotation,2,{z:-.7});
                 this.TweenF04.to(this.Ferris.scene.children[i].rotation,1,{z:0});
+                let mate01 = new THREE.MeshMatcapMaterial({
+                  color:0xffffff,
+                  side:2,
+                  matcap:this.white
+                })
+                let mate02 = new THREE.MeshMatcapMaterial({
+                  color:0xffffff,
+                  side:2,
+                  matcap:this.blue01
+                })
                 this.Ferris.scene.children[i].children[1].material=mate02
                 this.Ferris.scene.children[i].children[0].material=mate01
               } else if (this.Ferris.scene.children[i].name=="F05") {
@@ -758,6 +839,16 @@ export class welcomeService {
                 this.TweenF05.to(this.Ferris.scene.children[i].rotation,1,{z:.7})
                 this.TweenF05.to(this.Ferris.scene.children[i].rotation,2,{z:-.7});
                 this.TweenF05.to(this.Ferris.scene.children[i].rotation,1,{z:0});
+                let mate01 = new THREE.MeshMatcapMaterial({
+                  color:0xffffff,
+                  side:2,
+                  matcap:this.white
+                })
+                let mate03 = new THREE.MeshMatcapMaterial({
+                  color:0xffffff,
+                  side:2,
+                  matcap:this.pink
+                })
                 this.Ferris.scene.children[i].children[1].material=mate03
                 this.Ferris.scene.children[i].children[0].material=mate01
               } else if (this.Ferris.scene.children[i].name=="F06") {
@@ -765,6 +856,16 @@ export class welcomeService {
                 this.TweenF06.to(this.Ferris.scene.children[i].rotation,1,{z:.7})
                 this.TweenF06.to(this.Ferris.scene.children[i].rotation,2,{z:-.7});
                 this.TweenF06.to(this.Ferris.scene.children[i].rotation,1,{z:0});
+                let mate01 = new THREE.MeshMatcapMaterial({
+                  color:0xffffff,
+                  side:2,
+                  matcap:this.white
+                })
+                let mate02 = new THREE.MeshMatcapMaterial({
+                  color:0xffffff,
+                  side:2,
+                  matcap:this.blue01
+                })
                 this.Ferris.scene.children[i].children[1].material=mate02
                 this.Ferris.scene.children[i].children[0].material=mate01
               } else if (this.Ferris.scene.children[i].name=="F07") {
@@ -772,6 +873,16 @@ export class welcomeService {
                 this.TweenF07.to(this.Ferris.scene.children[i].rotation,1,{z:.7})
                 this.TweenF07.to(this.Ferris.scene.children[i].rotation,2,{z:-.7});
                 this.TweenF07.to(this.Ferris.scene.children[i].rotation,1,{z:0});
+                let mate01 = new THREE.MeshMatcapMaterial({
+                  color:0xffffff,
+                  side:2,
+                  matcap:this.white
+                })
+                let mate03 = new THREE.MeshMatcapMaterial({
+                  color:0xffffff,
+                  side:2,
+                  matcap:this.pink
+                })
                 this.Ferris.scene.children[i].children[1].material=mate03
                 this.Ferris.scene.children[i].children[0].material=mate01
               } else if (this.Ferris.scene.children[i].name=="F08") {
@@ -779,9 +890,24 @@ export class welcomeService {
                 this.TweenF08.to(this.Ferris.scene.children[i].rotation,1,{z:.7})
                 this.TweenF08.to(this.Ferris.scene.children[i].rotation,2,{z:-.7});
                 this.TweenF08.to(this.Ferris.scene.children[i].rotation,1,{z:0});
+                let mate01 = new THREE.MeshMatcapMaterial({
+                  color:0xffffff,
+                  side:2,
+                  matcap:this.white
+                })
+                let mate02 = new THREE.MeshMatcapMaterial({
+                  color:0xffffff,
+                  side:2,
+                  matcap:this.blue01
+                })
                 this.Ferris.scene.children[i].children[1].material=mate02
                 this.Ferris.scene.children[i].children[0].material=mate01
               } else {
+                let mate01 = new THREE.MeshMatcapMaterial({
+                  color:0xffffff,
+                  side:2,
+                  matcap:this.white
+                })
                 this.Ferris.scene.children[i].material=mate01
               }
               if(this.Ferris.scene.children[i].position.y<.65){
@@ -839,11 +965,31 @@ export class welcomeService {
         // Train
         for(var i=0;i<this.Train.scene.children.length;i++){
           if(this.Train.scene.children[i].name=="Rail"){
+            let mate02 = new THREE.MeshMatcapMaterial({
+              color:0xffffff,
+              side:2,
+              matcap:this.blue01
+            })
             this.Train.scene.children[i].material=mate02
           } else if (this.Train.scene.children[i].name=="SmokePipe"){
+            let mate02 = new THREE.MeshMatcapMaterial({
+              color:0xffffff,
+              side:2,
+              matcap:this.blue01
+            })
             this.Train.scene.children[i].material=mate02
             this.SmokePipe.push(this.Train.scene.children[i]);
           } else {
+            let mate01 = new THREE.MeshMatcapMaterial({
+              color:0xffffff,
+              side:2,
+              matcap:this.white
+            })
+            let mate02 = new THREE.MeshMatcapMaterial({
+              color:0xffffff,
+              side:2,
+              matcap:this.blue01
+            })
             this.Train.scene.children[i].children[0].material=mate02;
             this.Train.scene.children[i].children[1].material=mate01;
             this.TrainPosition[u].position.x=this.Train.scene.children[i].position.x;
@@ -856,10 +1002,14 @@ export class welcomeService {
         this.scene.add(this.Train.scene);
       }
     );
+  }
 
-    this.Smoke = new THREE.Mesh(new THREE.SphereBufferGeometry(.04,6,4),new THREE.MeshMatcapMaterial({transparent:true,matcap:white,opacity:0}));
-    for(var i=0;i<160;i++){
+  CreateSmokes(){
+    this.Smoke = new THREE.Mesh(new THREE.SphereBufferGeometry(.04,10,10));
+    for(var i=0;i<80;i++){
       let smokeClone = this.Smoke.clone();
+      let mate = new THREE.MeshMatcapMaterial({transparent:true,matcap:this.white,opacity:0,depthWrite:false});
+      smokeClone.material = mate;
       this.Smokes.push(smokeClone);
       this.scene.add(smokeClone);
     }
@@ -1042,24 +1192,23 @@ export class welcomeService {
       this.SmokeI=0;
     }
     // Shadow
-    TweenLite.to(this.TrainPosition[0].position,.1,{x:this.TrainPosition[2].position.x,z:this.TrainPosition[2].position.z,delay:.1})
-    TweenLite.to(this.TrainPosition[1].position,.1,{x:this.TrainPosition[3].position.x,z:this.TrainPosition[3].position.z,delay:.1})
-
+    gsap.to(this.TrainPosition[0].position,.1,{x:this.TrainPosition[2].position.x,z:this.TrainPosition[2].position.z,delay:.1})
+    gsap.to(this.TrainPosition[1].position,.1,{x:this.TrainPosition[3].position.x,z:this.TrainPosition[3].position.z,delay:.1})
 
     this.TrainPosition[0].rotation.y=this.TrainPosition[2].rotation.y;
     this.TrainPosition[1].rotation.y=this.TrainPosition[3].rotation.y;
     // Position
-    TweenLite.fromTo(this.Smokes[this.SmokeI].position,1.6,
+    gsap.fromTo(this.Smokes[this.SmokeI].position,1.6,
       {x:this.SmokePipe[0].position.x,z:this.SmokePipe[0].position.z,y:this.SmokePipe[0].position.y},
       {x:this.SmokePipe[0].position.x+(.3-Math.random()*.3),z:this.SmokePipe[0].position.z+(.3-Math.random()*.3),y:this.SmokePipe[0].position.y+Math.random()*.4+.4});
     // Scale
-    TweenLite.fromTo(this.Smokes[this.SmokeI].scale,1.6,
+    gsap.fromTo(this.Smokes[this.SmokeI].scale,1.6,
       {x:1,z:1,y:1},
-      {x:.1,z:.1,y:.1,ease:Power1.easeIn});
+      {x:.1,z:.1,y:.1,ease:"none"});
     // // Opacity
-    TweenLite.fromTo(this.Smokes[this.SmokeI].material,1.6,
+    gsap.fromTo(this.Smokes[this.SmokeI].material,1.6,
       {opacity:1},
-      {opacity:0});
+      {opacity:0,ease:"none"});
     this.SmokeI++;
     if(this.TrainAnimation==null){
     } else {
@@ -1080,7 +1229,7 @@ export class welcomeService {
     })
 
     this.AddEvent();
-
+    this.CreateSmokes();
     // this.nextStageFunction();
     // this.CreateParkObject();
     // this.ParkStaticShadow();
@@ -1106,9 +1255,9 @@ export class welcomeService {
     });
 
 
-    // this.canvas.addEventListener("touchmove", (e) => {
-    //   this.renderThreePosition(e.touches[0].clientX, e.touches[0].clientY);
-    // });
+    this.canvas.addEventListener("touchmove", (e) => {
+      this.renderThreePosition(e.touches[0].clientX, e.touches[0].clientY);
+    });
     this.canvas.addEventListener("mousedown", (e) => {
       if (e.which == 1) {
         this.CursorBegin();
@@ -2622,11 +2771,19 @@ export class welcomeService {
       () => {
       this.ThirdClickEvent();
       },600));
+
+    this.canvas.addEventListener("touchmove", throttle(
+      () => {
+      this.ThirdClickEvent();
+      },600));
   }
 
 
   private IslandRock:THREE.Object3D;
   private Island:THREE.Object3D;
+  private Tent:THREE.Object3D;
+  private House:THREE.Object3D;
+  private Hammer:THREE.Object3D;
   CreateIsland(Ix,Iy,Iz){
     // Material
     let tent01 = this.textureLoader.load('assets/matcaps/03/tent01.png',()=>{
@@ -2650,19 +2807,20 @@ export class welcomeService {
     let white = this.textureLoader.load('assets/matcaps/03/white.png',()=>{
       white.encoding=THREE.sRGBEncoding;
     });
-    let yellow = this.textureLoader.load('assets/matcaps/03/FFEB40.png',()=>{
+    let yellow = this.textureLoader.load('assets/matcaps/03/coin.png',()=>{
       yellow.encoding=THREE.sRGBEncoding;
     });
 
-
-
+    var ScaleMultiplier = 1.75;
     var mateOpacity = 1;
 
+
+    // Island 
     this.loader.load(
-      'assets/model/Island04.glb',
+      'assets/model/Island05.glb',
       (gltf) => {
         this.Island = gltf.scene;
-        this.Island.scale.set(1.75,1.75,1.75);
+        this.Island.scale.set(ScaleMultiplier,ScaleMultiplier,ScaleMultiplier);
         this.Island.rotation.set(0,0*Math.PI/180,0)
         this.Island.position.set(Ix,Iy,Iz);
 
@@ -2676,23 +2834,14 @@ export class welcomeService {
               color:0xffffff,side:2,matcap:tree,transparent:true,opacity:mateOpacity,
             });
             this.Island.children[""+i+""].children[1].material=mate02;
-          } else if(this.Island.children[""+i+""].name=="Tent"){
-            let mate01 = new THREE.MeshMatcapMaterial({
-              color:0xffffff,side:2,matcap:tent01,transparent:true,opacity:mateOpacity,
-            });
-            this.Island.children[""+i+""].children[0].material=mate01;
-            let mate02 = new THREE.MeshMatcapMaterial({
-              color:0xffffff,side:2,matcap:tent02,transparent:true,opacity:mateOpacity,
-            });
-            this.Island.children[""+i+""].children[1].material=mate02;
-          } else if(this.Island.children[""+i+""].name=="Tree"||this.Island.children[""+i+""].name=="Tree02"){
-            let mate01 = new THREE.MeshMatcapMaterial({
-              color:0xffffff,side:2,matcap:tree,transparent:true,opacity:mateOpacity,
-            });
-            this.Island.children[""+i+""].children[0].material=mate01;
-            let mate02 = new THREE.MeshMatcapMaterial({
-              color:0xffffff,side:2,matcap:wood,transparent:true,opacity:mateOpacity,
-            });
+          } else if(this.Island.children[""+i+""].name=="Tree01"||this.Island.children[""+i+""].name=="Tree02"){
+              let mate01 = new THREE.MeshMatcapMaterial({
+                color:0xffffff,side:2,matcap:wood,transparent:true,opacity:mateOpacity,
+              });
+              this.Island.children[""+i+""].children[0].material=mate01;
+              let mate02 = new THREE.MeshMatcapMaterial({
+                color:0xffffff,side:2,matcap:tree,transparent:true,opacity:mateOpacity,
+              });
             this.Island.children[""+i+""].children[1].material=mate02;
             this.ThirdSceneObject.push(this.Island.children[""+i+""]);
           } else if(this.Island.children[""+i+""].name=="Mail"){
@@ -2704,30 +2853,13 @@ export class welcomeService {
               color:0xcccccc,side:2,matcap:wood,transparent:true,opacity:mateOpacity,
             });
             this.Island.children[""+i+""].children[1].material=mate02;
-          } else if(this.Island.children[""+i+""].name=="Pillar"){
-            let mate01 = new THREE.MeshMatcapMaterial({
-              color:0xffffff,side:2,matcap:wood,transparent:true,opacity:mateOpacity,
-            });
-            this.Island.children[""+i+""].material=mate01;
-          } else if(this.Island.children[""+i+""].name=="Rope"){
-            let mate01 = new THREE.MeshMatcapMaterial({
-              color:0xffffff,side:2,matcap:wood,transparent:true,opacity:mateOpacity,
-            });
-            this.Island.children[""+i+""].material=mate01;
-          } else if(this.Island.children[""+i+""].name=="Rock"){
-            let mate01 = new THREE.MeshMatcapMaterial({
-              color:0xffffff,side:2,matcap:white,transparent:true,opacity:mateOpacity,
-            });
-            this.Island.children[""+i+""].material=mate01;
           } else if(this.Island.children[""+i+""].name=="Sea"){
-            
             var seaMate = new THREE.MeshBasicMaterial({color:0x81d2e8});
             let bgparams = {
               sea: "#81d2e8",
             }
           
             var bg = this.gui.addFolder("Sea Inner");
-        
             bg.addColor(bgparams, "sea")
               .onChange(() => {
                 seaMate.color.set(new THREE.Color(bgparams.sea));
@@ -2757,35 +2889,189 @@ export class welcomeService {
           }
         }
 
+        // Island Shadow 
+        var texture = this.textureLoader.load('assets/shadow/Island.png');
+
+        var uniforms = {
+          tShadow:{value:texture},
+          uShadowColor:{value:new THREE.Color("#78b75e")},
+          uAlpha:{value:.7}
+        }
+        var material = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms,depthWrite:false,
+          vertexShader:document.getElementById('vertexShader').textContent,
+          fragmentShader:document.getElementById('fragmentShader').textContent})
+
+        var shadow = new THREE.Mesh(new THREE.PlaneGeometry(6,6),material);
+        shadow.rotation.set(-Math.PI/2,0,0)
+        shadow.position.set(0,.151,0);
+
+        this.Island.add(shadow);
         this.scene.add(this.Island);
       }
     );
 
-    // Shadow
-    var texture = this.textureLoader.load('assets/shadow/Island.png');
 
-    var uniforms = {
-      tShadow:{value:texture},
-      uShadowColor:{value:new THREE.Color("#78b75e")},
-      uAlpha:{value:.75}
-    }
-    var material = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms,depthWrite:false,
-      vertexShader:document.getElementById('vertexShader').textContent,
-      fragmentShader:document.getElementById('fragmentShader').textContent})
 
-    var shadow = new THREE.Mesh(new THREE.PlaneGeometry(6*1.75,6*1.75),material);
-    shadow.rotation.set(-Math.PI/2,0,0)
-    shadow.position.set(Ix+0,Iy+.263,Iz+.01);
+    // Hammer
+    this.loader.load(
+      'assets/model/Hammer.glb',
+      (gltf) => {
+        this.Hammer = gltf.scene;
+        for(var i=0;i<this.Hammer.children.length;i++){
+          if(this.Hammer.children[""+i+""].name=="Hammer"){
+            let mate01 = new THREE.MeshMatcapMaterial({
+              color:0xffffff,side:2,matcap:white,transparent:true,opacity:mateOpacity,
+            });
+            let mate02 = new THREE.MeshMatcapMaterial({
+              color:0xfefefe,side:2,matcap:wood,transparent:true,opacity:mateOpacity,
+            });
+            this.Hammer.children[""+i+""].children[0].material=mate01;
+            this.Hammer.children[""+i+""].children[1].material=mate02;
+          }
+        }
+      }
+    )
 
-    this.scene.add(shadow);
-    
+    // Tent
+    this.loader.load(
+      'assets/model/Tent.glb',
+      (gltf) => {
+        this.Tent = gltf.scene;
+        this.Tent.scale.set(ScaleMultiplier,ScaleMultiplier,ScaleMultiplier);
+        this.Tent.position.set(Ix,Iy,Iz);
+
+        for(var i=0;i<this.Tent.children.length;i++){
+          if(this.Tent.children[""+i+""].name=="Tent"){
+            let mate01 = new THREE.MeshMatcapMaterial({
+              color:0xffffff,side:2,matcap:tent01,transparent:true,opacity:mateOpacity,
+            });
+            this.Tent.children[""+i+""].children[0].material=mate01;
+            let mate02 = new THREE.MeshMatcapMaterial({
+              color:0xffffff,side:2,matcap:tent02,transparent:true,opacity:mateOpacity,
+            });
+            this.Tent.children[""+i+""].children[1].material=mate02;
+          } else if(this.Tent.children[""+i+""].name=="Pillar"){
+            let mate01 = new THREE.MeshMatcapMaterial({
+              color:0xffffff,side:2,matcap:wood,transparent:true,opacity:mateOpacity,
+            });
+            this.Tent.children[""+i+""].material=mate01;
+          } else if(this.Tent.children[""+i+""].name=="Rope"){
+            let mate01 = new THREE.MeshMatcapMaterial({
+              color:0xffffff,side:2,matcap:wood,transparent:true,opacity:mateOpacity,
+            });
+            this.Tent.children[""+i+""].material=mate01;
+          } 
+        }
+
+        var texture = this.textureLoader.load('assets/shadow/Tent.png');
+
+        var uniforms = {
+          tShadow:{value:texture},
+          uShadowColor:{value:new THREE.Color("#78b75e")},
+          uAlpha:{value:.75}
+        }
+        var material = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms,depthWrite:false,
+          vertexShader:document.getElementById('vertexShader').textContent,
+          fragmentShader:document.getElementById('fragmentShader').textContent})
+
+        var shadow = new THREE.Mesh(new THREE.PlaneGeometry(6,6),material);
+        shadow.rotation.set(-Math.PI/2,0,0)
+        shadow.position.set(0,0.151,0);
+
+        this.Tent.add(shadow);
+        this.scene.add(this.Tent);
+      }
+    );
+
+
+    let HousePaint = this.textureLoader.load('assets/matcaps/03/F8E1B5.png',()=>{
+      HousePaint.encoding=THREE.sRGBEncoding;
+    });
+
+    // House
+    this.loader.load(
+      'assets/model/House01.glb',
+      (gltf) => {
+        this.House = gltf.scene;
+        this.House.scale.set(ScaleMultiplier,ScaleMultiplier,ScaleMultiplier);
+        this.House.position.set(Ix-.1,Iy,Iz);
+        // this.scene.add(this.House);
+        for(var i=0;i<this.House.children.length;i++){
+          if(this.House.children[""+i+""].name=="House"){
+            let mate01 = new THREE.MeshMatcapMaterial({
+              color:0xffffff,side:2,matcap:HousePaint,transparent:true,opacity:mateOpacity,
+            });
+            this.House.children[""+i+""].children[0].material=mate01;
+            let mate02 = new THREE.MeshMatcapMaterial({
+              color:0xffffff,side:2,matcap:HousePaint,transparent:true,opacity:mateOpacity,
+            });
+            this.House.children[""+i+""].children[1].material=mate02;
+            let mate03 = new THREE.MeshMatcapMaterial({
+              color:0xffffff,side:2,matcap:wood,transparent:true,opacity:mateOpacity,
+            });
+            this.House.children[""+i+""].children[2].material=mate03;
+          } else if(this.House.children[""+i+""].name=="Door"){
+            let mate01 = new THREE.MeshMatcapMaterial({
+              color:0xffffff,side:2,matcap:wood,transparent:true,opacity:mateOpacity,
+            });
+            this.House.children[""+i+""].children[0].material=mate01;
+            let mate02 = new THREE.MeshMatcapMaterial({
+              color:0xeeeeee,side:2,matcap:wood,transparent:true,opacity:mateOpacity,
+            });
+            this.House.children[""+i+""].children[1].material=mate02;
+          } else if(this.House.children[""+i+""].name=="Window"){
+            let mate01 = new THREE.MeshMatcapMaterial({
+              color:0xffffff,side:2,matcap:wood,transparent:true,opacity:mateOpacity,
+            });
+            this.House.children[""+i+""].children[0].material=mate01;
+            let mate02 = new THREE.MeshMatcapMaterial({
+              color:0xffffff,side:2,matcap:white,transparent:true,opacity:mateOpacity,
+            });
+            var seaMate = new THREE.MeshBasicMaterial({color:0xaee3f2});
+            this.House.children[""+i+""].children[1].material=mate02;
+          } else if(this.House.children[""+i+""].name=="Lamp"){
+            let mate01 = new THREE.MeshMatcapMaterial({
+              color:0xffffff,side:2,matcap:white,transparent:true,opacity:mateOpacity,
+            });
+            this.House.children[""+i+""].children[0].material=mate01;
+            let mate02 = new THREE.MeshMatcapMaterial({
+              color:0xffffff,side:2,matcap:wood,transparent:true,opacity:mateOpacity,
+            });
+            this.House.children[""+i+""].children[1].material=mate02;
+          } else if(this.House.children[""+i+""].name=="SmokePipe"){
+            let mate01 = new THREE.MeshMatcapMaterial({
+              color:0xffffff,side:2,matcap:wood,transparent:true,opacity:mateOpacity,
+            });
+            this.House.children[""+i+""].material=mate01;
+          }
+        }
+
+        var texture = this.textureLoader.load('assets/shadow/House.png');
+
+        var uniforms = {
+          tShadow:{value:texture},
+          uShadowColor:{value:new THREE.Color("#78b75e")},
+          uAlpha:{value:.5}
+        }
+        var material = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms,depthWrite:false,
+          vertexShader:document.getElementById('vertexShader').textContent,
+          fragmentShader:document.getElementById('fragmentShader').textContent})
+
+        var shadow = new THREE.Mesh(new THREE.PlaneGeometry(6,6),material);
+        shadow.rotation.set(-Math.PI/2,0,0)
+        shadow.position.set(0,0.151,0);
+
+        this.House.add(shadow);
+      }
+    );
+
     // Rock
     this.loader.load(
       'assets/model/Rock.glb',
       (gltf)=>{
         this.IslandRock = gltf.scene;
-        this.IslandRock.scale.set(1.75,1.75,1.75)
-        this.IslandRock.position.set(Ix+1.9,Iy,Iz-.5);
+        this.IslandRock.scale.set(ScaleMultiplier,ScaleMultiplier,ScaleMultiplier)
+        this.IslandRock.position.set(Ix+1.8,Iy,Iz+.2);
         let mate01 = new THREE.MeshMatcapMaterial({
           color:0xe6e6e6,side:2,matcap:white,transparent:true,opacity:mateOpacity,
         });
@@ -2809,7 +3095,7 @@ export class welcomeService {
         shadow.renderOrder = 1
 
         shadow.rotation.set(-Math.PI/2,0,0)
-        shadow.position.set(0,.155,0.01);
+        shadow.position.set(0,.151,0.01);
         this.IslandRock.add(shadow);
       }
     )
@@ -2884,6 +3170,121 @@ export class welcomeService {
 
     this.world03.addBody(BodyLand);
     BodyLand.position.set(Ix,Iy,Iz);
+  }
+
+
+
+  private SmokeTexture = [];
+  private SmokeTexture02 = [];
+  UpgradeFunction(Ix,Iy,Iz){
+    // Hammer
+    this.Hammer.position.set(.85,.9,0);
+    this.Hammer.scale.set(2,2,2);
+    this.scene.add(this.Hammer);
+    gsap.fromTo(this.Hammer.rotation,.14,{z:0},{z:1.2,yoyo:true,repeat:3,ease:"none",onComplete:()=>{
+      this.Hammer.position.set(-.8,1.1,0);
+      gsap.fromTo(this.Hammer.rotation,.14,{z:0},{z:-1.2,yoyo:true,repeat:3,ease:"none",onComplete:()=>{
+        this.Hammer.position.set(.65,1.25,0);
+        gsap.fromTo(this.Hammer.rotation,.14,{z:0},{z:1.2,yoyo:true,repeat:3,ease:"none",onComplete:()=>{
+          this.scene.remove(this.Hammer);
+        }});
+      }});
+    }});
+
+    var texture = this.textureLoader.load('assets/shadow/Smoke02.png');
+  
+    var uniforms = {
+      tShadow:{value:texture},
+      uShadowColor:{value:new THREE.Color("#eeeeee")},
+      uAlpha:{value:.4}
+    }
+    var material = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms,depthWrite:false,
+      vertexShader:document.getElementById('vertexShader').textContent,
+      fragmentShader:document.getElementById('fragmentShader').textContent})
+      
+    var Shadow = new THREE.Mesh(new THREE.PlaneGeometry(2,2),material);
+    Shadow.rotation.set(0,0,0)
+    Shadow.position.set(Ix,Iy+.85,Iz+.75);
+    Shadow.renderOrder=2;
+
+    let ExplosionTextureNum=0;
+    // center
+    for(var i=0;i<3;i++){
+      let shadow = Shadow.clone();
+      this.scene.add(shadow);
+      this.SmokeTexture.push(shadow);
+
+      // Scale
+      gsap.fromTo(this.SmokeTexture[i].scale,1,{x:.4,y:.4,z:.4},{x:1.2,y:1.2,z:1.2,ease:"none"});
+
+      // Rotation
+      gsap.fromTo(this.SmokeTexture[i].rotation,4,{z:Math.random()*3.15},{z:"+="+(Math.random()*40-20),ease:"none"})
+      
+      // Explosion
+      gsap.to(this.SmokeTexture[i].material.uniforms.uAlpha,.1,{value:1.5,delay:1.4,onComplete:()=>{
+        // var max = ExplosionTextureNum+3;
+        // for(var j=ExplosionTextureNum;j<max;j++){
+        //   ExplosionTextureNum++
+        //   this.scene.add(this.SmokeTexture02[j])
+
+        //   gsap.fromTo(this.SmokeTexture02[j].scale,.3,{x:1,y:1,z:1},{x:.01,y:.01,z:.01,ease:"none"});
+
+        //   // Position
+        //   gsap.fromTo(this.SmokeTexture02[j].position,.3,{x:Math.random()*1-.5,y:.5,z:-.1},
+        //     {x:"+="+(Math.random()*2.5-1.25),y:"+="+(Math.random()*1.5+.75),z:.3});
+    
+        //   // Rotation
+        //   gsap.fromTo(this.SmokeTexture02[j].rotation,.5,{z:Math.random()*3.15},{z:"+="+(Math.random()*10-5),ease:"none"})
+    
+        //   let k = j;
+        //   gsap.delayedCall(.6,()=>{
+        //     this.scene.remove(this.SmokeTexture02[k]);
+        //   })
+        // }
+      }});
+      
+      gsap.to(this.SmokeTexture[i].scale,.2,{x:1.8,y:1.8,z:1.8,delay:1.5});
+      
+      gsap.to(this.SmokeTexture[i].material.uniforms.uAlpha,.3,{value:0,delay:1.7,onComplete:()=>{
+        this.SmokeTexture=[];
+      }});
+    }
+
+    var uniforms = {
+      tShadow:{value:texture},
+      uShadowColor:{value:new THREE.Color("#f2f2f2")},
+      uAlpha:{value:.7}
+    }
+    var material = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms,depthWrite:false,
+      vertexShader:document.getElementById('vertexShader').textContent,
+      fragmentShader:document.getElementById('fragmentShader').textContent})
+      
+    var Shadow = new THREE.Mesh(new THREE.PlaneGeometry(2,2),material);
+    Shadow.rotation.set(0,0,0)
+    Shadow.position.set(Ix,Iy+.85,Iz+.75);
+
+    // outer
+    for(var i=0;i<15;i++){
+      let shadow = Shadow.clone();
+      this.scene.add(shadow);
+      this.SmokeTexture02.push(shadow);
+
+      var delayI = i*.1;
+      // Scale
+      gsap.fromTo(shadow.scale,.5,{x:.6,y:.6,z:.6},{x:.01,y:.01,z:.01,delay:delayI,ease:"none"});
+
+      // Position
+      gsap.fromTo(shadow.position,.5,{x:Math.random()*.5-.25,y:.5,z:-.1},
+        {x:"+="+(Math.random()*2-1),y:"+="+(Math.random()*1+.6),z:.3,delay:delayI});
+
+      // Rotation
+      gsap.fromTo(shadow.rotation,1,{z:Math.random()*3.15},{z:"+="+(Math.random()*10-5),ease:"none",delay:delayI})
+
+      gsap.delayedCall(1+delayI,()=>{
+        this.scene.remove(shadow);
+      })
+    }
+
   }
 
   private LandMaterial: CANNON.Material
@@ -3338,25 +3739,73 @@ export class welcomeService {
           break;
       }
       switch (intersect[0].object.parent.name){
-        case "Tree":
+        case "Tree01":
         case "Tree02":
+          this.UpgradeFunction(0,-0.075,-.5);
           var Vector = new THREE.Vector3();
-          Vector.setFromMatrixPosition(intersect[0].object.matrixWorld);
+
+          // Vibrate
+          gsap.to(intersect[0].object.parent.rotation,.075,{z:-.02,ease:"none"});
+          gsap.to(intersect[0].object.parent.rotation,.15,{z:.02,ease:"none",delay:.075});
+          gsap.to(intersect[0].object.parent.rotation,.15,{z:-.02,ease:"none",delay:.225});
+          gsap.to(intersect[0].object.parent.rotation,.075,{z:0,ease:"none",delay:.375});
+
 
           // Leaf
-          for(var i=0;i<5;i++){
-            var leaf = document.createElement('div');
-            leaf.className = "leaf";
-            document.getElementById('welcome').appendChild(leaf);
+          gsap.delayedCall(.2,()=>{
+            for(var i=0;i<4;i++){
+              let leaf = document.createElement('div');
+              leaf.className = "leaf";
+              document.getElementById('welcome').appendChild(leaf);
+  
+              Vector.setFromMatrixPosition(intersect[0].object.parent.matrixWorld);
+              
+              Vector.x += Math.random()*.8-.4 - .1;
+              Vector.y += Math.random()*.8-.4 + .75;
+              Vector.project(this.camera);
+              var Px = (Vector.x+1)*window.innerWidth/2;
+              var Py = - (Vector.y-1)*window.innerHeight/2;
+              
+              
+              gsap.set(leaf,{css:{rotate:Math.random()*360-180}});
+              gsap.to(leaf,.3,{css:{opacity:1},delay:i*.2});
 
-            Vector.setFromMatrixPosition(intersect[0].object.parent.matrixWorld);
-            Vector.project(this.camera);
-            var Px = (Vector.x+1)*window.innerWidth/2;
-            var Py = - (Vector.y-1)*window.innerHeight/2;
-            Vector.y+=.2;
-            gsap.fromTo(leaf,.4,{css:{left:Px,top:Py}},{css:{top:"-=20"}});
-            console.log('asdf')
-          }
+              var rX = Math.random()*40-20;
+              var rY = Math.random()*40+40;
+              gsap.fromTo(leaf,1.5,{css:{left:Px,top:Py}},{css:{top:"+="+rY,left:"+="+rX},ease:"none"});
+              
+              gsap.fromTo(leaf,1.5,{css:{scale:Math.random()*.5+.5}},{css:{scale:.01},delay:i*.2,ease:"none"});
+
+              gsap.delayedCall(2,()=>{
+                document.getElementById('welcome').removeChild(leaf);
+              })
+            }
+
+            // Coin
+            if(this.CoinCurrent<4){
+              // scale
+              gsap.fromTo(this.CoinArray[this.CoinCurrent].scale,.6,{x:.2,y:.2,z:.2},{x:1,y:1,z:1})
+              // Opacity
+              gsap.to(this.CoinArray[this.CoinCurrent].children[1].material.uniforms.uAlpha,
+                .3,{value:.6,delay:.6})
+  
+              Vector.setFromMatrixPosition(intersect[0].object.parent.matrixWorld);
+              Vector.x+=.21;
+              Vector.z+=.21;
+  
+              // X Z
+              gsap.set(this.CoinArray[this.CoinCurrent].position,{x:Vector.x,z:Vector.z,});
+              gsap.to(this.CoinArray[this.CoinCurrent].position,.35,{x:"+=.15",z:"+=.15",delay:.4});
+  
+              // Y
+              gsap.fromTo(this.CoinArray[this.CoinCurrent].position,.4,{y:.28+.6},{ease:"power1.in",y:"-=.6"})
+  
+              gsap.to(this.CoinArray[this.CoinCurrent].position,.2,{delay:0.4,ease:"power1.out",y:"+=.15"})
+              gsap.to(this.CoinArray[this.CoinCurrent].position,.2,{ease:"power1.in",delay:.6,y:0.28})
+  
+              this.CoinCurrent+=1;
+            }
+          })
           break;
         case "Coin":
           // Coin

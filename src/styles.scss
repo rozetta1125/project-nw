@@ -40,7 +40,7 @@ $color: #000;
 
 .leaf{
     position: absolute;
-    opacity: 1;
+    opacity: 0;
     pointer-events: none;
     top:500px;
     left:400px;
@@ -48,7 +48,8 @@ $color: #000;
     height: 20px;
     border-top-right-radius: 30px;
     border-bottom-left-radius: 30px;
-    background: linear-gradient(to right,#bed9ae 0%, #99BB87 100%);
+    background: #99BB87;
+    background: linear-gradient(to right,#AAC99A 0%, #99BB87 100%);
 }
 
 
