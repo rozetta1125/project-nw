@@ -233,8 +233,6 @@ export class welcomeService {
     var width = window.innerWidth * PixelRatio;
     var height = window.innerHeight * PixelRatio;
     this.renderer.setSize(width,height);
-    this.canvas.style.width=width/PixelRatio+"px";
-    this.canvas.style.height=height/PixelRatio+"px";
     // this.renderer.setSize(window.innerWidth, window.innerHeight);
     // this.renderer.setClearColor("#a8b3d3", 0);
     // this.renderer.autoClearColor=false;
@@ -1255,9 +1253,9 @@ export class welcomeService {
     });
 
 
-    this.canvas.addEventListener("touchmove", (e) => {
-      this.renderThreePosition(e.touches[0].clientX, e.touches[0].clientY);
-    });
+    // this.canvas.addEventListener("touchmove", (e) => {
+    //   this.renderThreePosition(e.touches[0].clientX, e.touches[0].clientY);
+    // });
     this.canvas.addEventListener("mousedown", (e) => {
       if (e.which == 1) {
         this.CursorBegin();
@@ -2772,10 +2770,10 @@ export class welcomeService {
       this.ThirdClickEvent();
       },600));
 
-    this.canvas.addEventListener("touchmove", throttle(
-      () => {
+    this.canvas.addEventListener("touchstart", throttle((e) => {
+      this.renderThreePosition(e.touches[0].clientX, e.touches[0].clientY);
       this.ThirdClickEvent();
-      },600));
+    },600));
   }
 
 
@@ -5921,8 +5919,6 @@ export class welcomeService {
     this.camera.updateProjectionMatrix();
 
     this.renderer.setSize(width, height);
-    this.canvas.style.width=width/PixelRatio+"px";
-    this.canvas.style.height=height/PixelRatio+"px";
   }
 }
 
