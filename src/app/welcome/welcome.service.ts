@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import * as CANNON from 'cannon';
-import { TimelineMax,TimelineLite,TweenLite,Power0,Power1,Power2,gsap, random } from 'gsap';
+import { TimelineMax,TimelineLite,TweenLite,Power0,Power1,Power2,gsap, random,  } from 'gsap';
 import * as OrbitControls from 'three-orbitcontrols';
 import GLTFLoader from 'three-gltf-loader';
 // import thisWork from 'three-dragcontrols';
@@ -226,12 +226,12 @@ export class welcomeService {
     // this.renderer.toneMapping = THREE.LinearToneMapping;
     // this.renderer.toneMappingExposure = 1;
     
-    this.renderer.setPixelRatio(2);
+    this.renderer.setPixelRatio(1.5);
     this.textureLoader = new THREE.TextureLoader();
     this.clock = new THREE.Clock();
-    var PixelRatio = 1;
-    var width = window.innerWidth * PixelRatio;
-    var height = window.innerHeight * PixelRatio;
+
+    var width = window.innerWidth;
+    var height = window.innerHeight;
     this.renderer.setSize(width,height);
     // this.renderer.setSize(window.innerWidth, window.innerHeight);
     // this.renderer.setClearColor("#a8b3d3", 0);
@@ -2761,8 +2761,8 @@ export class welcomeService {
     this.CreateScoreMaterial();
     this.BOOPMaterial();
     this.CreateGiftBalloon(-5,3,-1);
-    this.CreateGiftBalloon(-2,2.7,0);
-    this.CreateGiftBalloon(2,2.5,.5);
+    // this.CreateGiftBalloon(-2,2.7,0);
+    // this.CreateGiftBalloon(2,2.5,.5);
 
     this.CreateIsland(0,-0.075,-.5);
     this.canvas.addEventListener("click", throttle(
@@ -2782,6 +2782,8 @@ export class welcomeService {
   private Tent:THREE.Object3D;
   private House:THREE.Object3D;
   private Hammer:THREE.Object3D;
+  private SmokeTexture:THREE.Object3D;
+  private SmokeTexture02:THREE.Object3D;
   CreateIsland(Ix,Iy,Iz){
     // Material
     let tent01 = this.textureLoader.load('assets/matcaps/03/tent01.png',()=>{
@@ -2930,6 +2932,37 @@ export class welcomeService {
       }
     )
 
+    // Smoke Texture Center
+    var texture = this.textureLoader.load('assets/shadow/Smoke02.png');
+  
+    var uniforms = {
+      tShadow:{value:texture},
+      uShadowColor:{value:new THREE.Color("#eeeeee")},
+      uAlpha:{value:.4}
+    }
+    var material = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms,depthWrite:false,
+      vertexShader:document.getElementById('vertexShader').textContent,
+      fragmentShader:document.getElementById('fragmentShader').textContent})
+      
+    this.SmokeTexture = new THREE.Mesh(new THREE.PlaneGeometry(2,2),material);
+    this.SmokeTexture.rotation.set(0,0,0)
+    this.SmokeTexture.position.set(Ix,Iy+.85,Iz+.75);
+    this.SmokeTexture.renderOrder=2;
+
+    // Smoke Texture 02
+    var uniforms = {
+      tShadow:{value:texture},
+      uShadowColor:{value:new THREE.Color("#f2f2f2")},
+      uAlpha:{value:.7}
+    }
+    var material = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms,depthWrite:false,
+      vertexShader:document.getElementById('vertexShader').textContent,
+      fragmentShader:document.getElementById('fragmentShader').textContent})
+      
+    this.SmokeTexture02 = new THREE.Mesh(new THREE.PlaneGeometry(2,2),material);
+    this.SmokeTexture02.rotation.set(0,0,0)
+    this.SmokeTexture02.position.set(Ix,Iy+.85,Iz+.75);
+
     // Tent
     this.loader.load(
       'assets/model/Tent.glb',
@@ -2991,9 +3024,56 @@ export class welcomeService {
       'assets/model/House01.glb',
       (gltf) => {
         this.House = gltf.scene;
-        this.House.scale.set(ScaleMultiplier,ScaleMultiplier,ScaleMultiplier);
-        this.House.position.set(Ix-.1,Iy,Iz);
+        this.House.scale.set(1.7,1.7,1.7);
+        this.House.position.set(Ix-.1,Iy+.01,Iz);
+        this.House.rotation.set(0,0*Math.PI/180,0);
         // this.scene.add(this.House);
+
+        // blue
+        var ma01 = new THREE.MeshMatcapMaterial({
+          color:0xE79D7C,side:2,matcap:white,transparent:true,opacity:mateOpacity,
+        });
+        let ma01params = {
+          ma01: "#E79D7C",
+        }
+        // white
+        var ma02 = new THREE.MeshMatcapMaterial({
+          color:0xfff3d8,side:2,matcap:white,transparent:true,opacity:mateOpacity,
+        });
+        let ma02params = {
+          ma02: "#fff3d8",
+        }
+        // wood
+        var ma03 = new THREE.MeshMatcapMaterial({
+          color:0xE7CE9B,side:2,matcap:white,transparent:true,opacity:mateOpacity,
+        });
+        let ma03params = {
+          ma03: "#E7CE9B",
+        }
+        // sea
+        var ma04 = new THREE.MeshMatcapMaterial({
+          color:0xd3f5ff,side:2,matcap:white,transparent:true,opacity:mateOpacity,
+        });
+        let ma04params = {
+          ma04: "#d3f5ff",
+        }
+        var House = this.gui.addFolder("House");
+        House.addColor(ma01params, "ma01")
+          .onChange(() => {
+            ma01.color.set(new THREE.Color(ma01params.ma01));
+          });
+        House.addColor(ma02params, "ma02")
+        .onChange(() => {
+          ma02.color.set(new THREE.Color(ma02params.ma02));
+        });
+        House.addColor(ma03params, "ma03")
+        .onChange(() => {
+          ma03.color.set(new THREE.Color(ma03params.ma03));
+        });
+        House.addColor(ma04params, "ma04")
+        .onChange(() => {
+          ma04.color.set(new THREE.Color(ma04params.ma04));
+        });
         for(var i=0;i<this.House.children.length;i++){
           if(this.House.children[""+i+""].name=="House"){
             let mate01 = new THREE.MeshMatcapMaterial({
@@ -3008,6 +3088,11 @@ export class welcomeService {
               color:0xffffff,side:2,matcap:wood,transparent:true,opacity:mateOpacity,
             });
             this.House.children[""+i+""].children[2].material=mate03;
+            
+            // Testing
+            this.House.children[""+i+""].children[0].material=ma02;
+            this.House.children[""+i+""].children[1].material=ma03;
+            this.House.children[""+i+""].children[2].material=ma01;
           } else if(this.House.children[""+i+""].name=="Door"){
             let mate01 = new THREE.MeshMatcapMaterial({
               color:0xffffff,side:2,matcap:wood,transparent:true,opacity:mateOpacity,
@@ -3017,6 +3102,9 @@ export class welcomeService {
               color:0xeeeeee,side:2,matcap:wood,transparent:true,opacity:mateOpacity,
             });
             this.House.children[""+i+""].children[1].material=mate02;
+
+            // testing
+            this.House.children[""+i+""].children[0].material=ma03;
           } else if(this.House.children[""+i+""].name=="Window"){
             let mate01 = new THREE.MeshMatcapMaterial({
               color:0xffffff,side:2,matcap:wood,transparent:true,opacity:mateOpacity,
@@ -3027,6 +3115,10 @@ export class welcomeService {
             });
             var seaMate = new THREE.MeshBasicMaterial({color:0xaee3f2});
             this.House.children[""+i+""].children[1].material=mate02;
+
+            // testing
+            this.House.children[""+i+""].children[0].material=ma03;
+            this.House.children[""+i+""].children[1].material=ma04;
           } else if(this.House.children[""+i+""].name=="Lamp"){
             let mate01 = new THREE.MeshMatcapMaterial({
               color:0xffffff,side:2,matcap:white,transparent:true,opacity:mateOpacity,
@@ -3036,11 +3128,17 @@ export class welcomeService {
               color:0xffffff,side:2,matcap:wood,transparent:true,opacity:mateOpacity,
             });
             this.House.children[""+i+""].children[1].material=mate02;
+
+            // testing
+            this.House.children[""+i+""].children[0].material=ma02;
+            this.House.children[""+i+""].children[1].material=ma03;
           } else if(this.House.children[""+i+""].name=="SmokePipe"){
             let mate01 = new THREE.MeshMatcapMaterial({
               color:0xffffff,side:2,matcap:wood,transparent:true,opacity:mateOpacity,
             });
             this.House.children[""+i+""].material=mate01;
+            // testing
+            this.House.children[""+i+""].material=ma01;
           }
         }
 
@@ -3172,8 +3270,8 @@ export class welcomeService {
 
 
 
-  private SmokeTexture = [];
-  private SmokeTexture02 = [];
+  private SmokeTextureArray = [];
+  private SmokeTexture02Array = [];
   UpgradeFunction(Ix,Iy,Iz){
     // Hammer
     this.Hammer.position.set(.85,.9,0);
@@ -3189,100 +3287,109 @@ export class welcomeService {
       }});
     }});
 
-    var texture = this.textureLoader.load('assets/shadow/Smoke02.png');
-  
-    var uniforms = {
-      tShadow:{value:texture},
-      uShadowColor:{value:new THREE.Color("#eeeeee")},
-      uAlpha:{value:.4}
-    }
-    var material = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms,depthWrite:false,
-      vertexShader:document.getElementById('vertexShader').textContent,
-      fragmentShader:document.getElementById('fragmentShader').textContent})
-      
-    var Shadow = new THREE.Mesh(new THREE.PlaneGeometry(2,2),material);
-    Shadow.rotation.set(0,0,0)
-    Shadow.position.set(Ix,Iy+.85,Iz+.75);
-    Shadow.renderOrder=2;
-
-    let ExplosionTextureNum=0;
     // center
     for(var i=0;i<3;i++){
-      let shadow = Shadow.clone();
-      this.scene.add(shadow);
-      this.SmokeTexture.push(shadow);
+      if(this.SmokeTextureArray.length<3){
+        let shadow = this.SmokeTexture.clone();
+        this.scene.add(shadow);
+        this.SmokeTextureArray.push(shadow);
+      }
+
+      this.scene.add(this.SmokeTextureArray[i])
+      gsap.set(this.SmokeTextureArray[i].material.uniforms.uAlpha,{value:.4});
 
       // Scale
-      gsap.fromTo(this.SmokeTexture[i].scale,1,{x:.4,y:.4,z:.4},{x:1.2,y:1.2,z:1.2,ease:"none"});
+      gsap.fromTo(this.SmokeTextureArray[i].scale,1,{x:.4,y:.4,z:.4},{x:1.,y:1.,z:1.,ease:"none"});
 
       // Rotation
-      gsap.fromTo(this.SmokeTexture[i].rotation,4,{z:Math.random()*3.15},{z:"+="+(Math.random()*40-20),ease:"none"})
+      gsap.fromTo(this.SmokeTextureArray[i].rotation,4,{z:Math.random()*3.15},{z:"+="+(Math.random()*40-20),ease:"none"})
       
       // Explosion
-      gsap.to(this.SmokeTexture[i].material.uniforms.uAlpha,.1,{value:1.5,delay:1.4,onComplete:()=>{
-        // var max = ExplosionTextureNum+3;
-        // for(var j=ExplosionTextureNum;j<max;j++){
-        //   ExplosionTextureNum++
-        //   this.scene.add(this.SmokeTexture02[j])
-
-        //   gsap.fromTo(this.SmokeTexture02[j].scale,.3,{x:1,y:1,z:1},{x:.01,y:.01,z:.01,ease:"none"});
-
-        //   // Position
-        //   gsap.fromTo(this.SmokeTexture02[j].position,.3,{x:Math.random()*1-.5,y:.5,z:-.1},
-        //     {x:"+="+(Math.random()*2.5-1.25),y:"+="+(Math.random()*1.5+.75),z:.3});
-    
-        //   // Rotation
-        //   gsap.fromTo(this.SmokeTexture02[j].rotation,.5,{z:Math.random()*3.15},{z:"+="+(Math.random()*10-5),ease:"none"})
-    
-        //   let k = j;
-        //   gsap.delayedCall(.6,()=>{
-        //     this.scene.remove(this.SmokeTexture02[k]);
-        //   })
-        // }
-      }});
-      
-      gsap.to(this.SmokeTexture[i].scale,.2,{x:1.8,y:1.8,z:1.8,delay:1.5});
-      
-      gsap.to(this.SmokeTexture[i].material.uniforms.uAlpha,.3,{value:0,delay:1.7,onComplete:()=>{
-        this.SmokeTexture=[];
+      gsap.to(this.SmokeTextureArray[i].material.uniforms.uAlpha,.1,{value:1.5,delay:1.4});
+      gsap.to(this.SmokeTextureArray[i].scale,.2,{x:1.8,y:1.8,z:1.8,delay:1.5});
+      gsap.to(this.SmokeTextureArray[i].scale,.2,{x:1.5,y:1.5,z:1.5,delay:1.7});
+      let k = i;
+      gsap.to(this.SmokeTextureArray[i].material.uniforms.uAlpha,.2,{value:0,delay:1.7,ease:"none",onComplete:()=>{
+        this.scene.remove(this.SmokeTextureArray[k])
       }});
     }
-
-    var uniforms = {
-      tShadow:{value:texture},
-      uShadowColor:{value:new THREE.Color("#f2f2f2")},
-      uAlpha:{value:.7}
-    }
-    var material = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms,depthWrite:false,
-      vertexShader:document.getElementById('vertexShader').textContent,
-      fragmentShader:document.getElementById('fragmentShader').textContent})
+    gsap.delayedCall(1.6,()=>{
+      this.scene.remove(this.Tent);
       
-    var Shadow = new THREE.Mesh(new THREE.PlaneGeometry(2,2),material);
-    Shadow.rotation.set(0,0,0)
-    Shadow.position.set(Ix,Iy+.85,Iz+.75);
+      gsap.fromTo(this.House.scale,.4,{x:"-=.8",y:"-=1.6",z:"-=1.6"},{x:"+=.8",y:"+=1.6",z:"+=1.6",delay:.1,ease:"in"});
+      gsap.to(this.House.scale,.15,{x:"-=.2",y:"-=.2",z:"-=.2",delay:.5,ease:"out"});
+      gsap.to(this.House.scale,.15,{x:"+=.2",y:"+=.2",z:"+=.2",delay:.65,ease:"in"});
+      this.scene.add(this.House);
+    })
 
     // outer
-    for(var i=0;i<15;i++){
-      let shadow = Shadow.clone();
-      this.scene.add(shadow);
-      this.SmokeTexture02.push(shadow);
+    gsap.delayedCall(.2,()=>{
+      for(var i=0;i<12;i++){
+        let shadow = this.SmokeTexture02.clone();
+        this.scene.add(shadow);
 
-      var delayI = i*.1;
-      // Scale
-      gsap.fromTo(shadow.scale,.5,{x:.6,y:.6,z:.6},{x:.01,y:.01,z:.01,delay:delayI,ease:"none"});
+        var delayI = i*.1;
+        // Scale
+        gsap.fromTo(shadow.scale,.5,{x:.6,y:.6,z:.6},{x:.01,y:.01,z:.01,delay:delayI,ease:"none"});
+  
+        // Position
+        gsap.fromTo(shadow.position,.5,{x:Math.random()*.5-.25,y:.5,z:-.1},
+          {x:"+="+(Math.random()*2-1),y:"+="+(Math.random()*1+.6),z:.3,delay:delayI});
+  
+        // Rotation
+        gsap.fromTo(shadow.rotation,1,{z:Math.random()*3.15},{z:"+="+(Math.random()*10-5),ease:"none",delay:delayI})
+  
+        gsap.delayedCall(1+delayI,()=>{
+          this.scene.remove(shadow);
+        })
+      }
+    })
 
-      // Position
-      gsap.fromTo(shadow.position,.5,{x:Math.random()*.5-.25,y:.5,z:-.1},
-        {x:"+="+(Math.random()*2-1),y:"+="+(Math.random()*1+.6),z:.3,delay:delayI});
+    // last 
+    var randomArray=[];
+    randomArray = this.GenerateRandomPosition(10,-1.5,1.5,.7,2,1,1,1.5);
+    gsap.delayedCall(1.5,()=>{
+    for(var i=0;i<10;i++){
+        let shadow = this.SmokeTexture02.clone();
+        this.scene.add(shadow);
 
-      // Rotation
-      gsap.fromTo(shadow.rotation,1,{z:Math.random()*3.15},{z:"+="+(Math.random()*10-5),ease:"none",delay:delayI})
+        // Scale
+        gsap.fromTo(shadow.scale,.3,{x:1,y:1,z:1},{x:.01,y:.01,z:.01,ease:"none"});
+        
+        // Position
+        gsap.fromTo(shadow.position,.3,{x:Math.random()*.5-.25,y:.5,z:-.1},
+          {x:randomArray[i].x,y:randomArray[i].y,z:randomArray[i].z});
 
-      gsap.delayedCall(1+delayI,()=>{
-        this.scene.remove(shadow);
-      })
+        // Rotation
+        gsap.fromTo(shadow.rotation,1,{z:Math.random()*3.15},{z:"+="+(Math.random()*10-5),ease:"none"})
+
+        gsap.delayedCall(1,()=>{
+          this.scene.remove(shadow);
+        })
+      }
+    })
+  }
+
+  GenerateRandomPosition(n:number,minx,maxx,miny,maxy,minz,maxz,distance){
+    let Array = [];
+    
+    while(Array.length<n){
+      var Vec3 = new THREE.Vector3(
+        Math.random()*(maxx-minx+1)+minx,
+        Math.random()*(maxy-miny+1)+miny,
+        Math.random()*(maxz-minz+1)+minz
+      );
+      for(var j=0;j<Array.length;j++){
+        var overlap:boolean=false;
+        if(this.distance(Vec3.x,Vec3.y,Vec3.z,Array[j].x,Array[j].y,Array[j].z)<distance){
+          overlap=true;  
+        }
+      }
+      if(!overlap){
+        Array.push(Vec3);
+      }
     }
-
+    return Array;
   }
 
   private LandMaterial: CANNON.Material
@@ -3630,7 +3737,7 @@ export class welcomeService {
           }});
       })
     }
-    
+
   }
 
   ThirdRaycaster(){
@@ -5912,8 +6019,8 @@ export class welcomeService {
   resize() {
     var PixelRatio = 1;
 
-    let width = window.innerWidth * PixelRatio;
-    let height = window.innerHeight * PixelRatio;
+    let width = window.innerWidth;
+    let height = window.innerHeight;
 
     this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();
