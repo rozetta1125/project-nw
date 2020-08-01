@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { welcomeService } from './welcome.service';
+import { ThreeService } from './three.service';
 
 @Component({
   selector: 'app-welcome',
@@ -9,11 +9,11 @@ import { welcomeService } from './welcome.service';
 export class WelcomeComponent implements OnInit {
   private welcomeCanvas = 'welcomeCanvas';
 
-  constructor(private welService: welcomeService) { }
+  constructor(private ThreeService: ThreeService) { }
 
   ngOnInit() {
-    this.welService.InitThree(this.welcomeCanvas);
-    this.welService.FirstInit();
+    this.ThreeService.InitThree(this.welcomeCanvas);
+    this.ThreeService.FirstInit();
   }
 
 }
