@@ -1,3 +1,8 @@
+#welcome{
+  // pointer-events: none;
+  user-select: none;
+}
+
 canvas {
     // position: absolute;
     // top:0;
@@ -5,11 +10,11 @@ canvas {
     max-width: 100%;
     max-height: 100%;
     z-index: -1;
-    background: linear-gradient(to bottom, #f0d4c8 0%, #f0d4c8 45%, #eee2d9 40%, #eee2d9 100%);
-    background: #848484;
-    background: linear-gradient(to bottom, #dbbbaa 0%, #dfc1b1 35%, #e6d7c8 35%, #e6d7c8  100%);
-    background: #aee3f2;
-    background: linear-gradient(to bottom, #c9e9f2 0%, #c9e9f2 35%, #aee3f2 35%, #aee3f2  100%);
+    background: linear-gradient(to bottom, #f0d4c8 0%, #f0d4c8 40%, #eee2d9 40%, #eee2d9 100%);
+    // background: #848484;
+    // background: linear-gradient(to bottom, #dbbbaa 0%, #dfc1b1 35%, #e6d7c8 35%, #e6d7c8  100%);
+    // background: #aee3f2;
+    // background: linear-gradient(to bottom, #c9e9f2 0%, #c9e9f2 35%, #aee3f2 35%, #aee3f2  100%);
     // A3E1FF 8ac2ef
 }
 

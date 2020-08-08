@@ -1,18 +1,16 @@
 import * as THREE from 'three';
 import * as CANNON from 'cannon';
-import { TimelineMax,TimelineLite,TweenLite,Power0,Power1,Power2,gsap, random,  } from 'gsap';
+import { TweenLite,Power0,Power1,Power2,gsap } from 'gsap';
 import * as OrbitControls from 'three-orbitcontrols';
 import GLTFLoader from 'three-gltf-loader';
 // import thisWork from 'three-dragcontrols';
 import { Injectable } from '@angular/core';
 import * as dat from 'dat.gui';
-import { ConvexBufferGeometry } from 'three/examples/jsm/geometries/ConvexGeometry'
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader';
-import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter';
 import { Line2 } from 'three/examples/jsm/lines/Line2';
 import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial';
 import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry';
-import { Reflector } from 'three/examples/jsm/objects/Reflector';
+import { Resources } from './Resources.service';
 
 
 class GiftBalloon{
@@ -59,48 +57,15 @@ class GiftBalloon{
   State:Boolean
 }
 
-class LetterProperty {
-  Object3D: THREE.Object3D
-  ObjectBody: CANNON.Body
-  Scene: THREE.Scene
-  setPoint: THREE.Vector3
-  Points: number[]
-  AttachPoint: THREE.Mesh
-  AttachPointV: THREE.Vector3
-  letterArray: CANNON.Body[]
-  letterArrayA: CANNON.Body[]
-  LConstraint: CANNON.LockConstraint
-  DConstraint: CANNON.DistanceConstraint
-  StringC: THREE.LineCurve3
-  StringT: THREE.Mesh
-  StringCA: THREE.LineCurve3
-  StringTA: THREE.Mesh
-  StringCAB: THREE.LineCurve3
-  StringTAB: THREE.Mesh
-  Line: THREE.Line
-  Line2: THREE.Line
-
-  // second line
-  AttachPoint02: THREE.Mesh
-  AttachPointV02: THREE.Vector3
-  LConstraint02: CANNON.LockConstraint
-  DConstraint02: CANNON.DistanceConstraint
-  letterArray02: CANNON.Body[]
-  letterArrayA02: CANNON.Body[]
-  StringC02: THREE.LineCurve3
-  StringT02: THREE.Mesh
-  StringCA02: THREE.LineCurve3
-  StringTA02: THREE.Mesh
-  StringCAB02: THREE.LineCurve3
-  StringTAB02: THREE.Mesh
-  type: number
-}
-
 @Injectable({
   providedIn: 'root'
 })
 
+
+
 export class ThreeService {
+  constructor(private RS: Resources){}
+
   // THREE BASIC SETUP
   canvas: HTMLCanvasElement;
   renderer: THREE.WebGLRenderer;
@@ -113,22 +78,15 @@ export class ThreeService {
   private dracoLoader;
   // CANNON BASIC SETUP
   private world03 = new CANNON.World();
-  private world02 = new CANNON.World();
+
 
   private clock = new THREE.Clock();
 
 
   // FPS
   private times = [];
-  private fps:number;
+  fps:number;
   private now:number;
-
-  // 
-  private windmillthree = [];
-  private windmillcannon = [];
-  private GolfShadows = [];
-  private GolfThrees = [];
-  private GolfCannons = [];
 
   private meshes03 = [];
   private bodies03 = [];
@@ -149,15 +107,7 @@ export class ThreeService {
   PipeThree = [];
   vec = new THREE.Vector3();
   pos = new THREE.Vector3();
-  BasePosition = new THREE.Vector2();
-  lastpipe;
-  lastthreepipe;
-  dragControl;
-  directionPipe;
-  DragPoint;
-  DragPointThree = [];
-  PipeDistance = new THREE.Vector3();
-  dragging: boolean = false;
+  
   lockConstraint;
   ThreeStuff = new THREE.Mesh();
 
@@ -176,11 +126,7 @@ export class ThreeService {
   private LastCursor = new THREE.Vector3();
   private LetterArray = [];
   private GiftBalloonArray = [];
-  private Golfing: boolean = false;
-  private FBvec = new THREE.Vector3();
-  private LBvec = new THREE.Vector3();
-  private FBpos = new THREE.Vector3();
-  private LBpos = new THREE.Vector3();
+
 
   // Drag Stuffs
   private curvePipe = new THREE.Mesh();
@@ -195,13 +141,12 @@ export class ThreeService {
   private intersection = new THREE.Vector3();
   private Lines=[];
 
-  private exporter = new GLTFExporter();
 
 
   private DynamicShadows = [];
   private ScenePhase:number;
 
-  private Goal = new THREE.Vector3();
+  Goal = new THREE.Vector3();
   private EasedGoal = new THREE.Vector3();
   private GoalAngle = new THREE.Vector3();
   
@@ -218,7 +163,7 @@ export class ThreeService {
     // this.renderer.toneMapping = THREE.LinearToneMapping;
     // this.renderer.toneMappingExposure = 1;
     
-    this.renderer.setPixelRatio(1.5);
+    this.renderer.setPixelRatio(2);
     this.textureLoader = new THREE.TextureLoader();
     this.clock = new THREE.Clock();
 
@@ -250,17 +195,22 @@ export class ThreeService {
 
 
     // this.GoalAngle.set(0,1.4,8);
-    // this.camera.position.copy(this.GoalAngle);
-    // this.camera.lookAt(new THREE.Vector3(0,0,0));
+    this.GoalAngle.set(0,1.4,8);
+    this.camera.position.copy(this.GoalAngle);
+    this.camera.lookAt(new THREE.Vector3(0,0,0));
 
-    // this.Goal.set(0,1,0)
-    // this.EasedGoal.copy(this.Goal);
+    this.Goal.set(0,1,0)
+    this.EasedGoal.copy(this.Goal);
 
-    this.controls = new OrbitControls(this.camera, this.canvas);
-    this.controls.target.set(0,1,0);
-    this.controls.update();
-    this.controls.enableRotate = false;
-    this.gui.add(this.controls,'enableRotate');
+
+    // OrbitControls
+    // this.controls = new OrbitControls(this.camera, this.canvas);
+    // this.controls.target.set(0,1,0);
+    // this.controls.update();
+    // this.controls.enableRotate = false;
+    // this.gui.add(this.controls,'enableRotate');
+
+
 
     // second
     // this.GoalAngle.set(0,5,6);
@@ -302,51 +252,14 @@ export class ThreeService {
       .onChange(() => {
         canvas.setAttribute("style","background:"+ bgparams.background+";");
       });
-
-
-
-    // Color
-    this.white = this.textureLoader.load('assets/matcaps/white.png',()=>{
-      this.white.encoding=THREE.sRGBEncoding;
-    });
-    this.blue01 = this.textureLoader.load('assets/matcaps/blue01.png',()=>{
-      this.blue01.encoding=THREE.sRGBEncoding;
-    });
-    this.blue02 = this.textureLoader.load('assets/matcaps/blue02.png',()=>{
-      this.blue02.encoding=THREE.sRGBEncoding;
-    });
-    this.pink = this.textureLoader.load('assets/matcaps/pink.png',()=>{
-      this.pink.encoding=THREE.sRGBEncoding;
-    });
-    this.green01 = this.textureLoader.load('assets/matcaps/green01.png',()=>{
-      this.green01.encoding=THREE.sRGBEncoding;
-    });
-    this.wood = this.textureLoader.load('assets/matcaps/wood.png',()=>{
-      this.wood.encoding=THREE.sRGBEncoding;
-    });
-    this.red = this.textureLoader.load('assets/matcaps/03/balloon.png',()=>{
-      this.red.encoding=THREE.sRGBEncoding;
-    });
-    this.yellow = this.textureLoader.load('assets/matcaps/03/coin.png',()=>{
-      this.yellow.encoding=THREE.sRGBEncoding;
-    });
   }
-
-  // Color
-  blue01; 
-  blue02; 
-  white;
-  pink;
-  green01;
-  wood;
-  red;
-  yellow;
-  
 
 
   private BaseMatcap;
   FirstInit(): void {
+
     this.ScenePhase=1;
+    // this.FS.InitFirstScene();
 
     this.StringM = new LineMaterial({
       color:0xeeeeee,
@@ -355,14 +268,8 @@ export class ThreeService {
 
     this.AddEvent();
 
-    // this.nextStageFunction();
-    // this.CreateParkObject();
-    // this.ParkStaticShadow();
-
-
-    // this.SecondInit();
-    this.ThirdInit();
-    this.CreateBalloonCursor();
+    // this.ThirdInit();
+    // this.CreateBalloonCursor();
 
     let cursor = document.querySelector('.cursor');
 
@@ -372,9 +279,6 @@ export class ThreeService {
     document.addEventListener('mousedown',this.CursorDown,false);
     document.addEventListener('mouseup',this.CursorUp,false);
     
-    // this.canvas.addEventListener("click", () => {
-    //   this.FirstSceneClickEvent();
-    // });
 
     this.canvas.addEventListener("mousemove", (e) => {
       this.renderThreePosition(e.x, e.y);
@@ -384,43 +288,36 @@ export class ThreeService {
     // this.canvas.addEventListener("touchmove", (e) => {
     //   this.renderThreePosition(e.touches[0].clientX, e.touches[0].clientY);
     // });
-    this.canvas.addEventListener("mousedown", (e) => {
-      if (e.which == 1) {
-        this.CursorBegin();
-        // this.canvas.onmousemove = () => {
-        //   this.BalloonCursor();
-        // };
-        this.canvas.addEventListener("mousemove",this.ThirdSceneMouseMove,false);
-      }
-    });
-    // this.canvas.addEventListener("touchstart", (e) => {
-    //   this.renderThreePosition(e.touches[0].clientX, e.touches[0].clientY);
+    // this.canvas.addEventListener("mousedown", (e) => {
+    //   if (e.which == 1) {
     //     this.CursorBegin();
-    //     this.canvas.ontouchmove = () => {
-    //       this.BalloonCursor();
-    //       this.FirstSceneClickEvent();
-    //     };
+    //     // this.canvas.onmousemove = () => {
+    //     //   this.BalloonCursor();
+    //     // };
+    //     this.canvas.addEventListener("mousemove",this.ThirdSceneMouseMove,false);
+    //   }
     // });
-    this.canvas.addEventListener("mouseup", (e) => {
-      if (e.which == 1) {
-        // this.canvas.onmousemove = null;
-        this.canvas.removeEventListener("mousemove",this.ThirdSceneMouseMove,false);
-        TweenLite.to(this.FirstCursor, .5, {
-          x: this.LastCursor.x,
-          y: this.LastCursor.y, z: this.LastCursor.z
-        })
-        this.CheckIntersect();
-        // if (this.collided) {
-        //   this.FirstCursor.copy(this.LastCursor);
-        // } else {
-        //   TweenLite.to(this.FirstCursor, .5, {
-        //     x: this.LastCursor.x,
-        //     y: this.LastCursor.y, z: this.LastCursor.z
-        //   })
-        //   this.CheckIntersect()
-        // }
-      }
-    });
+
+    // this.canvas.addEventListener("mouseup", (e) => {
+    //   if (e.which == 1) {
+    //     // this.canvas.onmousemove = null;
+    //     this.canvas.removeEventListener("mousemove",this.ThirdSceneMouseMove,false);
+    //     TweenLite.to(this.FirstCursor, .5, {
+    //       x: this.LastCursor.x,
+    //       y: this.LastCursor.y, z: this.LastCursor.z
+    //     })
+    //     this.CheckIntersect();
+    //     // if (this.collided) {
+    //     //   this.FirstCursor.copy(this.LastCursor);
+    //     // } else {
+    //     //   TweenLite.to(this.FirstCursor, .5, {
+    //     //     x: this.LastCursor.x,
+    //     //     y: this.LastCursor.y, z: this.LastCursor.z
+    //     //   })
+    //     //   this.CheckIntersect()
+    //     // }
+    //   }
+    // });
     // this.canvas.addEventListener("touchend", (e) => {
     //   // this.renderThreePosition(e.touches[0].clientX, e.touches[0].clientY);
     //     this.canvas.ontouchmove = null;
@@ -451,105 +348,18 @@ export class ThreeService {
     this.BalloonCursor();
   }
 
-  ParkStaticShadow(){
-    var texture = this.textureLoader.load('assets/shadow/Park01.png');
 
-    let uniforms = {
-      tShadow:{value:texture},
-      uShadowColor:{value:new THREE.Color("#c0a68e")},
-      uAlpha:{value:1}
-    }
-    let material = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms,depthWrite:false,
-      vertexShader:document.getElementById('vertexShader').textContent,
-      fragmentShader:document.getElementById('fragmentShader').textContent})
 
-      
-    let railshadow = new THREE.Mesh(new THREE.PlaneGeometry(12,12),material);
-    railshadow.rotation.set(-Math.PI/2,0,-Math.PI/2)
-    railshadow.position.set(0,0,0);
-
-    this.scene.add(railshadow);
-  }
-
-  private firstClientX:number=0;
-  private onNextLeft:boolean=false;
-  nextStageFunction(){
-    document.querySelector('#nextStage .nextLeft').addEventListener("mousedown", this.nextLeftDown, false);
-
-    document.addEventListener("mouseup", ()=>{
-      if(this.onNextLeft){
-        document.removeEventListener("mousemove", this.nextLeftMove, false);
-        console.log("cancelled")
-        this.firstClientX=0;
-        this.onNextLeft=false;
-        if(!this.cameraFrameBoolean){
-          this.nextCancel();
-        }
-      }
-    })
-  }
-
-  nextLeftDown = (e) => {
-    document.addEventListener("mousemove", this.nextLeftMove);
-    this.firstClientX=e.clientX;
-    this.onNextLeft = true;
-  }
-
-  nextLeftMove = (e) => {
-    var num = e.clientX-this.firstClientX > 0 ? e.clientX-this.firstClientX : 0;
-    if(num>0){
-      if(num>=250){
-        if(!this.cameraFrameBoolean){
-          this.nextLeftOnceOnly();
-        }
-        this.cameraFrameBoolean=true;
-      } else {
-        TweenLite.to(this.Goal,.01,{x:num*.01})
-        TweenLite.set('#nextStage .nextLeft',{css:{left:num+"px"}});
-        TweenLite.set('#nextStage .mid .svg',{css:{width:(200-num)+"px"}});
-      }
-    }
-  }
-
-  nextLeftOnceOnly(){
-    if(this.cameraFrameBoolean=true){
-      console.log('succeed')
-
-      TweenLite.to(this.Goal,1.2,{ease:Power1.easeIn,x:10});
-
-      TweenLite.to('#nextStage',.5,{ease:Power1.easeIn,css:{opacity:0}});
-      TweenLite.set('#nextStage',{css:{visibility:"hidden"},delay:.4});
-      
-      var offsetl = document.querySelector('#nextStage .nextRight') as HTMLElement;
-
-      // TweenLite.to('#nextStage .nextLeft',.2,{css:{left:offsetl.offsetLeft+"px"}});
-      // TweenLite.to('#nextStage .mid .svg',.2,{css:{width:0+"px"}});
-
-      document.removeEventListener("mousemove", this.nextLeftMove, false);
-      console.log("cancelled")
-      this.firstClientX=0;
-      this.onNextLeft=false;
-    }
-  }
-
-  private cameraFrameBoolean:boolean=false;
-  nextCancel(){
-    TweenLite.to('#nextStage .nextLeft',.3,{ease:Power1.easeOut,css:{left:0+"px"}});
-    TweenLite.to('#nextStage .mid .svg',.3,{ease:Power1.easeOut,css:{width:200+"px"}});
-    TweenLite.to(this.Goal,.3,{ease:Power1.easeOut,x:0})
-  }
 
   AddEvent(): void {
-    window.addEventListener('DOMContentLoaded', () => {
-      this.render();
-    });
-
+    this.render();
     window.addEventListener('resize', () => {
       this.resize();
     });
   }
 
-
+   BasePosition = new THREE.Vector2();
+   LBvec = new THREE.Vector3();
   renderThreePosition(x, y) {
     this.vec.set(
       (x / window.innerWidth) * 2 - 1,
@@ -590,16 +400,14 @@ export class ThreeService {
       this.render();
     });
 
-
-
     this.now = performance.now();
 
     // Camera 
-    // this.EasedGoal.x+=(this.Goal.x - this.EasedGoal.x) * this.GoalEasing;
-    // this.EasedGoal.y+=(this.Goal.y - this.EasedGoal.y) * this.GoalEasing;
-    // this.EasedGoal.z+=(this.Goal.z - this.EasedGoal.z) * this.GoalEasing;
+    this.EasedGoal.x+=(this.Goal.x - this.EasedGoal.x) * this.GoalEasing;
+    this.EasedGoal.y+=(this.Goal.y - this.EasedGoal.y) * this.GoalEasing;
+    this.EasedGoal.z+=(this.Goal.z - this.EasedGoal.z) * this.GoalEasing;
 
-    // this.camera.position.copy(this.EasedGoal).add(this.GoalAngle.clone().normalize().multiplyScalar(this.GoalAngle.z))
+    this.camera.position.copy(this.EasedGoal).add(this.GoalAngle.clone().normalize().multiplyScalar(this.GoalAngle.z))
 
 
     if (this.times.length > 0 && this.times[0] <= this.now - 1000) {
@@ -609,500 +417,10 @@ export class ThreeService {
     this.times.push(this.now);
     this.fps = this.times.length;
 
-    // this.FirstSceneRender();
     // this.MiniGolfRender();
-    this.ThirdSceneRender();
-
+    // this.ThirdSceneRender();
 
     this.renderer.render(this.scene, this.camera);
-  }
-
-
-  private CircleGolf;
-  SecondInit(){
-    this.InitGolfCannon();
-
-
-
-    var shape = new CANNON.Plane();
-    var PlaneBody = new CANNON.Body({ mass: 0,material:this.PlaneMaterial });
-    PlaneBody.addShape(shape);
-    PlaneBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -Math.PI / 2);
-    PlaneBody.position.set(0, -.2, 0);
-    this.world02.addBody(PlaneBody)
-
-    this.GolfStageCannon();
-    // this.GolfStage();
-
-
-    this.GolfString = new THREE.Object3D();
-    let material = new THREE.MeshBasicMaterial({color:0xffffff});
-    let arrow = new THREE.Mesh(
-      new THREE.CylinderBufferGeometry(.075,.075,.01,3),material
-    )
-    arrow.position.set(0,0,0.45);
-    let box = new THREE.Mesh(
-      new THREE.BoxBufferGeometry(.05,.01,.1),material
-    )
-    box.position.set(0,0,0.3);
-    let box02 = new THREE.Mesh(
-      new THREE.BoxBufferGeometry(.05,.01,.1),material
-    )
-    box02.position.set(0,0,0.15);
-    this.GolfString.add(arrow);
-    this.GolfString.add(box);
-    this.GolfString.add(box02);
-
-    this.canvas.addEventListener("mousedown", (e) => {
-      if (e.which == 1) {
-        if(this.GolfState.value==1){
-          this.canvas.addEventListener("mousemove", this.isGolfing, false);
-          this.GolfBegin();
-        }
-      }
-    });
-    this.canvas.addEventListener("mouseup", (e) => {
-      if (e.which == 1) {
-        this.canvas.removeEventListener("mousemove", this.isGolfing, false);
-        this.Golfing=false;
-        gsap.set('.circle',{css:{strokeDashoffset: 270}});
-        gsap.set('.circle .innerCircle',{css:{strokeDashoffset: 270}});
-        gsap.set('.svg-line',{css:{opacity:0}});
-
-        this.scene.remove(this.GolfString);
-
-        if(!this.controls.enableRotate&&this.GolfState.value==2){
-          if(this.BasePosition.x==this.FBasePosition.x&&this.BasePosition.y==this.FBasePosition.y){
-          } else {
-            this.GolfMove();
-            this.GolfState.value=0;
-            gsap.delayedCall(.6,()=>{
-              this.MiniGolf(); 
-            });
-          }
-        }
-      }
-    });
-  }
-
-  isGolfing = () => {
-    this.Golfing=true;
-    this.GolfState.value=2;
-    this.scene.add(this.GolfString);
-    gsap.set('.circle .innerCircle',{css:{strokeDashoffset: 0}});
-    gsap.set('.svg-line',{css:{opacity:1}});
-  }
-
-  private GolfCMaterial:CANNON.Material;
-  private GolfStageMaterial:CANNON.Material;
-  private GoalMaterial:CANNON.Material;
-  InitGolfCannon(){
-    this.world02 = new CANNON.World();
-    this.world02.gravity.set(0, 0, 0);
-
-
-    this.GolfCMaterial = new CANNON.Material("GolfCMaterial");
-    this.GoalMaterial = new CANNON.Material("GoalMaterial");
-    this.GolfStageMaterial = new CANNON.Material("GolfStageMaterial");
-    this.PlaneMaterial = new CANNON.Material("PlaneMaterial");
-
-    // let Contact = new CANNON.ContactMaterial(this.GolfCMaterial,this.PlaneMaterial,{
-    //   // friction:0.01,
-    //   restitution:0.3,
-    // });
-    // this.world02.addContactMaterial(Contact);
-
-    // // Golf stage
-    
-    // Contact = new CANNON.ContactMaterial(this.GolfCMaterial,this.GolfStageMaterial,{
-    //   // friction: 0.5,
-    //   restitution: 0.3,
-    // });
-    // this.world02.addContactMaterial(Contact);
-    this.debugger = new CannonDebugRenderer(this.scene, this.world02);
-
-    // First time
-    if(this.GolfClone==null){
-
-      // Create material once time
-      let white = this.textureLoader.load('assets/matcaps/white.png',()=>{
-        white.encoding=THREE.sRGBEncoding;
-      });
-      // white
-      let mate = new THREE.MeshMatcapMaterial({
-        color:0xffffff,
-        matcap:white,
-      })
-
-      // THREE
-      this.GolfClone = new THREE.Mesh(
-        new THREE.SphereBufferGeometry(.09,16,16),
-        mate
-      )
-      this.GolfClone.position.set(0,6,0)
-    }
-
-
-    gsap.delayedCall(2,() => {
-
-      this.MiniGolf()
-
-      this.world02.gravity.set(0, -10, 0);
-    });
-
-  }
-
-
-
-  
-  private FBasePosition=new THREE.Vector2();
-  GolfBegin(){
-    this.FBvec.copy(this.LBvec);
-    this.FBasePosition.copy(this.BasePosition);
-  }
-
-  
-  private GolfString:THREE.Object3D;
-  private GolfDistance:number;
-  private GolfPercent:number;
-  RenderGolfCursor(){
-    if(this.GolfCannons[this.GolfN] && this.Golfing){
-      this.FBpos=this.GolfCannons[this.GolfN].position;
-      var Multiplier = 1.2;
-      this.LBpos.set(this.FBpos.x+((this.FBvec.x-this.LBvec.x)*Multiplier),this.FBpos.y,this.FBpos.z-((this.FBvec.y-this.LBvec.y)*Multiplier));
-
-      this.GolfString.position.copy(this.FBpos);
-      this.GolfString.lookAt(this.LBpos);
-
-
-      this.GolfDistance = this.distanceVec2(this.FBpos.x,this.FBpos.z,this.LBpos.x,this.LBpos.z);
-
-      var maxDistance = 4;
-      
-      this.GolfPercent = 270 - (this.GolfDistance/maxDistance * 100)*2.7;
-      
-
-      gsap.set('.circle',{css:{strokeDashoffset: this.GolfPercent > 0 ? this.GolfPercent : 0}});
-
-
-      var angleRadians = 180 + (Math.atan2(this.BasePosition.y-this.FBasePosition.y,this.BasePosition.x-this.FBasePosition.x) * 180/Math.PI);
-      gsap.set('#lgrad',{attr:{gradientTransform:"rotate("+angleRadians+" 0.5 0.5)"}});
-      gsap.set('.svg-line .line',{attr:{x1:this.FBasePosition.x,y1:this.FBasePosition.y,x2:this.BasePosition.x,y2:this.BasePosition.y}});
-    }
-  }
-
-  GolfMove(){
-    let startPosition = new CANNON.Vec3(this.FBpos.x, 0, this.FBpos.z);
-    let endPosition = new CANNON.Vec3(this.LBpos.x, 0, this.LBpos.z);
-
-    // endPosition limit
-    var maxDistance = 4;
-    if(this.GolfDistance>maxDistance){
-      var Line = new THREE.LineCurve3(new THREE.Vector3(startPosition.x,startPosition.y,startPosition.z),
-        new THREE.Vector3(endPosition.x,endPosition.y,endPosition.z));
-      var len = Line.getLengths();
-      var numberI:number;
-      var Vec3:THREE.Vector3;
-
-      for(var i=0;i<len.length;i++){
-        if(len[i]>maxDistance){
-          numberI=i;
-          break;
-        }
-      }
-
-      Vec3 = Line.getPointAt(numberI/201);
-      endPosition.set(Vec3.x,Vec3.y,Vec3.z);
-    }
-
-
-    let direction = new CANNON.Vec3();
-    endPosition.vsub(startPosition, direction);
-
-    let totalLength = this.distance(direction.x, direction.y, direction.z, 0, 0, 0);
-    direction.normalize();
-
-    let speed = totalLength / 0.225;
-    if(speed<1){
-      speed = 1;
-    }
-
-    direction.scale(speed, this.GolfCannons[this.GolfN].velocity);
-    // this.GolfStateFunction();
-  }
-  private GolfState={value:0}; // 0 preparing 1 standby 2 damping
-
-  // GolfStateFunction(){
-  //   if(this.GolfState.value==0)
-  //   gsap.delayedCall(.1,() => {
-  //     if(Math.abs(this.GolfCannons[this.GolfN].angularVelocity.x)+Math.abs(this.GolfCannons[this.GolfN].angularVelocity.z) < 2 ){
-  //       console.log('dingding')
-  //       TweenLite.set(this.GolfState,{value:2});
-  //       TweenLite.to(this.GolfCannons[this.GolfN],1,{linearDamping:.8,angularDamping:.8});
-  //       TweenLite.set(this.GolfCannons[this.GolfN],{delay:1,linearDamping:.5,angularDamping:.5});
-  //       TweenLite.set(this.GolfState,{delay:1,value:1});
-  //     }
-  //     this.GolfStateFunction();
-  //   });
-  //   console.log(Math.abs(this.GolfCannons[this.GolfN].angularVelocity.x)+Math.abs(this.GolfCannons[this.GolfN].angularVelocity.z))
-  // }
-
-
-  private GolfClone=null;
-  private GolfN: number = 0;
-  private MaxGolf: number = 2;
-  MiniGolf(){
-    // P
-    var Position = new THREE.Vector3();
-    Position.setFromMatrixPosition(this.StageThreeArray[0].matrixWorld);
-    this.GolfN++;
-
-    gsap.fromTo(this.GolfFlip[0].rotation,1,{x:0},{x:-Math.PI});
-
-    if(this.GolfThrees.length<1){
-      this.GolfN=0;
-    }
-
-    if(this.GolfThrees.length == this.MaxGolf){
-      // if max
-      if(this.GolfN==this.MaxGolf){
-        this.GolfN=0;
-      }
-      this.ScoreFunction(this.GolfCannons[this.GolfN].position)
-      this.GolfCannons[this.GolfN].collisionFilterMask=2;
-      this.GolfCannons[this.GolfN].position.set(Position.x,Position.y - .6,Position.z);
-      this.GolfCannons[this.GolfN].velocity.set(.09,6,-.18);
-      this.GolfCannons[this.GolfN].angularVelocity.set(0,0,0);
-      this.GolfState.value=0;
-      gsap.delayedCall(.5,()=>{
-        this.GolfCannons[this.GolfN].collisionFilterMask=1;
-      })
-      gsap.delayedCall(1,()=>{
-        this.GolfState.value=1;
-      })
-
-    } else {
-      // Create more Golf ball if length less than MaxGolf
-      // CANNON
-      let body = new CANNON.Body({mass:1,material:this.GolfCMaterial})
-      body.linearDamping = .5;
-      body.angularDamping = .5;
-      body.addShape(new CANNON.Sphere(.09));
-      this.world02.addBody(body)
-      this.GolfCannons[this.GolfN] = body;
-
-
-      body.collisionFilterMask=2;
-      body.position.set(Position.x,Position.y - .6,Position.z);
-      body.velocity.set(.09,6,-.18);
-      this.GolfState.value=0;
-      gsap.delayedCall(.5,()=>{
-        body.collisionFilterMask=1;
-      })
-      gsap.delayedCall(1,()=>{
-        this.GolfState.value=1;
-      })
-
-
-      // Collision
-      body.addEventListener('collide',(e)=>{
-        if(e.body.material.name=="GoalMaterial"){
-          this.ScoreFunction(body.position)
-        }
-      });
-
-      // THREE
-      let Golf = this.GolfClone.clone();
-      this.scene.add(Golf);
-      this.GolfThrees[this.GolfN] = Golf;
-      
-
-      // SHADOW
-      var texture = this.textureLoader.load('assets/shadow/Golf.png');
-
-      let uniforms = {
-        tShadow:{value:texture},
-        uShadowColor:{value:new THREE.Color("#c0a68e")},
-        uAlpha:{value:1}
-      }
-      let material = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms,depthWrite:false,
-        vertexShader:document.getElementById('vertexShader').textContent,
-        fragmentShader:document.getElementById('fragmentShader').textContent})
-        
-      let shadow = new THREE.Mesh(new THREE.PlaneGeometry(1,1),material);
-      shadow.rotation.set(-Math.PI/2,0,0)
-      shadow.position.set(0,0,0);
-
-      this.scene.add(shadow);
-      this.GolfShadows[this.GolfN] = shadow;
-    }
-  }
-
-  // 24 for each function call,3 material, 4 usage at the same time.
-  private ScoreMax = 6*3*4;
-  private ScoreCurrent = 0;
-  private ScoreLast = 0;
-  private CoinArray=[];
-  private CoinCurrent = 0;
-  CreateScoreMaterial(){
-    // Score
-    let Score01 = new THREE.Mesh(new THREE.BoxBufferGeometry(.05,.08,.005),
-      new THREE.MeshMatcapMaterial({color:0xffffff,matcap:this.blue02,transparent:true}));
-    let Score02 = new THREE.Mesh(new THREE.BoxBufferGeometry(.08,.05,.005),
-      new THREE.MeshMatcapMaterial({color:0xffffff,matcap:this.red,transparent:true}));
-    let Score03 = new THREE.Mesh(new THREE.BoxBufferGeometry(.05,.08,.005),
-      new THREE.MeshMatcapMaterial({color:0xffffff,matcap:this.yellow,transparent:true}));
-    Score01.position.set(0,5,0)
-    Score02.position.set(0,5,0)
-    Score03.position.set(0,5,0)
-    for (var i=0;i<this.ScoreMax/3;i++){
-      let mesh = Score01.clone();
-      this.scene.add(mesh);
-      this.GolfScore.push(mesh);
-      
-      let mesh02 = Score02.clone();
-      this.scene.add(mesh02);
-      this.GolfScore.push(mesh02);
-
-      let mesh03 = Score03.clone();
-      this.scene.add(mesh03);
-      this.GolfScore.push(mesh03);
-    }
-    // let Score02 = new THREE.Mesh(new THREE.CylinderBufferGeometry(.04,.04,.02,8,1),
-    //   new THREE.MeshMatcapMaterial({color:0xffffff,matcap:this.blue02,transparent:true}));
-    // Score02.position.set(0,5,0)
-    // for(var i=0;i<this.ScoreMax/3;i++){
-    //   let mesh = Score02.clone();
-    //   this.scene.add(mesh);
-    //   this.GolfScore.push(mesh);
-    // }
-    // let Score03 = new THREE.Mesh(new THREE.CylinderBufferGeometry(.04,.04,.02,8,1),
-    //   new THREE.MeshMatcapMaterial({color:0xffffff,matcap:this.pink,transparent:true}));
-    // Score03.position.set(0,5,0)
-    // for(var i=0;i<this.ScoreMax/3;i++){
-    //   let mesh = Score03.clone();
-    //   this.scene.add(mesh);
-    //   this.GolfScore.push(mesh);
-    // }
-
-    // let yellow = this.textureLoader.load('assets/matcaps/03/FFEB40.png',()=>{
-    //   yellow.encoding=THREE.sRGBEncoding;
-    // });
-    this.loader.load(
-      'assets/model/Coin.glb',
-      (gltf) => {
-        let coin = new THREE.Object3D();
-
-        gltf.scene.scale.set(2.75,2.75,2.75)
-        gltf.scene.position.set(0,0,0);
-        gltf.scene.rotation.set(40*Math.PI/180,0,20*Math.PI/180)
-
-        coin.add(gltf.scene);
-
-        for(var i=0;i<4;i++){
-          let mesh = coin.clone();
-          mesh.name="Coin";
-          let mate01 = new THREE.MeshMatcapMaterial({
-            color:0xffffff,
-            side:2,
-            transparent:true,
-            opacity:1,
-            matcap:this.yellow
-          })
-          let mate02 = new THREE.MeshMatcapMaterial({
-            color:0xeeeeee,
-            side:2,
-            transparent:true,
-            opacity:1,
-            matcap:this.yellow
-          })
-
-          mesh.children["0"].children[0].children[0].material=mate01;
-          mesh.children["0"].children[0].children[1].material=mate02;
-
-          
-          // Shadow
-          let texture = this.textureLoader.load('assets/shadow/Coin.png');
-
-          let uniforms = {
-            tShadow:{value:texture},
-            uShadowColor:{value:new THREE.Color("#78b75e")},
-            uAlpha:{value:0}
-          }
-          let material = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms,depthWrite:false,
-            vertexShader:document.getElementById('vertexShader').textContent,
-            fragmentShader:document.getElementById('fragmentShader').textContent})
-      
-          let shadow = new THREE.Mesh(new THREE.PlaneGeometry(2.8,2.8),material);
-          shadow.renderOrder = 1
-  
-          shadow.rotation.set(-Math.PI/2,0,0)
-          shadow.position.set(-0.01,-0.085,0.01);
-          mesh.add(shadow);
-
-          this.ThirdSceneObject.push(mesh.children["0"]);
-          this.scene.add(mesh);
-          this.CoinArray.push(mesh);
-        }
-      });
-  }
-
-  private ScoreDistance = .25;
-  ScoreFunction(Po:CANNON.Vec3){
-    if(this.ScoreCurrent >= this.ScoreMax){
-      this.ScoreCurrent=24;
-      this.ScoreLast=0;
-      this.CoinCurrent=0;
-    } else {
-      this.ScoreCurrent+=24;
-    }
-
-    var j=0;
-    for(var i=this.ScoreLast;i<this.ScoreCurrent;i++){
-
-      var ranX = Po.x + Math.random()*1.2-.6;
-      var ranZ = Po.z + Math.random()*1.2-.6;
-
-      var distance = this.distanceVec2(ranX,ranZ,Po.x,Po.z);
-      if(distance>this.ScoreDistance){
-        var randomDelay = j;
-        j+=.01;
-
-        // Distance duration
-        var DD = (distance - this.ScoreDistance);
-
-        var PoDuration = .35 + DD;
-        
-        // Position
-        gsap.fromTo(this.GolfScore[i].position,PoDuration,
-          {x:Po.x,z:Po.z},
-          {x:ranX,z:ranZ,delay:randomDelay,ease:"power1.out"});
-
-
-        gsap.fromTo(this.GolfScore[i].position,PoDuration/2,{y:Po.y},{ease:"power1.out",y:DD+.4,delay:randomDelay})
-        gsap.to(this.GolfScore[i].position,PoDuration/2,{ease:"power1.in",delay:(PoDuration/2)+randomDelay,y:0.28})
-
-        // Rotation
-        gsap.fromTo(this.GolfScore[i].rotation,PoDuration,{x:0,y:0,z:0},{x:Math.random()*24-12,y:Math.random()*24-12,z:Math.random()*24-12,delay:randomDelay,ease:"none"});
-
-        // Scale
-        // gsap.set(this.GolfScore[i].scale,{x:Math.random()*.3+.7,y:Math.random()*.3+.7,z:Math.random()*.3+.7});
-        gsap.to(this.GolfScore[i].scale,PoDuration,{delay:PoDuration+.1,x:.1,y:.1,z:.1})
-      } else {
-        i--;
-      }
-    }
-    this.ScoreLast = this.ScoreCurrent;
-
-    // Coin
-    this.CoinArray[this.CoinCurrent].position.set(Po.x,Po.y,Po.z);
-    gsap.fromTo(this.CoinArray[this.CoinCurrent].position,.35,{y:Po.y},{delay:0,ease:"power1.out",y:"+=.6"})
-    gsap.to(this.CoinArray[this.CoinCurrent].position,.35,{ease:"power1.in",delay:.35,y:0.28})
-
-    // Opacity
-    gsap.to(this.CoinArray[this.CoinCurrent].children[1].material.uniforms.uAlpha,
-      .3,{value:.6,delay:.6})
-    this.CoinCurrent+=1;
   }
 
   BOOPArray=[];
@@ -1147,700 +465,9 @@ export class ThreeService {
     this.BOOPCurrent++;
   }
 
-  private StageThreeArray=[];
-  private StageCannnonArray=[];
-  private GolfFlip=[];
-  private GolfScore=[];
-  GolfStageCannon(){
-
-    let FlagMate = new THREE.MeshMatcapMaterial({
-      color:0xec1c24,
-      side:2,
-      matcap:this.white,
-      morphTargets:true,
-    })
-
-    let Stage = new THREE.Object3D();
-    this.scene.add(Stage)
-    Stage.position.set(10,0,-1.5);
-    // Stage.scale.set(1.1,1.1,1.1);
-    Stage.rotation.set(0*Math.PI/180,-25*Math.PI/180,0*Math.PI/180);
-
-    let StageMaterial = new THREE.MeshBasicMaterial({transparent:true,opacity:0,color:0x2395dc})
-
-    var texture = this.textureLoader.load('assets/shadow/Windmill01.png');
-
-    let uniforms = {
-      tShadow:{value:texture},
-      uShadowColor:{value:new THREE.Color("#c0a68e")},
-      uAlpha:{value:1}
-    }
-    let material = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms,depthWrite:false,
-      vertexShader:document.getElementById('vertexShader').textContent,
-      fragmentShader:document.getElementById('fragmentShader').textContent})
-
-      
-    let StageShadow = new THREE.Mesh(new THREE.PlaneGeometry(10,10),material);
-    StageShadow.rotation.set(-Math.PI/2,0,0)
-    StageShadow.position.set(0,0,0);
-
-    Stage.add(StageShadow);
-
-    var texture02 = this.textureLoader.load('assets/shadow/Windmill02.png');
-    let uniforms02 = {
-      tShadow:{value:texture02},
-      uShadowColor:{value:new THREE.Color("#c0a68e")},
-      uAlpha:{value:1}
-    }
-    let material02 = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms:uniforms02,depthWrite:false,
-      vertexShader:document.getElementById('vertexShader').textContent,
-      fragmentShader:document.getElementById('fragmentShader').textContent})
-
-      
-    let StageShadow02 = new THREE.Mesh(new THREE.PlaneGeometry(10,10),material02);
-    StageShadow02.rotation.set(-Math.PI/2,0,0)
-    StageShadow02.position.set(0,-.2,0);
-
-    Stage.add(StageShadow02);
-
-
-    
-    var texture03 = this.textureLoader.load('assets/shadow/Windmill03.png');
-    let uniforms03 = {
-      tShadow:{value:texture03},
-      uShadowColor:{value:new THREE.Color("#000000")},
-      uAlpha:{value:.08}
-    }
-    let material03 = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms:uniforms03,depthWrite:false,
-      vertexShader:document.getElementById('vertexShader').textContent,
-      fragmentShader:document.getElementById('fragmentShader').textContent})
-
-      
-    let StageShadow03 = new THREE.Mesh(new THREE.PlaneGeometry(3,3),material03);
-    StageShadow03.rotation.set(0*Math.PI/180,0,0)
-    StageShadow03.scale.set(.5,.5,1)
-    StageShadow03.position.set(0,1.2,.48);
-
-    Stage.add(StageShadow03);
-
-    let StageShadow0302 = StageShadow03.clone();
-    Stage.add(StageShadow0302);
-
-    let StageShadow0303 = StageShadow03.clone();
-    Stage.add(StageShadow0303);
-
-    let StageShadow0304 = StageShadow03.clone();
-    Stage.add(StageShadow0304);
-
-
-    this.loader.load(
-      'assets/model/Windmill04.glb',
-      (gltf) => {
-        let stage = gltf.scene;
-        stage.position.set(10,0,-1.5);
-        // stage.scale.set(1.1,1.1,1.1);
-        stage.rotation.set(0*Math.PI/180,-25*Math.PI/180,0)
-        for(var i=0;i<stage.children.length;i++){
-          if(stage.children[""+i+""].name == "Windmill"){
-            let mate01 = new THREE.MeshMatcapMaterial({
-              color:0xffffff,
-              side:2,
-              matcap:this.white
-            })
-            let mate02 = new THREE.MeshMatcapMaterial({
-              color:0xffffff,
-              side:2,
-              matcap:this.blue02
-            })
-            stage.children[""+i+""].children[0].material=mate01;
-            stage.children[""+i+""].children[1].material=mate02;
-          } else if (stage.children[""+i+""].name == "Goal"){
-            let mate01 = new THREE.MeshMatcapMaterial({
-              color:0xffffff,
-              side:2,
-              matcap:this.green01
-            })
-            let mate02 = new THREE.MeshMatcapMaterial({
-              color:0xffffff,
-              side:2,
-              matcap:this.wood
-            })
-            stage.children[""+i+""].children[0].material=mate01;
-            stage.children[""+i+""].children[1].material=mate02;
-          } else if (stage.children[""+i+""].name == "Fan"){
-            let mate01 = new THREE.MeshMatcapMaterial({
-              color:0xffffff,
-              side:2,
-              matcap:this.blue02
-            })
-            stage.children[""+i+""].material=mate01;
-            let wmthree = new THREE.Mesh();
-            wmthree.rotation.set(0,-23*Math.PI/180,-31.5*Math.PI/180)
-            this.windmillthree.push(wmthree);
-
-            gsap.fromTo(stage.children[""+i+""].rotation,10,{y:0},{y:-Math.PI*2,ease:"none",repeat:-1})
-            gsap.fromTo(wmthree.rotation,10,{z:-31.5*Math.PI/180},{z:-31.5*Math.PI/180-Math.PI*2,ease:"none",repeat:-1})
-
-            gsap.fromTo(StageShadow03.rotation,10,{z:0*Math.PI/180},{z:-360*Math.PI/180,ease:"none",delay:.3,repeat:-1})
-            var ShadowTween = gsap.timeline({repeat:-1,delay:.3,repeatDelay:2.5});
-            ShadowTween.to(StageShadow03.scale,.75,{x:1,y:1,ease:"none",})
-            ShadowTween.to(StageShadow03.scale,.75,{x:.3,y:.3,ease:"none",delay:.75})
-            ShadowTween.to(StageShadow03.scale,1.75,{x:.45,y:.45,ease:"none",delay:3})
-            ShadowTween.to(StageShadow03.scale,.5,{x:.5,y:.5,ease:"none",})
-
-
-            gsap.fromTo(StageShadow0302.rotation,10,{z:0*Math.PI/180},{z:-360*Math.PI/180,ease:"none",delay:2.8,repeat:-1})
-            var ShadowTween02 = gsap.timeline({repeat:-1,delay:2.8,repeatDelay:2.5});
-            ShadowTween02.to(StageShadow0302.scale,.75,{x:1,y:1,ease:"none",})
-            ShadowTween02.to(StageShadow0302.scale,.75,{x:.3,y:.3,ease:"none",delay:.75})
-            ShadowTween02.to(StageShadow0302.scale,1.75,{x:.45,y:.45,ease:"none",delay:3})
-            ShadowTween02.to(StageShadow0302.scale,.5,{x:.5,y:.5,ease:"none"})
-
-            gsap.fromTo(StageShadow0303.rotation,10,{z:0*Math.PI/180},{z:-360*Math.PI/180,ease:"none",delay:5.3,repeat:-1})
-            var ShadowTween03 = gsap.timeline({repeat:-1,delay:5.3,repeatDelay:2.5});
-            ShadowTween03.to(StageShadow0303.scale,.75,{x:1,y:1,ease:"none",})
-            ShadowTween03.to(StageShadow0303.scale,.75,{x:.3,y:.3,ease:"none",delay:.75})
-            ShadowTween03.to(StageShadow0303.scale,1.75,{x:.45,y:.45,ease:"none",delay:3})
-            ShadowTween03.to(StageShadow0303.scale,.5,{x:.5,y:.5,ease:"none"})
-
-            gsap.fromTo(StageShadow0304.rotation,10,{z:0*Math.PI/180},{z:-360*Math.PI/180,ease:"none",delay:7.8,repeat:-1})
-            var ShadowTween04 = gsap.timeline({repeat:-1,delay:7.8,repeatDelay:2.5});
-            ShadowTween04.to(StageShadow0304.scale,.75,{x:1,y:1,ease:"none",})
-            ShadowTween04.to(StageShadow0304.scale,.75,{x:.3,y:.3,ease:"none",delay:.75})
-            ShadowTween04.to(StageShadow0304.scale,1.75,{x:.45,y:.45,ease:"none",delay:3})
-            ShadowTween04.to(StageShadow0304.scale,.5,{x:.5,y:.5,ease:"none"})
-          } else if (stage.children[""+i+""].name == "Bench"){
-            let mate01 = new THREE.MeshMatcapMaterial({
-              color:0xffffff,
-              side:2,
-              matcap:this.wood
-            })
-            stage.children[""+i+""].material=mate01;
-          } else if (stage.children[""+i+""].name == "Wall"){
-            let mate01 = new THREE.MeshMatcapMaterial({
-              color:0xffffff,
-              side:2,
-              matcap:this.blue02
-            })
-            stage.children[""+i+""].material=mate01;
-          } else if (stage.children[""+i+""].name == "Bush"){
-            let mate01 = new THREE.MeshMatcapMaterial({
-              color:0xffffff,
-              side:2,
-              matcap:this.green01
-            })
-            stage.children[""+i+""].material=mate01;
-          } else if (stage.children[""+i+""].name == "Tree"){
-            let mate01 = new THREE.MeshMatcapMaterial({
-              color:0xffffff,
-              side:2,
-              matcap:this.green01
-            })
-            let mate02 = new THREE.MeshMatcapMaterial({
-              color:0xffffff,
-              side:2,
-              matcap:this.wood
-            })
-            stage.children[""+i+""].children[0].material=mate01;
-            stage.children[""+i+""].children[1].material=mate02;
-          }  else if (stage.children[""+i+""].name == "Flip"){
-            let mate01 = new THREE.MeshMatcapMaterial({
-              color:0xffffff,
-              side:2,
-              matcap:this.green01
-            })
-            stage.children[""+i+""].material=mate01;
-            this.GolfFlip.push(stage.children[""+i+""]);
-          } else if (stage.children[""+i+""].name == "Start"){
-            let mate01 = new THREE.MeshMatcapMaterial({
-              color:0xffffff,
-              side:2,
-              matcap:this.green01
-            })
-            let mate02 = new THREE.MeshMatcapMaterial({
-              color:0xffffff,
-              side:2,
-              matcap:this.wood
-            })
-            stage.children[""+i+""].children[0].material=mate02;
-            stage.children[""+i+""].children[1].material=mate01;
-          } else if (stage.children[""+i+""].name == "Rock"){
-            let mate01 = new THREE.MeshMatcapMaterial({
-              color:0xffffff,
-              side:2,
-              matcap:this.white
-            })
-            stage.children[""+i+""].material=mate01;
-          } else if (stage.children[""+i+""].name == "Window"){
-            let mate01 = new THREE.MeshMatcapMaterial({
-              color:0xffffff,
-              side:2,
-              matcap:this.white
-            })
-            stage.children[""+i+""].material=mate01;
-          } else if (stage.children[""+i+""].name == "Pole"){
-            let mate01 = new THREE.MeshMatcapMaterial({
-              color:0xffffff,
-              side:2,
-              matcap:this.white
-            })
-            stage.children[""+i+""].material=mate01;
-          } else {
-            let mate01 = new THREE.MeshMatcapMaterial({
-              color:0xffffff,
-              side:2,  
-              matcap:this.white
-            })
-            stage.children[""+i+""].material=mate01;
-          }
-        }
-        this.scene.add(stage);
-      }
-    );
-
-    this.loader.load(
-      'assets/model/Flag001.glb',
-      (gltf) => {
-        let flag = gltf;
-
-        this.FlagMixer = new THREE.AnimationMixer(flag.scene);
-        this.FlagMixer.timeScale = 1;
-
-        let animation = this.FlagMixer.clipAction(flag.animations[0]);
-        animation.play();
-
-        flag.scene.children[0].scale.set(1,1,1);
-        flag.scene.children[0].position.set(0,0,0);
-
-        // flag.scene.children["0"].material.emissive.color=
-        // console.log(flag.scene.children["0"].material)
-        flag.scene.children["0"].material=FlagMate;
-        flag.scene.position.set(.38,.75,-2);
-
-        Stage.add(flag.scene);
-      }
-    );
-
-    var sizeX = .8;
-    var sizeY = .01;
-    var sizeZ = .6;
-
-    let CG01 = {
-      x:0,
-      y:-.011,
-      z:2.875+.2,
-      Rx:0,
-      Ry:0,
-      Rz:0,
-    }
-
-    // THREE 01 
-    let Cube01 = new THREE.Mesh(new THREE.BoxBufferGeometry(sizeX*2,sizeY*2,sizeZ*2),StageMaterial);
-    Cube01.position.set(CG01.x,CG01.y,CG01.z);
-    Cube01.rotation.set(CG01.Rx*Math.PI/180,CG01.Ry*Math.PI/180,CG01.Rz*Math.PI/180)
-    Stage.add(Cube01);
-    this.StageThreeArray.push(Cube01);
-    
-    // CANNON 01
-    let Cube001 = new CANNON.Body({mass:0,material:this.GolfStageMaterial});
-    Cube001.addShape(new CANNON.Box(new CANNON.Vec3(sizeX,sizeY,sizeZ)),new CANNON.Vec3(0,0,-.2));
-    Cube001.addShape(new CANNON.Box(new CANNON.Vec3(sizeX*.08,.07,sizeZ*.5)),new CANNON.Vec3(-sizeX,.04,-.3-.2));
-    Cube001.addShape(new CANNON.Box(new CANNON.Vec3(sizeX*.08,.07,sizeZ*.5)),new CANNON.Vec3(sizeX,.04,-.3-.2));
-    var shape = this.CreateCANNONCirclePlane(0,.12,.73,0*Math.PI/180,180*Math.PI/180,20);
-    Cube001.addShape(shape,new CANNON.Vec3(0,0,-.13-.2))
-
-    this.world02.addBody(Cube001)
-    this.StageCannnonArray.push(Cube001)
-
-
-    sizeX = .8;
-    sizeY = .01;
-    sizeZ = 1.4;
-
-    let CG02 = {
-      x:0,
-      y:-.011,
-      z:.875,
-      Rx:0,
-      Ry:0,
-      Rz:0,
-    }
-
-    // THREE 02 
-    let Cube02 = new THREE.Mesh(new THREE.BoxBufferGeometry(sizeX*2,sizeY*2,sizeZ*2),StageMaterial);
-    Cube02.position.set(CG02.x,CG02.y,CG02.z);
-    Cube02.rotation.set(CG02.Rx*Math.PI/180,CG02.Ry*Math.PI/180,CG02.Rz*Math.PI/180)
-    Stage.add(Cube02);
-    this.StageThreeArray.push(Cube02);
-    
-    // CANNON 02
-    let Cube002 = new CANNON.Body({mass:0,material:this.GolfStageMaterial});
-    Cube002.addShape(new CANNON.Box(new CANNON.Vec3(sizeX,sizeY,sizeZ)),new CANNON.Vec3(0,0,0));
-    Cube002.addShape(new CANNON.Box(new CANNON.Vec3(sizeX*.08,.07,sizeZ)),new CANNON.Vec3(-sizeX,.04,0));
-    Cube002.addShape(new CANNON.Box(new CANNON.Vec3(sizeX*.08,.07,sizeZ)),new CANNON.Vec3(sizeX,.04,0));
-    this.world02.addBody(Cube002)
-    this.StageCannnonArray.push(Cube002)
-    
-
-    sizeX = .14;
-    sizeY = .1;
-    sizeZ = .035;
-
-    let CG03 = {
-      x:0,
-      y:.1,
-      z:0,
-      Rx:0,
-      Ry:0,
-      Rz:0,
-    }
-
-    // THREE 03 
-    let Cube03 = new THREE.Mesh(new THREE.BoxBufferGeometry(sizeX*2,sizeY*2,sizeZ*2),StageMaterial);
-    Cube03.position.set(CG03.x,CG03.y,CG03.z);
-    Cube03.rotation.set(CG03.Rx*Math.PI/180,CG03.Ry*Math.PI/180,CG03.Rz*Math.PI/180)
-    Stage.add(Cube03);
-    this.StageThreeArray.push(Cube03);
-    
-    // CANNON 03
-    let Cube003 = new CANNON.Body({mass:0,material:this.GolfStageMaterial});
-    Cube003.addShape(new CANNON.Box(new CANNON.Vec3(sizeX,sizeY,sizeZ)),new CANNON.Vec3(-.6,0,0));
-    Cube003.addShape(new CANNON.Box(new CANNON.Vec3(sizeX,sizeY,sizeZ)),new CANNON.Vec3(.6,0,0));
-    this.world02.addBody(Cube003)
-    this.StageCannnonArray.push(Cube003)
-
-
-    sizeX = .16;
-    sizeY = .1;
-    sizeZ = .025;
-
-    let CG04 = {
-      x:0,
-      y:0,
-      z:0,
-      Rx:0,
-      Ry:0,
-      Rz:0,
-    }
-    // THREE 04 
-    let Cube04 = new THREE.Mesh(new THREE.BoxBufferGeometry(sizeX*2,sizeY*2,sizeZ*2),StageMaterial);
-    Cube04.position.set(CG04.x,CG04.y,CG04.z);
-    Cube04.rotation.set(CG04.Rx*Math.PI/180,CG04.Ry*Math.PI/180,CG04.Rz*Math.PI/180)
-    Stage.add(Cube04);
-    this.StageThreeArray.push(Cube04);
-    
-
-    // CANNON 04
-    var quat = new CANNON.Quaternion();
-
-    let quatThree = new THREE.Mesh;
-    quatThree.rotation.set(-Math.PI/2,0,108*Math.PI/180);
-    quat.set(quatThree.quaternion.x,quatThree.quaternion.y,quatThree.quaternion.z,quatThree.quaternion.w)
-    quat.normalize();
-
-    let Cube004 = new CANNON.Body({mass:0,material:this.GolfStageMaterial});
-    
-    var shape = this.CannonHalfCylinder(.44,.47,.3,6,.96);
-    Cube004.addShape(shape,new CANNON.Vec3(0,.15,0),quat);
-
-
-    quatThree.rotation.set(-Math.PI/2,0,(108+180)*Math.PI/180);
-    quat.set(quatThree.quaternion.x,quatThree.quaternion.y,quatThree.quaternion.z,quatThree.quaternion.w)
-    quat.normalize();
-
-    var shape = this.CannonHalfCylinder(.44,.47,.3,6,.96);
-    Cube004.addShape(shape,new CANNON.Vec3(0,.15,0),quat);
-
-
-    // Cube004.addShape(new CANNON.Box(new CANNON.Vec3(.02,.4,.13)),new CANNON.Vec3(.15,.15,0));
-    // Cube004.addShape(new CANNON.Box(new CANNON.Vec3(.02,.4,.13)),new CANNON.Vec3(-.15,.15,0));
-
-    var quat = new CANNON.Quaternion(.5,0,0,-.5);
-    quat.normalize();
-
-    Cube004.addShape(new CANNON.Cylinder(.3,.4,1,8),new CANNON.Vec3(0,.8,0),quat);
-    Cube004.addShape(new CANNON.Cylinder(.38,.38,.12,8),new CANNON.Vec3(0,1.2,0),quat);
-    Cube004.addShape(new CANNON.Cylinder(.1,.42,.4,8),new CANNON.Vec3(0,1.5,0),quat);
-
-    this.world02.addBody(Cube004)
-    this.StageCannnonArray.push(Cube004)
-
-
-
-
-    sizeX = .142;
-    sizeY = .42;
-    sizeZ = .03;
-
-    let CG05 = {
-      x:0,
-      y:1.2,
-      z:.48,
-      Rx:0,
-      Ry:0,
-      Rz:0,
-    }
-    // THREE 05
-    let Cube05 = new THREE.Mesh(new THREE.BoxBufferGeometry(sizeX*2,sizeY*2,sizeZ*2),StageMaterial);
-    Cube05.position.set(CG05.x,CG05.y,CG05.z);
-    Cube05.rotation.set(CG05.Rx*Math.PI/180,CG05.Ry*Math.PI/180,CG05.Rz*Math.PI/180);
-    Stage.add(Cube05);
-    this.StageThreeArray.push(Cube05);
-
-    // CANNON 05
-    let Cube005 = new CANNON.Body({mass:0,material:this.GolfStageMaterial});
-    Cube005.addShape(new CANNON.Box(new CANNON.Vec3(sizeX,sizeY,sizeZ)),new CANNON.Vec3(-.128,-.68,0));
-    Cube005.addShape(new CANNON.Box(new CANNON.Vec3(sizeX,sizeY,sizeZ)),new CANNON.Vec3(.128,.68,0));
-    Cube005.addShape(new CANNON.Box(new CANNON.Vec3(sizeY,sizeX,sizeZ)),new CANNON.Vec3(.68,-.128,0));
-    Cube005.addShape(new CANNON.Box(new CANNON.Vec3(sizeY,sizeX,sizeZ)),new CANNON.Vec3(-.68,.128,0));
-    this.windmillcannon.push(Cube005);
-    this.world02.addBody(Cube005);
-    this.StageCannnonArray.push(Cube005);
-
-
-    sizeX = .15;
-    sizeY = .2;
-    sizeZ = .15;
-
-    let CG06 = {
-      x:0,
-      y:0,
-      z:-1.97,
-      Rx:0,
-      Ry:0,
-      Rz:0,
-    }
-    // THREE 06
-    let Cube06 = new THREE.Mesh(new THREE.BoxBufferGeometry(sizeX*2,sizeY*2,sizeZ*2),StageMaterial);
-    Cube06.position.set(CG06.x,CG06.y,CG06.z);
-    Cube06.rotation.set(CG06.Rx*Math.PI/180,CG06.Ry*Math.PI/180,CG06.Rz*Math.PI/180);
-    Stage.add(Cube06);
-    this.StageThreeArray.push(Cube06);
-
-    // CANNON 06
-    let Cube006 = new CANNON.Body({mass:0,material:this.GolfStageMaterial});
-    var shape = this.CreateCANNONCirclePlane(0,.12,1.6,118*Math.PI/180,425*Math.PI/180,20);
-    Cube006.addShape(shape,new CANNON.Vec3(0,0,-.01));
-    var shape = this.CreateCANNONPlane(0,1.8,.25,0,0*Math.PI/180,380*Math.PI/180,20);
-    Cube006.addShape(shape,new CANNON.Vec3(0,0,0));
-    var shape = this.CreateCANNONCirclePlane(0,.2,.25,0*Math.PI/180,380*Math.PI/180,10);
-    Cube006.addShape(shape,new CANNON.Vec3(0,-.2,0));
-
-    var quat = new CANNON.Quaternion(.5,0,0,.5);
-    quat.normalize();
-    Cube006.addShape(new CANNON.Cylinder(.025,.025,1,6),new CANNON.Vec3(0,0.25,0),quat);
-    this.world02.addBody(Cube006);
-    this.StageCannnonArray.push(Cube006);
-    
-
-    sizeX = .15;
-    sizeY = .2;
-    sizeZ = .15;
-
-    let CG07 = {
-      x:0,
-      y:0,
-      z:-1.97,
-      Rx:0,
-      Ry:0,
-      Rz:0,
-    }
-    // THREE 07
-    let Cube07 = new THREE.Mesh(new THREE.BoxBufferGeometry(sizeX*2,sizeY*2,sizeZ*2),StageMaterial);
-    Cube07.position.set(CG07.x,CG07.y,CG07.z);
-    Cube07.rotation.set(CG07.Rx*Math.PI/180,CG07.Ry*Math.PI/180,CG07.Rz*Math.PI/180);
-    Stage.add(Cube07);
-    this.StageThreeArray.push(Cube07);
-
-    // CANNON 07
-    let Cube007 = new CANNON.Body({mass:0,material:this.GoalMaterial});
-
-    var quat = new CANNON.Quaternion(.5,0,0,.5);
-    quat.normalize();
-    Cube007.addShape(new CANNON.Box(new CANNON.Vec3(.25,.25,.1)),new CANNON.Vec3(0,-0.25,0),quat);
-    this.world02.addBody(Cube007);
-    this.StageCannnonArray.push(Cube007);
-    
-    gsap.delayedCall(1,()=>{
-      this.SetStageCannonPosition();
-    })
-  }
-
-  SetStageCannonPosition(){
-    var Position = new THREE.Vector3();
-    var Quaternion = new THREE.Quaternion();
-    for(var i=0;i<this.StageThreeArray.length;i++){
-      // P
-      Position.setFromMatrixPosition(this.StageThreeArray[i].matrixWorld);
-      this.StageCannnonArray[i].position.set(Position.x,Position.y,Position.z);
-
-      // Q
-      Quaternion.setFromRotationMatrix(this.StageThreeArray[i].matrixWorld)
-      this.StageCannnonArray[i].quaternion.set(Quaternion.x,Quaternion.y,Quaternion.z,Quaternion.w);
-    }
-  }
-
-  CannonHalfCylinder( radiusTop, radiusBottom, height , numSegments, pie ) {
-    var N = numSegments,
-        verts = [],
-        axes = [],
-        faces = [],
-        bottomface = [],
-        topface = [],
-        
-        cos = Math.cos,
-        sin = Math.sin;
-
-    // First bottom point
-    verts.push(new CANNON.Vec3(radiusBottom*cos(0),
-                               radiusBottom*sin(0),
-                               -height*0.5));
-    bottomface.push(0);
-
-    // First top point
-    verts.push(new CANNON.Vec3(radiusTop*cos(0),
-                               radiusTop*sin(0),
-                               height*0.5));
-    topface.push(1);
-
-    for(var i=0; i<N; i++){
-        var theta = Math.PI*pie/N * (i+1);
-        var thetaN = Math.PI*pie/N * (i+0.5);
-        if(i<N-1){
-            // Bottom
-            verts.push(new CANNON.Vec3(radiusBottom*cos(theta),
-                                       radiusBottom*sin(theta),
-                                       -height*0.5));
-            bottomface.push(2*i+2);
-            // Top
-            verts.push(new CANNON.Vec3(radiusTop*cos(theta),
-                                       radiusTop*sin(theta),
-                                       height*0.5));
-            topface.push(2*i+3);
-
-            // Face
-            faces.push([2*i+2, 2*i+3, 2*i+1,2*i]);
-        } else {
-            faces.push([0,1, 2*i+1, 2*i]); // Connect
-        }
-
-        // Axis: we can cut off half of them if we have even number of segments
-        if(N % 2 === 1 || i < N / 2){
-            axes.push(new CANNON.Vec3(cos(thetaN), sin(thetaN), 0));
-        }
-    }
-    faces.push(topface);
-    axes.push(new CANNON.Vec3(0,0,1));
-
-    // Reorder bottom face
-    var temp = [];
-    for(var i=0; i<bottomface.length; i++){
-        temp.push(bottomface[bottomface.length - i - 1]);
-    }
-    faces.push(temp);
-
-    var shape = new CANNON.ConvexPolyhedron( verts, faces);
-    return shape;
-  }
-
-  CreateCANNONCirclePlane(H1:number,H2:number,radius:number,N0:number,N:number,Ni:number){
-    var vertTest=[];
-    var number=0;
-    for(var i=N0;i<N;i+=Math.PI/Ni){
-      if(number%2==0){
-        vertTest.push(new CANNON.Vec3(Math.cos(i)*radius,H1,Math.sin(i)*radius));
-      } else {
-        vertTest.push(new CANNON.Vec3(Math.cos(i)*radius,H2,Math.sin(i)*radius));
-      }
-      number++;
-    }
-    var faceTest=[];
-    faceTest.push([0,2,1]);
-    faceTest.push([1,2,3]);// 2
-    faceTest.push([3,2,4]);
-    var zero=3,one=4,two=5;
-    for(var i=0;i<vertTest.length-2-3;i++){
-      if(i%2==0){
-        faceTest.push([zero,one,two]);
-      } else {
-        faceTest.push([one,zero,two]);
-      }
-      zero++;
-      one++;
-      two++;
-    }
-
-    var cannonShape = new CANNON.ConvexPolyhedron(vertTest,faceTest);
-    return cannonShape;
-  }
-
-  CreateCANNONPlane(H:number,Oradius:number,Iradius:number,Hminus:number,N0:number,N:number,Ni:number){
-    var vertTest=[];
-    var number=0;
-  
-    for(var i=N0;i<N;i+=Math.PI/Ni){
-      if(number%2==0){
-        H-=Hminus;
-        vertTest.push(new CANNON.Vec3(Math.cos(-i)*Oradius,H,Math.sin(-i)*Oradius));
-      } else {
-        vertTest.push(new CANNON.Vec3(Math.cos(-i)*Iradius,H,Math.sin(-i)*Iradius));
-      }
-      number++;
-    }
-    var faceTest=[];
-    faceTest.push([0,2,1]);
-    faceTest.push([1,2,3]);// 2
-    faceTest.push([3,2,4]);
-    var zero=3,one=4,two=5;
-    for(var i=0;i<vertTest.length-2-3;i++){
-      if(i%2==0){
-        faceTest.push([zero,one,two]);
-      } else {
-        faceTest.push([one,zero,two]);
-      }
-      zero++;
-      one++;
-      two++;
-    }
-
-    var cannonShape = new CANNON.ConvexPolyhedron(vertTest,faceTest);
-    return cannonShape;
-  }
-
-
-  MiniGolfRender(){
-    this.world02.step(1 / this.fps);
-    // this.debugger.update();
-    for (var i = 0; i < this.GolfThrees.length; i++) {
-      this.GolfThrees[i].position.copy(this.GolfCannons[i].position);
-      this.GolfThrees[i].quaternion.copy(this.GolfCannons[i].quaternion);
-      this.GolfShadows[i].position.set(this.GolfCannons[i].position.x,this.GolfCannons[i].position.y-0.08,this.GolfCannons[i].position.z);
-      if(Math.abs(this.GolfCannons[i].position.y)>0.3){
-        this.GolfShadows[i].material.uniforms.uAlpha.value = 0;
-      } else {
-        this.GolfShadows[i].material.uniforms.uAlpha.value = (.3 - this.GolfCannons[i].position.y)*5;
-      }
-    }
-    // windmill
-    if(this.windmillthree.length>0){
-      this.windmillcannon[0].quaternion.copy(this.windmillthree[0].quaternion);
-    }
-
-    if(this.GolfState.value==2){
-      this.RenderGolfCursor();
-    }
-
-    // this.CameraVec.setFromMatrixPosition(this.CameraPos.matrixWorld);
-    // this.camera.position.lerp(this.CameraVec, 1);
-    // this.camera.lookAt(this.GolfC.position.x,this.GolfC.position.y,this.GolfC.position.z)
-  }
-
-
-
   // THIRD SCENE SETUP
   ThirdInit(){
     this.InitThirdWorld();
-    this.CreateScoreMaterial();
     this.BOOPMaterial();
     this.CreateGiftBalloon(-5,3,-1);
     // this.CreateGiftBalloon(-2,2.7,0);
@@ -2548,7 +1175,7 @@ export class ThreeService {
             side:2,
             transparent:true,
             opacity:1,
-            matcap:this.red
+            matcap:this.RS.red
           })
           s.children["0"].material=mate01;
           E.Balloon3d.add(s);
@@ -2592,14 +1219,14 @@ export class ThreeService {
             side:2,
             transparent:true,
             opacity:1,
-            matcap:this.red
+            matcap:this.RS.red
           })
           let mate03 = new THREE.MeshMatcapMaterial({
             color:0xfefefe,
             side:2,
             transparent:true,
             opacity:1,
-            matcap:this.white
+            matcap:this.RS.white
           })
           E.BoxThree.children["0"].children[0].material=mate03;
           E.BoxThree.children["0"].children[1].material=mate01;
@@ -2620,14 +1247,14 @@ export class ThreeService {
             side:2,
             transparent:true,
             opacity:1,
-            matcap:this.red
+            matcap:this.RS.red
           })
           let mate03 = new THREE.MeshMatcapMaterial({
             color:0xfefefe,
             side:2,
             transparent:true,
             opacity:1,
-            matcap:this.white
+            matcap:this.RS.white
           })
           E.BoxLid.children["0"].children[0].material=mate03;
           E.BoxLid.children["0"].children[1].material=mate01;
@@ -2641,7 +1268,6 @@ export class ThreeService {
       E.Box3d.add(E.BoxAttach);
       this.scene.add(E.Box3d);
 
-      console.log(E.Box3d)
   
       E.BoxBody = new CANNON.Body({ mass: 6,material:this.GiftMaterial });
       E.BoxBody.addShape(new CANNON.Box(new CANNON.Vec3(.125,.08,.125)),new CANNON.Vec3(0,-.025,0));
@@ -2834,6 +1460,173 @@ export class ThreeService {
       gsap.to(outer,.2,{attr:{r:13}});
       gsap.to(inner,.2,{attr:{r:0}});
     }
+  }
+
+  private ScoreMax = 6*3*4;
+  private ScoreCurrent = 0;
+  private ScoreLast = 0;
+  private CoinArray=[];
+  private CoinCurrent = 0;
+  private GolfScore=[];
+  CreateScoreMaterial(){
+    // Score
+    let Score01 = new THREE.Mesh(new THREE.BoxBufferGeometry(.05,.08,.005),
+      new THREE.MeshMatcapMaterial({color:0xffffff,matcap:this.RS.blue02,transparent:true}));
+    let Score02 = new THREE.Mesh(new THREE.BoxBufferGeometry(.08,.05,.005),
+      new THREE.MeshMatcapMaterial({color:0xffffff,matcap:this.RS.red,transparent:true}));
+    let Score03 = new THREE.Mesh(new THREE.BoxBufferGeometry(.05,.08,.005),
+      new THREE.MeshMatcapMaterial({color:0xffffff,matcap:this.RS.yellow,transparent:true}));
+    Score01.position.set(0,5,0)
+    Score02.position.set(0,5,0)
+    Score03.position.set(0,5,0)
+    for (var i=0;i<this.ScoreMax/3;i++){
+      let mesh = Score01.clone();
+      this.scene.add(mesh);
+      this.GolfScore.push(mesh);
+      
+      let mesh02 = Score02.clone();
+      this.scene.add(mesh02);
+      this.GolfScore.push(mesh02);
+
+      let mesh03 = Score03.clone();
+      this.scene.add(mesh03);
+      this.GolfScore.push(mesh03);
+    }
+    // let Score02 = new THREE.Mesh(new THREE.CylinderBufferGeometry(.04,.04,.02,8,1),
+    //   new THREE.MeshMatcapMaterial({color:0xffffff,matcap:this.RS.blue02,transparent:true}));
+    // Score02.position.set(0,5,0)
+    // for(var i=0;i<this.ScoreMax/3;i++){
+    //   let mesh = Score02.clone();
+    //   this.scene.add(mesh);
+    //   this.GolfScore.push(mesh);
+    // }
+    // let Score03 = new THREE.Mesh(new THREE.CylinderBufferGeometry(.04,.04,.02,8,1),
+    //   new THREE.MeshMatcapMaterial({color:0xffffff,matcap:this.pink,transparent:true}));
+    // Score03.position.set(0,5,0)
+    // for(var i=0;i<this.ScoreMax/3;i++){
+    //   let mesh = Score03.clone();
+    //   this.scene.add(mesh);
+    //   this.GolfScore.push(mesh);
+    // }
+
+    // let yellow = this.textureLoader.load('assets/matcaps/03/FFEB40.png',()=>{
+    //   yellow.encoding=THREE.sRGBEncoding;
+    // });
+    this.loader.load(
+      'assets/model/Coin.glb',
+      (gltf) => {
+        let coin = new THREE.Object3D();
+
+        gltf.scene.scale.set(2.75,2.75,2.75)
+        gltf.scene.position.set(0,0,0);
+        gltf.scene.rotation.set(40*Math.PI/180,0,20*Math.PI/180)
+
+        coin.add(gltf.scene);
+
+        for(var i=0;i<4;i++){
+          let mesh = coin.clone();
+          mesh.name="Coin";
+          let mate01 = new THREE.MeshMatcapMaterial({
+            color:0xffffff,
+            side:2,
+            transparent:true,
+            opacity:1,
+            matcap:this.RS.yellow
+          })
+          let mate02 = new THREE.MeshMatcapMaterial({
+            color:0xeeeeee,
+            side:2,
+            transparent:true,
+            opacity:1,
+            matcap:this.RS.yellow
+          })
+
+          mesh.children["0"].children[0].children[0].material=mate01;
+          mesh.children["0"].children[0].children[1].material=mate02;
+
+          
+          // Shadow
+          let texture = this.textureLoader.load('assets/shadow/Coin.png');
+
+          let uniforms = {
+            tShadow:{value:texture},
+            uShadowColor:{value:new THREE.Color("#78b75e")},
+            uAlpha:{value:0}
+          }
+          let material = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms,depthWrite:false,
+            vertexShader:document.getElementById('vertexShader').textContent,
+            fragmentShader:document.getElementById('fragmentShader').textContent})
+      
+          let shadow = new THREE.Mesh(new THREE.PlaneGeometry(2.8,2.8),material);
+          shadow.renderOrder = 1
+  
+          shadow.rotation.set(-Math.PI/2,0,0)
+          shadow.position.set(-0.01,-0.085,0.01);
+          mesh.add(shadow);
+
+          this.ThirdSceneObject.push(mesh.children["0"]);
+          this.scene.add(mesh);
+          this.CoinArray.push(mesh);
+        }
+      });
+  }
+
+  private ScoreDistance = .25;
+  ScoreFunction(Po:CANNON.Vec3){
+    if(this.ScoreCurrent >= this.ScoreMax){
+      this.ScoreCurrent=24;
+      this.ScoreLast=0;
+      this.CoinCurrent=0;
+    } else {
+      this.ScoreCurrent+=24;
+    }
+
+    var j=0;
+    for(var i=this.ScoreLast;i<this.ScoreCurrent;i++){
+
+      var ranX = Po.x + Math.random()*1.2-.6;
+      var ranZ = Po.z + Math.random()*1.2-.6;
+
+      var distance = this.distanceVec2(ranX,ranZ,Po.x,Po.z);
+      if(distance>this.ScoreDistance){
+        var randomDelay = j;
+        j+=.01;
+
+        // Distance duration
+        var DD = (distance - this.ScoreDistance);
+
+        var PoDuration = .35 + DD;
+        
+        // Position
+        gsap.fromTo(this.GolfScore[i].position,PoDuration,
+          {x:Po.x,z:Po.z},
+          {x:ranX,z:ranZ,delay:randomDelay,ease:"power1.out"});
+
+
+        gsap.fromTo(this.GolfScore[i].position,PoDuration/2,{y:Po.y},{ease:"power1.out",y:DD+.4,delay:randomDelay})
+        gsap.to(this.GolfScore[i].position,PoDuration/2,{ease:"power1.in",delay:(PoDuration/2)+randomDelay,y:0.28})
+
+        // Rotation
+        gsap.fromTo(this.GolfScore[i].rotation,PoDuration,{x:0,y:0,z:0},{x:Math.random()*24-12,y:Math.random()*24-12,z:Math.random()*24-12,delay:randomDelay,ease:"none"});
+
+        // Scale
+        // gsap.set(this.GolfScore[i].scale,{x:Math.random()*.3+.7,y:Math.random()*.3+.7,z:Math.random()*.3+.7});
+        gsap.to(this.GolfScore[i].scale,PoDuration,{delay:PoDuration+.1,x:.1,y:.1,z:.1})
+      } else {
+        i--;
+      }
+    }
+    this.ScoreLast = this.ScoreCurrent;
+
+    // Coin
+    this.CoinArray[this.CoinCurrent].position.set(Po.x,Po.y,Po.z);
+    gsap.fromTo(this.CoinArray[this.CoinCurrent].position,.35,{y:Po.y},{delay:0,ease:"power1.out",y:"+=.6"})
+    gsap.to(this.CoinArray[this.CoinCurrent].position,.35,{ease:"power1.in",delay:.35,y:0.28})
+
+    // Opacity
+    gsap.to(this.CoinArray[this.CoinCurrent].children[1].material.uniforms.uAlpha,
+      .3,{value:.6,delay:.6})
+    this.CoinCurrent+=1;
   }
 
   private RockClickNum:number=0;
@@ -3556,7 +2349,7 @@ export class ThreeService {
   // }
 
 
-  private debugger;
+
   private debugger03;
   private LetterMaterial:CANNON.Material;
   private PlaneMaterial:CANNON.Material;
@@ -4487,604 +3280,6 @@ export class ThreeService {
   // }
 
 
-  // SecondScene(): void {
-  //   this.CreateSmoke();
-  //   this.CreateFireExtinguisher();
-  //   this.popIt();
-  // }
-
-
-  // private smoke = new THREE.MeshLambertMaterial({ color: 0x7f8eb8, emissive: 0xe0e0e0 });
-  // CreateSmoke() {
-  //   this.smokeThree = new THREE.Mesh(
-  //     new THREE.SphereBufferGeometry(.068),
-  //     this.smoke);
-  //   this.smokeThree.castShadow = true;
-
-  //   let stuff02 = {
-  //     color: "#ff6262"
-  //   }
-
-  //   var f6 = this.gui.addFolder("boop");
-  //   f6.addColor(stuff02, "color")
-  //     .onChange(() => {
-  //       boopMat.color.set(stuff02.color);
-  //     })
-
-  //   let stuff = {
-  //     shininess: 0.7,
-  //     specular: "#ffffff",
-  //     color: "#7f8eb8",
-  //     emissive: "#e0e0e0",
-  //   }
-  //   var f4 = this.gui.addFolder("SMOKE");
-  //   f4.addColor(stuff, 'color')
-  //     .onChange(() => {
-  //       this.smoke.color.set(stuff.color);
-  //     });
-  //   f4.addColor(stuff, 'emissive')
-  //     .onChange(() => {
-  //       this.smoke.emissive.set(stuff.emissive);
-  //     });
-  // }
-
-  // private pipem = new THREE.MeshLambertMaterial({ color: 0x4d67b1, emissive: 0xe1e1e1 });
-  // CreateFireExtinguisher() {
-  //   let stuff = {
-  //     roughness: 0.7,
-  //     metalness: 0.25,
-  //     color: "#7f8eb8",
-  //     emissive: "#d2d2d2",
-  //   }
-  //   var f3 = this.gui.addFolder("PIPE");
-  //   f3.addColor(stuff, 'color')
-  //     .onChange(() => {
-  //       this.pipem.color.set(stuff.color);
-  //     });
-  //   f3.addColor(stuff, 'emissive')
-  //     .onChange(() => {
-  //       this.pipem.emissive.set(stuff.emissive);
-  //     });
-
-
-  //   let FEMaterial = new THREE.MeshStandardMaterial({ color: 0xcd7f7f, emissive: 0xcd5151, metalness: 0.25, roughness: 0.7, });
-  //   let FEMaterial02 = new THREE.MeshStandardMaterial({ color: 0x4d67b1, emissive: 0xdcdcdc, metalness: 0.25, roughness: 0.7, });
-  //   let N = 27;
-  //   let lastBody = null;
-  //   let distaince = .04;
-  //   let x = 0;
-  //   let height = .595;
-  //   let pipeshape = new CANNON.Cylinder(.025, .025, .04, 8);
-  //   let quat = new CANNON.Quaternion(0.5, 0, 0, -0.5);
-  //   quat.normalize();
-  //   for (var i = 0; i < N; i++) {
-  //     var pipebody = new CANNON.Body({ mass: i == 0 ? 0 : 1 });
-  //     pipebody.addShape(pipeshape, new CANNON.Vec3, quat);
-  //     pipebody.position.set(i * distaince + x, height, 0);
-  //     pipebody.quaternion.setFromAxisAngle(new CANNON.Vec3(0, 0, 1), Math.PI / 2);
-  //     pipebody.angularDamping = 0.99;
-  //     pipebody.linearDamping = 0.99;
-  //     this.world02.addBody(pipebody);
-  //     this.PipeCannon.push(pipebody);
-
-  //     // let pipe3 = this.Pipe.clone();
-  //     // this.PipeThree.push(pipe3);
-  //     // this.scene.add(pipe3);
-
-  //     if (lastBody !== null) {
-  //       let c = new CANNON.LockConstraint(pipebody, lastBody);
-  //       this.world02.addConstraint(c);
-  //     }
-
-  //     // Keep track of the lastly added body
-  //     lastBody = pipebody;
-  //   }
-
-  //   // LAST PIPE
-  //   this.lastpipe = new CANNON.Body({ mass: 1 });
-  //   let cylinderShape = new CANNON.Cylinder(.06, .08, .16, 16);
-  //   this.lastpipe.addShape(cylinderShape, new CANNON.Vec3, quat);
-
-
-  //   this.lastpipe.position.set(N * distaince + x + 0.06, height, 0);
-  //   this.lastpipe.quaternion.setFromAxisAngle(new CANNON.Vec3(0, 0, 1), Math.PI / 2);
-  //   this.lastpipe.angularDamping = 0.99;
-  //   this.lastpipe.linearDamping = 0.99;
-
-  //   this.world02.addBody(this.lastpipe);
-  //   // this.PipeCannon.push(this.lastpipe);
-  //   this.bodies02.push(this.lastpipe);
-
-  //   let c = new CANNON.LockConstraint(this.lastpipe, lastBody);
-  //   this.world02.addConstraint(c);
-
-  //   // pipe part
-  //   let lastpipegeometry = new THREE.CylinderBufferGeometry(.06, .08, .16, 16);
-  //   let lastpipematerial = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0 })
-  //   let lasspipethree = new THREE.Mesh(lastpipegeometry, lastpipematerial);
-  //   lasspipethree.castShadow = true;
-  //   let lastthreemesh = new THREE.Object3D();
-
-  //   this.lastthreepipe = new THREE.Object3D();
-  //   this.loader = new GLTFLoader();
-  //   this.loader.load(
-  //     'assets/model/pipe.glb',
-  //     (gltf) => {
-  //       lastthreemesh = gltf.scene;
-  //       lastthreemesh.children["0"].material.copy(
-  //         FEMaterial);
-  //       this.lastthreepipe.add(lastthreemesh)
-  //     }
-  //   );
-
-
-  //   let boxGeo = new THREE.BoxGeometry(0.05, 0.05, 0.05);
-  //   var invisible = new THREE.MeshBasicMaterial({ color: 0xf0f0f0, transparent: true, opacity: 0 });
-  //   // smoke start
-  //   this.FETap = new THREE.Mesh(boxGeo, invisible);
-  //   this.FETap.position.set(0, 0, 0);
-  //   // smoke end
-  //   this.SmokePoint = new THREE.Mesh(boxGeo, invisible);
-  //   this.SmokePoint.position.set(0, -1.5, 0);
-  //   // reset point
-  //   this.ResetPoint = new THREE.Mesh(boxGeo, invisible);
-  //   this.ResetPoint.position.set(0, 0, 0);
-
-
-  //   this.lastthreepipe.add(this.SmokePoint);
-  //   this.lastthreepipe.add(this.ResetPoint);
-  //   this.lastthreepipe.add(this.FETap);
-  //   this.lastthreepipe.add(lasspipethree);
-
-  //   this.scene.add(this.lastthreepipe);
-  //   // this.PipeThree.push(this.lastthreepipe)
-  //   this.meshes02.push(this.lastthreepipe)
-
-  //   let febox = new THREE.CylinderBufferGeometry(0.06, 0.08, 0.16, 16);
-  //   let Dragmaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0 })
-  //   // DRAG POINT THREE
-  //   let DragPointThree = new THREE.Mesh(febox, Dragmaterial);
-  //   DragPointThree.position.set(this.lastpipe.position.x, height, 0);
-  //   DragPointThree.rotation.set(0, 0, Math.PI / 2);
-  //   this.scene.add(DragPointThree);
-  //   this.DragPointThree.push(DragPointThree);
-
-
-  //   this.loader.load(
-  //     // 'assets/model/extinguisher.glb',
-  //     'assets/model/shitty.glb',
-  //     (gltf) => {
-  //       gltf.scene.traverse((node) => {
-  //         if (node instanceof THREE.Mesh) {
-  //           node.castShadow = true;
-  //         }
-  //       });
-  //       this.FireExtinguisher = gltf.scene;
-  //       this.FireExtinguisher.children["0"].children["0"].material.copy(
-  //         FEMaterial);
-  //       this.FireExtinguisher.children["0"].children["2"].material.copy(
-  //         FEMaterial02);
-
-  //       this.FETHREE.add(this.FireExtinguisher);
-  //     }
-  //   );
-  //   this.FETHREE.position.set(-0.1, -0.3, 0);
-  //   this.FETHREE.rotation.set(0 * Math.PI / 180, -15 * Math.PI / 180, 0 * Math.PI / 180);
-  //   this.FETHREE.castShadow = true;
-  //   this.scene.add(this.FETHREE);
-
-
-  //   // CANNON FE
-  //   var body = new CANNON.Body({ mass: 0 });
-  //   var CylinderShape = new CANNON.Cylinder(0.3, 0.3, 1.24, 16);
-  //   quat = new CANNON.Quaternion(0.5, 0, 0, -0.5);
-  //   quat.normalize();
-
-  //   let y = 0.2;
-  //   let sphere = new CANNON.Sphere(0.3);
-  //   let sphere2 = new CANNON.Sphere(0.063);
-
-  //   let cylinder = new CANNON.Cylinder(0.063, 0.063, 0.165, 8);
-  //   let cylinder02 = new CANNON.Cylinder(0.04, 0.04, 0.05, 8);
-  //   let cylinder03 = new CANNON.Cylinder(0.063, 0.063, 0.025, 16);
-  //   let top = 0.95;
-
-  //   let box = new CANNON.Box(new CANNON.Vec3(0.18, 0.02, 0.05));
-  //   let box02 = new CANNON.Box(new CANNON.Vec3(0.18, 0.02, 0.06));
-  //   let box03 = new CANNON.Box(new CANNON.Vec3(0.05, 0.05, 0.01));
-  //   let box04 = new CANNON.Box(new CANNON.Vec3(0.05, 0.025, 0.01));
-
-  //   let box05 = new CANNON.Box(new CANNON.Vec3(0.08, 0.02, 0.06));
-
-  //   let box06 = new CANNON.Box(new CANNON.Vec3(0.1, 0.01, 0.06));
-
-
-
-  //   body.addShape(cylinder, new CANNON.Vec3(0, 0.7 + y, 0), quat);
-
-  //   quat = new CANNON.Quaternion(0.5, 0.5, 0.5, 0.5);
-  //   quat.normalize();
-  //   body.addShape(cylinder02, new CANNON.Vec3(0.09, 0.694 + y, 0), quat);
-  //   body.addShape(cylinder03, new CANNON.Vec3(-0.015, 0.7 + y, 0.075));
-  //   quat = new CANNON.Quaternion(-0.07, 0.5, 0, 0);
-  //   quat.normalize();
-
-  //   body.addShape(box, new CANNON.Vec3(-0.28, 0.76 + y, 0), quat);
-
-  //   quat = new CANNON.Quaternion(0.11, 0.5, 0, 0);
-  //   quat.normalize();
-  //   body.addShape(box02, new CANNON.Vec3(-0.07, 0.9 + y, 0), quat);
-
-  //   body.addShape(box03, new CANNON.Vec3(-0.05, 0.84 + y, 0.05));
-  //   body.addShape(box04, new CANNON.Vec3(0.05, 0.815 + y, 0.05));
-
-  //   body.addShape(box03, new CANNON.Vec3(-0.05, 0.84 + y, -0.05));
-  //   body.addShape(box04, new CANNON.Vec3(0.05, 0.815 + y, -0.05));
-
-  //   body.addShape(box05, new CANNON.Vec3(-0.31, 0.98 + y, 0));
-
-  //   body.addShape(box06, new CANNON.Vec3(0, 0.79 + y, 0));
-
-  //   for (let i = 0; i < 4; i++) {
-  //     body.addShape(sphere2, new CANNON.Vec3(0, top, 0));
-  //     top -= 0.03;
-  //   }
-
-  //   let boxCy01 = new CANNON.Box(new CANNON.Vec3(0.025, 0.0275, 0.0275));
-  //   quat = new CANNON.Quaternion(0.5, 0, 0, 0.25);
-  //   quat.normalize();
-  //   body.addShape(boxCy01, new CANNON.Vec3(0.09, 0.694 + y, 0), quat);
-  //   body.addShape(boxCy01, new CANNON.Vec3(0.09, 0.694 + y, 0));
-
-  //   let boxCy02 = new CANNON.Box(new CANNON.Vec3(0.045, 0.045, 0.015));
-  //   body.addShape(boxCy02, new CANNON.Vec3(-0.015, 0.7 + y, 0.075));
-  //   quat = new CANNON.Quaternion(0.5, 0.25, 0, 0);
-  //   quat.normalize();
-  //   body.addShape(boxCy02, new CANNON.Vec3(-0.015, 0.7 + y, 0.075), quat);
-
-
-  //   quat = new CANNON.Quaternion(0.5, 0, 0, 0.5);
-  //   quat.normalize();
-  //   let cylinder04 = new CANNON.Cylinder(0.3, 0.26, 0.15, 16);
-  //   let cylinder05 = new CANNON.Cylinder(0.26, 0.1, 0.15, 16);
-  //   body.addShape(cylinder04, new CANNON.Vec3(0, 0.4 + y, 0), quat);
-  //   body.addShape(cylinder05, new CANNON.Vec3(0, 0.54 + y, 0), quat);
-
-
-  //   body.addShape(CylinderShape, new CANNON.Vec3(0, -.28 + y, 0), quat)
-
-  //   top = 0.525;
-  //   for (let i = 0; i < 25; i++) {
-  //     body.addShape(sphere, new CANNON.Vec3(0, top, 0));
-  //     top -= 0.05;
-  //   }
-
-  //   body.position.set(-0.1, -0.3, 0);
-  //   this.world02.addBody(body);
-  //   this.world.addBody(body);
-
-  //   body.position.copy(new CANNON.Vec3(this.FETHREE.position.x, this.FETHREE.position.y, this.FETHREE.position.z));
-  //   body.quaternion.copy(new CANNON.Quaternion(this.FETHREE.quaternion.x, this.FETHREE.quaternion.y, this.FETHREE.quaternion.z, this.FETHREE.quaternion.w));
-
-  //   this.PipeCannon[0].position.set(0, 0.59, 0.02);
-  //   this.CreateFirstDirectionPipe();
-
-  //   var params = {
-  //     roughness: 0.7,
-  //     metalness: 0.25,
-  //     color: "#ffffff",
-  //     emissive: "#e65a5a",
-  //   }
-
-  //   var f1 = this.gui.addFolder("Fire Extinguisher");
-  //   f1.add(params, 'metalness', 0, 1)
-  //     .onChange(() => {
-  //       FEMaterial.metalness = params.metalness;
-  //       this.FireExtinguisher.children["0"].children["0"].material.copy(
-  //         FEMaterial);
-  //       lastthreemesh.children["0"].material.copy(
-  //         FEMaterial);
-  //     });
-  //   f1.add(params, 'roughness', 0, 1)
-  //     .onChange(() => {
-  //       FEMaterial.roughness = params.roughness;
-  //       this.FireExtinguisher.children["0"].children["0"].material.copy(
-  //         FEMaterial);
-  //       lastthreemesh.children["0"].material.copy(
-  //         FEMaterial);
-  //     });
-  //   f1.addColor(params, 'color')
-  //     .onChange(() => {
-  //       FEMaterial.color.set(params.color);
-  //       this.FireExtinguisher.children["0"].children["0"].material.copy(
-  //         FEMaterial);
-  //       lastthreemesh.children["0"].material.copy(
-  //         FEMaterial);
-  //     });
-  //   f1.addColor(params, 'emissive')
-  //     .onChange(() => {
-  //       FEMaterial.emissive.set(params.emissive);
-  //       this.FireExtinguisher.children["0"].children["0"].material.copy(
-  //         FEMaterial);
-  //       lastthreemesh.children["0"].material.copy(
-  //         FEMaterial);
-  //     });
-
-  //   var f2 = this.gui.addFolder("Fire Extinguisher 02");
-  //   f2.add(params, 'metalness', 0, 1)
-  //     .onChange(() => {
-  //       FEMaterial02.metalness = params.metalness;
-  //       this.FireExtinguisher.children["0"].children["2"].material.copy(
-  //         FEMaterial02);
-  //     });
-  //   f2.add(params, 'roughness', 0, 1)
-  //     .onChange(() => {
-  //       FEMaterial02.roughness = params.roughness;
-  //       this.FireExtinguisher.children["0"].children["2"].material.copy(
-  //         FEMaterial02);
-  //     });
-  //   f2.addColor(params, 'color')
-  //     .onChange(() => {
-  //       FEMaterial02.color.set(params.color);
-  //       this.FireExtinguisher.children["0"].children["2"].material.copy(
-  //         FEMaterial02);
-  //     });
-  //   f2.addColor(params, 'emissive')
-  //     .onChange(() => {
-  //       FEMaterial02.emissive.set(params.emissive);
-  //       this.FireExtinguisher.children["0"].children["2"].material.copy(
-  //         FEMaterial02);
-  //     });
-  // }
-
-  // popIt() {
-  //   // Fan
-  //   let quat = new CANNON.Quaternion();
-  //   quat = new CANNON.Quaternion(0.5, 0, 0, -0.5);
-  //   quat.normalize();
-
-
-  //   let stuffMaterial = new THREE.MeshLambertMaterial({ color: 0x7f8eb8, emissive: 0x506493 });
-  //   let params = {
-  //     roughness: 0.7,
-  //     metalness: 0.25,
-  //     color: "#7f8eb8",
-  //     emissive: "#ffffff",
-  //   }
-  //   var f5 = this.gui.addFolder("Stuffs");
-  //   f5.addColor(params, 'color')
-  //     .onChange(() => {
-  //       stuffMaterial.color.set(params.color);
-  //     });
-  //   f5.addColor(params, 'emissive')
-  //     .onChange(() => {
-  //       stuffMaterial.emissive.set(params.emissive);
-  //     });
-
-
-  //   quat = new CANNON.Quaternion(0.5, -0.5, 0.5, 0.5);
-  //   let tempCannon = new CANNON.Body({ mass: 0 });
-  //   let tempThree = new THREE.Mesh(new THREE.BoxBufferGeometry(.2, .1, .2));
-
-  //   let collided = [];
-  //   let unique = [];
-
-  //   let boxX = .12;
-  //   let boxY = .12;
-  //   let boxZ = .04;
-
-
-  //   setInterval(() => {
-  //     if (document.hidden == true) {
-  //     } else {
-  //       if (this.meshes03.length > 11) {
-  //         if (collided.length > 0) {
-  //           unique = collided.filter(function (elem, index, self) {
-  //             return index === self.indexOf(elem);
-  //           })
-
-  //           collided = unique;
-
-  //           let segment = Math.floor(Math.random() * 4) + 3;
-  //           if (segment == 6) {
-  //             segment += 2;
-  //           }
-
-  //           let stuff = new CANNON.Body({ mass: 10 });
-  //           let stuffShape = new CANNON.Box(new CANNON.Vec3(boxX, boxZ, boxY));
-  //           stuff.addShape(stuffShape);
-  //           stuff.position.set((Math.random() * 3) - 1.5, 2, (Math.random() * 0.4) + 0.8);
-  //           this.world.addBody(stuff);
-
-  //           let stuff3;
-  //           if (segment == 8) {
-  //             stuff3 = new THREE.Mesh(
-  //               new THREE.CylinderBufferGeometry(boxX, boxY, boxZ * 2, 24),
-  //               stuffMaterial);
-  //           } else {
-  //             stuff3 = new THREE.Mesh(
-  //               new THREE.CylinderBufferGeometry(boxX, boxY, boxZ * 2, segment),
-  //               stuffMaterial);
-  //           }
-  //           stuff3.castShadow = true;
-  //           stuff3.scale.set(.1, .1, .1);
-  //           TweenLite.to(stuff3.scale, 1.5, { x: 1, y: 1, z: 1, ease: Power0.easeNone })
-  //           this.scene.add(stuff3);
-
-  //           this.bodies03.splice(collided[0], 1, stuff);
-  //           this.meshes03.splice(collided[0], 1, stuff3);
-  //           var test02 = collided[0];
-
-  //           stuff.addEventListener("collide", throttle((e) => {
-  //             if (e.contact.bi.collisionFilterGroup == 2) {
-  //               setTimeout(() => {
-  //                 if (stuff3.scale.x > 0.2) {
-
-  //                   stuff3.scale.x *= 0.85;
-  //                   stuff3.scale.y *= 0.85;
-  //                   stuff3.scale.z *= 0.85;
-
-  //                   stuffShape.halfExtents.set(stuff3.scale.x * boxX, stuff3.scale.y * boxZ, stuff3.scale.z * boxY);
-  //                   stuffShape.updateConvexPolyhedronRepresentation();
-  //                 } else {
-  //                   if (stuff) {
-  //                     this.BOOP(stuff3.position.x, stuff3.position.y, stuff3.position.z);
-  //                     this.world.remove(stuff);
-  //                     this.scene.remove(stuff3);
-  //                     this.meshes03.splice(test02, 1, tempCannon);
-  //                     this.bodies03.splice(test02, 1, tempThree);
-  //                     collided.push(test02);
-  //                   }
-  //                 }
-  //               }, 50);
-  //             }
-  //           }, 50));
-  //           collided.shift();
-  //         }
-  //       } else {
-  //         let segment = Math.floor(Math.random() * 4) + 3;
-  //         if (segment == 6) {
-  //           segment += 2;
-  //         }
-
-  //         let stuff = new CANNON.Body({ mass: 10 });
-  //         let stuffShape = new CANNON.Box(new CANNON.Vec3(boxX, boxZ, boxY));
-  //         stuff.addShape(stuffShape);
-  //         stuff.position.set((Math.random() * 3) - 1.5, 2, (Math.random() * 0.4) + 0.8);
-
-  //         this.world.addBody(stuff);
-  //         let stuff3;
-  //         if (segment == 8) {
-  //           stuff3 = new THREE.Mesh(
-  //             new THREE.CylinderBufferGeometry(boxX, boxY, boxZ * 2, 24),
-  //             stuffMaterial);
-  //         } else {
-  //           stuff3 = new THREE.Mesh(
-  //             new THREE.CylinderBufferGeometry(boxX, boxY, boxZ * 2, segment),
-  //             stuffMaterial);
-  //         }
-  //         stuff3.scale.set(.1, .1, .1);
-  //         stuff3.castShadow = true;
-  //         TweenLite.to(stuff3.scale, 1.5, { x: 1, y: 1, z: 1, ease: Power0.easeNone })
-  //         this.scene.add(stuff3);
-
-  //         this.bodies03.push(stuff);
-  //         this.meshes03.push(stuff3);
-
-  //         var test = this.bodies03.length - 1;
-  //         stuff.addEventListener("collide", throttle((e) => {
-  //           if (e.contact.bi.collisionFilterGroup == 2) {
-  //             setTimeout(() => {
-  //               if (stuff3.scale.x > 0.2) {
-
-  //                 stuff3.scale.x *= 0.85;
-  //                 stuff3.scale.y *= 0.85;
-  //                 stuff3.scale.z *= 0.85;
-
-  //                 stuffShape.halfExtents.set(stuff3.scale.x * boxX, stuff3.scale.y * boxZ, stuff3.scale.z * boxY);
-  //                 stuffShape.updateConvexPolyhedronRepresentation();
-  //               } else {
-  //                 this.BOOP(stuff3.position.x, stuff3.position.y, stuff3.position.z);
-  //                 this.world.remove(stuff);
-  //                 this.scene.remove(stuff3);
-  //                 this.meshes03.splice(test, 1, tempCannon);
-  //                 this.bodies03.splice(test, 1, tempThree);
-  //                 collided.push(test);
-  //               }
-  //             }, 50);
-  //           }
-  //         }, 50));
-  //       }
-  //     }
-  //   }, 500)
-  // }
-
-  // CreateFirstDirectionPipe() {
-  //   // DIRECTION PIPE
-  //   this.directionPipe = new CANNON.Body({ mass: 5 });
-  //   // let sphereshape = new CANNON.Box(new CANNON.Vec3(.05,.05,.05));
-  //   let sphereshape = new CANNON.Sphere(.02);
-  //   this.directionPipe.collisionFilterMask = 4;
-
-  //   this.directionPipe.angularDamping = 0.1;
-  //   this.directionPipe.linearDamping = 0.1;
-  //   this.directionPipe.addShape(sphereshape);
-  //   this.directionPipe.position.set(this.lastpipe.position.x, this.lastpipe.position.y, this.lastpipe.position.z);
-  //   this.world02.addBody(this.directionPipe);
-  //   this.FEcannon.push(this.directionPipe);
-
-  //   this.lockConstraint = new CANNON.LockConstraint(this.directionPipe, this.lastpipe);
-  //   this.world02.addConstraint(this.lockConstraint);
-
-  //   let directionThree = new THREE.SphereBufferGeometry(0.01);
-
-  //   let Dragmaterial02 = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0 })
-
-  //   this.DragPoint = new THREE.Mesh(directionThree, Dragmaterial02);
-  //   this.DragPoint.rotation.set(0, 0, Math.PI / 2);
-  //   this.DragPoint.position.set(this.lastpipe.position.x, this.lastpipe.position.y, this.lastpipe.position.z);
-  //   this.scene.add(this.DragPoint);
-  //   this.FEthree.push(this.DragPoint);
-
-  // }
-
-  // Easing = [
-  //   'Power0.easeOut',
-  //   'Power1.easeOut',
-  //   'Power2.easeOut',
-  //   'Power3.easeOut',
-  // ];
-
-  // shootSmoke() {
-  //   var vectorF = new THREE.Vector3();
-  //   var vectorD = new THREE.Vector3();
-  //   vectorF.setFromMatrixPosition(this.ResetPoint.matrixWorld);
-  //   vectorD.setFromMatrixPosition(this.SmokePoint.matrixWorld);
-
-  //   let smoke = this.smokeThree.clone();
-  //   this.scene.add(smoke);
-  //   this.meshes.push(smoke);
-
-  //   let body = new CANNON.Body({ mass: .1 });
-  //   body.addShape(this.sphereShape);
-  //   body.position.set(vectorF.x, vectorF.y, vectorF.z);
-
-  //   body.collisionFilterGroup = 2;
-  //   body.collisionFilterMask = 1;
-
-  //   this.world.addBody(body);
-  //   this.bodies.push(body);
-
-  //   TweenLite.to(smoke.scale, 0.7, { x: .05, y: .05, z: .05, delay: 0.5, ease: Power2.easeIn });
-
-  //   let startPosition = new CANNON.Vec3(vectorF.x, vectorF.y, vectorF.z);
-  //   let endPosition = new CANNON.Vec3(
-  //     vectorD.x + (Math.random() * 0.2 * (Math.random() < 0.5 ? -1 : 1)),
-  //     vectorD.y + (Math.random() * 0.2 * (Math.random() < 0.5 ? -1 : 1)),
-  //     vectorD.z + (Math.random() * 0.2 * (Math.random() < 0.5 ? -1 : 1))
-  //   );
-
-  //   let direction = new CANNON.Vec3();
-  //   endPosition.vsub(startPosition, direction);
-
-  //   let totalLength = this.distance(direction.x, direction.y, direction.z, 0, 0, 0);
-  //   direction.normalize();
-
-
-  //   let speed = totalLength / this.tweenTime;
-
-  //   direction.scale(speed, body.velocity);
-
-  //   TweenLite.to(body.velocity, 2.5, { x: 0, y: 0, z: 0, ease: Power0.easeIn });
-
-  //   setTimeout(() => {
-  //     this.scene.remove(smoke);
-  //     this.world.remove(body);
-  //     this.bodies.shift();
-  //     this.meshes.shift();
-  //   }, 1200);
-  // }
-
   distanceVec2(x,y,x2,y2){
     var a = x-x2;
     var b = y-y2;
@@ -5125,10 +3320,7 @@ function throttle(fn: Function, wait: number) {
   };
 }
 
-
-
 function CannonDebugRenderer(scene, world) {
-
   this.scene = scene;
   this.world = world;
 
