@@ -23,7 +23,7 @@ export class SecondScene{
     this.InitGolfCannon();
     this.CreateScoreMaterial();
     this.GolfStageCannon();
-
+    this.StartSecondScene();
     this.GolfString = new THREE.Object3D();
     let material = new THREE.MeshBasicMaterial({color:0xffffff});
     let arrow = new THREE.Mesh(
@@ -56,6 +56,9 @@ export class SecondScene{
   MouseDown = (e)=>{
     if (e.which == 1) {
       if(this.GolfState.value==1){
+        // Nextscene
+        document.getElementById('nextStage').classList.add("Golf");
+        // 
         this.ThreeService.canvas.addEventListener("mousemove", this.isGolfing, false);
         this.GolfBegin();
       }
@@ -64,6 +67,10 @@ export class SecondScene{
 
   MouseUp = (e)=>{
     if (e.which == 1) {
+      // Nextscene
+      document.getElementById('nextStage').classList.remove("Golf");
+
+      //
       this.ThreeService.canvas.removeEventListener("mousemove", this.isGolfing, false);
       this.Golfing=false;
       gsap.set('.circle',{css:{strokeDashoffset: 270}});
@@ -77,9 +84,6 @@ export class SecondScene{
         } else {
           this.GolfMove();
           this.GolfState.value=0;
-          gsap.delayedCall(.6,()=>{
-            this.MiniGolf(); 
-          });
         }
       }
     }
@@ -108,7 +112,7 @@ export class SecondScene{
 
     // Physic
     this.world02.step(1 / this.ThreeService.fps);
-    this.debugger.update();
+    // this.debugger.update();
 
     // Golf
     for (var i = 0; i < this.GolfThrees.length; i++) {
@@ -188,14 +192,10 @@ export class SecondScene{
 
     // First time
     if(this.GolfClone==null){
-      // Create material once time
-      let white = this.ThreeService.textureLoader.load('assets/matcaps/white.png',()=>{
-        white.encoding=THREE.sRGBEncoding;
-      });
       // white
       let mate = new THREE.MeshMatcapMaterial({
         color:0xffffff,
-        matcap:white,
+        matcap:this.RS.white,
       })
 
       // THREE
@@ -254,7 +254,7 @@ export class SecondScene{
     let startPosition = new CANNON.Vec3(this.FBpos.x, 0, this.FBpos.z);
     let endPosition = new CANNON.Vec3(this.LBpos.x, 0, this.LBpos.z);
 
-    // endPosition limit
+    // endPosition limit (setup Max Velocity)
     var maxDistance = 4;
     if(this.GolfDistance>maxDistance){
       var Line = new THREE.LineCurve3(new THREE.Vector3(startPosition.x,startPosition.y,startPosition.z),
@@ -274,7 +274,6 @@ export class SecondScene{
       endPosition.set(Vec3.x,Vec3.y,Vec3.z);
     }
 
-
     let direction = new CANNON.Vec3();
     endPosition.vsub(startPosition, direction);
 
@@ -286,27 +285,39 @@ export class SecondScene{
       speed = 1;
     }
 
+    // set Velocity
     direction.scale(speed, this.GolfCannons[this.GolfN].velocity);
-    // this.GolfStateFunction();
+
+
+    // Make the other Golf go BOOP
+    if(this.GolfThrees.length==this.MaxGolf){
+      var i=0;
+      if(this.GolfN==0){
+        var i = 1;
+      }
+      
+      if(this.GolfCannons[i].collisionFilterGroup==2){
+        // If Success
+      } else {
+        // If Failed
+        gsap.to(this.GolfThrees[i].scale,.25,{x:.1,y:.1,z:.1,ease:"none"});
+        gsap.to(this.GolfShadows[i].scale,.25,{x:.1,y:.1,z:.1,ease:"none"});
+        this.world02.remove(this.GolfCannons[i]);
+        gsap.delayedCall(.25,()=>{
+          this.ThreeService.BOOP(this.GolfCannons[i].position.x,this.GolfCannons[i].position.y,this.GolfCannons[i].position.z)
+        })
+      }
+    }
+
+    // Start another
+    gsap.delayedCall(.7,()=>{
+      this.MiniGolf();
+    });
   }
   private GolfState={value:0}; // 0 preparing 1 standby 2 damping
 
-  // GolfStateFunction(){
-  //   if(this.GolfState.value==0)
-  //   gsap.delayedCall(.1,() => {
-  //     if(Math.abs(this.GolfCannons[this.GolfN].angularVelocity.x)+Math.abs(this.GolfCannons[this.GolfN].angularVelocity.z) < 2 ){
-  //       console.log('dingding')
-  //       TweenLite.set(this.GolfState,{value:2});
-  //       TweenLite.to(this.GolfCannons[this.GolfN],1,{linearDamping:.8,angularDamping:.8});
-  //       TweenLite.set(this.GolfCannons[this.GolfN],{delay:1,linearDamping:.5,angularDamping:.5});
-  //       TweenLite.set(this.GolfState,{delay:1,value:1});
-  //     }
-  //     this.GolfStateFunction();
-  //   });
-  //   console.log(Math.abs(this.GolfCannons[this.GolfN].angularVelocity.x)+Math.abs(this.GolfCannons[this.GolfN].angularVelocity.z))
-  // }
-
-
+  private GolfThrees = [];
+  private GolfCannons = [];
   private GolfClone=null;
   private GolfN: number = 0;
   private MaxGolf: number = 2;
@@ -314,12 +325,10 @@ export class SecondScene{
     // P
     var Position = new THREE.Vector3();
     Position.setFromMatrixPosition(this.StageThreeArray[0].matrixWorld);
-    this.GolfN++;
-
     gsap.fromTo(this.GolfFlip[0].rotation,1,{x:0},{x:-Math.PI});
 
-    if(this.GolfThrees.length<1){
-      this.GolfN=0;
+    if(this.GolfThrees.length>0){
+      this.GolfN++;
     }
 
     if(this.GolfThrees.length == this.MaxGolf){
@@ -327,12 +336,19 @@ export class SecondScene{
       if(this.GolfN==this.MaxGolf){
         this.GolfN=0;
       }
-      this.ScoreFunction(this.GolfCannons[this.GolfN].position)
+
+      this.world02.addBody(this.GolfCannons[this.GolfN]);
       this.GolfCannons[this.GolfN].collisionFilterMask=2;
+      this.GolfCannons[this.GolfN].collisionFilterGroup=1;
       this.GolfCannons[this.GolfN].position.set(Position.x,Position.y - .6,Position.z);
       this.GolfCannons[this.GolfN].velocity.set(.09,6,-.18);
       this.GolfCannons[this.GolfN].angularVelocity.set(0,0,0);
+        
+      gsap.set(this.GolfThrees[this.GolfN].scale,{x:1,y:1,z:1,delay:.1});
+      gsap.set(this.GolfShadows[this.GolfN].scale,{x:1,y:1,z:1,delay:.1});
+
       this.GolfState.value=0;
+
       gsap.delayedCall(.5,()=>{
         this.GolfCannons[this.GolfN].collisionFilterMask=1;
       })
@@ -351,6 +367,7 @@ export class SecondScene{
       this.GolfCannons[this.GolfN] = body;
 
 
+      // Entrance
       body.collisionFilterMask=2;
       body.position.set(Position.x,Position.y - .6,Position.z);
       body.velocity.set(.09,6,-.18);
@@ -364,9 +381,13 @@ export class SecondScene{
 
 
       // Collision
+      let k = this.GolfN;
       body.addEventListener('collide',(e)=>{
         if(e.body.material.name=="GoalMaterial"){
-          this.ScoreFunction(body.position)
+          body.collisionFilterGroup=2;
+          gsap.to(this.GolfThrees[k].scale,.25,{x:.2,y:.2,z:.2,ease:"none",delay:.15});
+          gsap.to(this.GolfShadows[k].scale,.25,{x:.2,y:.2,z:.2,ease:"none",delay:.15});
+          this.ScoreFunction(body.position);
         }
       });
 
@@ -501,15 +522,15 @@ export class SecondScene{
   private windmillthree = [];
   private windmillcannon = [];
   private GolfShadows = [];
-  private GolfThrees = [];
-  private GolfCannons = [];
   GolfStageCannon(){
     let Stage = new THREE.Object3D();
     this.ThreeService.scene.add(Stage)
 
+    let StageRotation = -25*Math.PI/180;
+
     Stage.position.set(15,0,-1.5);
     // Stage.scale.set(1.1,1.1,1.1);
-    Stage.rotation.set(0*Math.PI/180,-25*Math.PI/180,0*Math.PI/180);
+    Stage.rotation.set(0*Math.PI/180,StageRotation,0*Math.PI/180);
 
     let StageMaterial = new THREE.MeshBasicMaterial({transparent:true,opacity:0,color:0x2395dc})
 
@@ -537,7 +558,6 @@ export class SecondScene{
     let material02 = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms:uniforms02,depthWrite:false,
       vertexShader:document.getElementById('vertexShader').textContent,
       fragmentShader:document.getElementById('fragmentShader').textContent})
-
       
     let StageShadow02 = new THREE.Mesh(new THREE.PlaneGeometry(10,10),material02);
     StageShadow02.rotation.set(-Math.PI/2,0,0)
@@ -554,7 +574,6 @@ export class SecondScene{
     let material03 = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms:uniforms03,depthWrite:false,
       vertexShader:document.getElementById('vertexShader').textContent,
       fragmentShader:document.getElementById('fragmentShader').textContent})
-
       
     let StageShadow03 = new THREE.Mesh(new THREE.PlaneGeometry(3,3),material03);
     StageShadow03.rotation.set(0*Math.PI/180,0,0)
@@ -575,7 +594,7 @@ export class SecondScene{
 
     this.RS.Windmill.scene.position.set(15,0,-1.5);
     // stage.scale.set(1.1,1.1,1.1);
-    this.RS.Windmill.scene.rotation.set(0*Math.PI/180,-25*Math.PI/180,0)
+    this.RS.Windmill.scene.rotation.set(0*Math.PI/180,StageRotation,0)
     for(var i=0;i<this.RS.Windmill.scene.children.length;i++){
       if(this.RS.Windmill.scene.children[""+i+""].name == "Windmill"){
         let mate01 = new THREE.MeshMatcapMaterial({

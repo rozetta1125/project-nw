@@ -4,6 +4,7 @@ import { ThreeService } from './three.service';
 import { FirstScene } from './FirstScene.service';
 import { NextScene } from "./NextScene.service";
 import { SecondScene } from './SecondScene.service';
+import { ThirdScene } from './ThirdScene.service';
 
 @Component({
   selector: 'app-welcome',
@@ -20,6 +21,7 @@ export class WelcomeComponent implements OnInit {
     private FS: FirstScene,
     private NS: NextScene,
     private SS: SecondScene,
+    private TS: ThirdScene,
   ) { }
 
   ngOnInit() {
@@ -30,7 +32,15 @@ export class WelcomeComponent implements OnInit {
         this.ThreeService.FirstInit();
         this.NS.nextStageFunction();
         this.FS.InitFirstScene();
-        this.SS.InitSecondScene();
+        this.TS.InitThirdScene();
+        this.NS.ScenePhaseChange.subscribe((value)=>{
+          if(value==1){
+            this.FS.CancelFirstScene();
+            console.log('canceled first scene')
+          }
+        });
+        // this.SS.InitSecondScene();
+
         // this.Start();
       }
     });

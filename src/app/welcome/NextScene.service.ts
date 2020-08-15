@@ -31,7 +31,7 @@ export class NextScene{
     // Mesh02.position.set(30,0,0);
     // this.ThreeService.scene.add(Mesh02);
 
-    document.querySelector('#nextStage .nextLeft').addEventListener("mousedown", this.Start, false);
+    document.querySelector('#nextStage .nextLeft').addEventListener("mousedown", throttle(this.Start,200), false);
     document.addEventListener("mouseup", ()=>{
       if(this.onNextLeft){
         document.removeEventListener("mousemove", this.Moving, false);
@@ -59,7 +59,7 @@ export class NextScene{
       if(num>=250){
         this.Succeed();
       } else {
-        gsap.set(this.ThreeService.Goal,{x:(this.CurrentGoal+num*.01)})
+        gsap.set(this.ThreeService.Goal,{x:(this.CurrentGoal+num*.01)});
         gsap.set('#nextStage .nextLeft',{css:{left:num+"px"}});
         gsap.set('#nextStage .mid .svg',{css:{width:(200-num)+"px"}});
       }
@@ -69,11 +69,13 @@ export class NextScene{
   Succeed(){
     this.ScenePhase += 1;
     this.ScenePhaseChange.next(this.ScenePhase);
-    console.log('Go to Scene'+this.ScenePhase)
-
-
+    console.log('Go to Scene'+this.ScenePhase);
     gsap.to(this.ThreeService.Goal,1.5,{ease:"in",x:this.NextGoal});
     
+
+    if(this.ScenePhase==1){
+      gsap.to(this.ThreeService.GoalAngle,1.5,{ease:"in",y:2.2});
+    } 
 
     this.CurrentGoal+=15;
     this.NextGoal+=15;
@@ -108,4 +110,18 @@ export class NextScene{
     gsap.to('#nextStage',.5,{ease:"in",css:{opacity:1}});
     gsap.set('#nextStage',{css:{visibility:"visible"},delay:.5});
   }
+}
+
+function throttle(fn: Function, wait: number) {
+  let isCalled = false;
+
+  return function (...args) {
+    if (!isCalled) {
+      fn(...args);
+      isCalled = true;
+      setTimeout(function () {
+        isCalled = false;
+      }, wait)
+    }
+  };
 }
