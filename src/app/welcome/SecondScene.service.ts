@@ -23,7 +23,6 @@ export class SecondScene{
     this.InitGolfCannon();
     this.CreateScoreMaterial();
     this.GolfStageCannon();
-    this.StartSecondScene();
     this.GolfString = new THREE.Object3D();
     let material = new THREE.MeshBasicMaterial({color:0xffffff});
     let arrow = new THREE.Mesh(
@@ -46,6 +45,11 @@ export class SecondScene{
   StartSecondScene(){
     this.SecondSceneRender();
     this.addEvent();
+    gsap.delayedCall(1,()=>{
+      this.MiniGolf();
+      this.world02.gravity.set(0, -10, 0);
+    })
+
   }
 
   addEvent(){
@@ -195,7 +199,7 @@ export class SecondScene{
       // white
       let mate = new THREE.MeshMatcapMaterial({
         color:0xffffff,
-        matcap:this.RS.white,
+        matcap:this.RS.SSwhite,
       })
 
       // THREE
@@ -205,13 +209,6 @@ export class SecondScene{
       )
       this.GolfClone.position.set(0,6,0)
     }
-
-
-    gsap.delayedCall(2,() => {
-      this.MiniGolf();
-      this.world02.gravity.set(0, -10, 0);
-    });
-
   }
   
   private FBasePosition=new THREE.Vector2();
@@ -241,12 +238,12 @@ export class SecondScene{
       this.GolfPercent = 270 - (this.GolfDistance/maxDistance * 100)*2.7;
       
 
-      gsap.set('.circle',{css:{strokeDashoffset: this.GolfPercent > 0 ? this.GolfPercent : 0}});
+      // gsap.set('.circle',{css:{strokeDashoffset: this.GolfPercent > 0 ? this.GolfPercent : 0}});
 
 
       var angleRadians = 180 + (Math.atan2(this.ThreeService.BasePosition.y-this.FBasePosition.y,this.ThreeService.BasePosition.x-this.FBasePosition.x) * 180/Math.PI);
-      gsap.set('#lgrad',{attr:{gradientTransform:"rotate("+angleRadians+" 0.5 0.5)"}});
-      gsap.set('.svg-line .line',{attr:{x1:this.FBasePosition.x,y1:this.FBasePosition.y,x2:this.ThreeService.BasePosition.x,y2:this.ThreeService.BasePosition.y}});
+      // gsap.set('#lgrad',{attr:{gradientTransform:"rotate("+angleRadians+" 0.5 0.5)"}});
+      // gsap.set('.svg-line .line',{attr:{x1:this.FBasePosition.x,y1:this.FBasePosition.y,x2:this.ThreeService.BasePosition.x,y2:this.ThreeService.BasePosition.y}});
     }
   }
 
@@ -400,7 +397,7 @@ export class SecondScene{
       // SHADOW
       let uniforms = {
         tShadow:{value:this.RS.GolfShadow},
-        uShadowColor:{value:new THREE.Color("#c0a68e")},
+        uShadowColor:{value:new THREE.Color("#a1c69e")},
         uAlpha:{value:1}
       }
       let material = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms,depthWrite:false,
@@ -423,11 +420,11 @@ export class SecondScene{
   CreateScoreMaterial(){
     // Score
     let Score01 = new THREE.Mesh(new THREE.BoxBufferGeometry(.05,.08,.005),
-      new THREE.MeshMatcapMaterial({color:0xffffff,matcap:this.RS.blue02,transparent:true}));
+      new THREE.MeshMatcapMaterial({color:0xffffff,matcap:this.RS.SSblue,transparent:true}));
     let Score02 = new THREE.Mesh(new THREE.BoxBufferGeometry(.08,.05,.005),
-      new THREE.MeshMatcapMaterial({color:0xffffff,matcap:this.RS.red,transparent:true}));
+      new THREE.MeshMatcapMaterial({color:0xffffff,matcap:this.RS.SSred,transparent:true}));
     let Score03 = new THREE.Mesh(new THREE.BoxBufferGeometry(.05,.08,.005),
-      new THREE.MeshMatcapMaterial({color:0xffffff,matcap:this.RS.yellow,transparent:true}));
+      new THREE.MeshMatcapMaterial({color:0xffffff,matcap:this.RS.SSyellow,transparent:true}));
     Score01.position.set(0,5,0)
     Score02.position.set(0,5,0)
     Score03.position.set(0,5,0)
@@ -445,7 +442,7 @@ export class SecondScene{
       this.GolfScore.push(mesh03);
     }
     // let Score02 = new THREE.Mesh(new THREE.CylinderBufferGeometry(.04,.04,.02,8,1),
-    //   new THREE.MeshMatcapMaterial({color:0xffffff,matcap:this.RS.blue02,transparent:true}));
+    //   new THREE.MeshMatcapMaterial({color:0xffffff,matcap:this.RS.SSblue,transparent:true}));
     // Score02.position.set(0,5,0)
     // for(var i=0;i<this.ScoreMax/3;i++){
     //   let mesh = Score02.clone();
@@ -528,16 +525,16 @@ export class SecondScene{
 
     let StageRotation = -25*Math.PI/180;
 
-    Stage.position.set(15,0,-1.5);
+    Stage.position.set(15,-.07,-1.5);
     // Stage.scale.set(1.1,1.1,1.1);
     Stage.rotation.set(0*Math.PI/180,StageRotation,0*Math.PI/180);
 
-    let StageMaterial = new THREE.MeshBasicMaterial({transparent:true,opacity:0,color:0x2395dc})
+    let StageMaterial = new THREE.MeshBasicMaterial({transparent:true,opacity:0,color:0xffffff,depthWrite:false})
 
 
     let uniforms = {
       tShadow:{value:this.RS.WindmillShadow01},
-      uShadowColor:{value:new THREE.Color("#c0a68e")},
+      uShadowColor:{value:new THREE.Color("#a1c69e")},
       uAlpha:{value:1}
     }
     let material = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms,depthWrite:false,
@@ -552,16 +549,16 @@ export class SecondScene{
 
     let uniforms02 = {
       tShadow:{value:this.RS.WindmillShadow02},
-      uShadowColor:{value:new THREE.Color("#c0a68e")},
+      uShadowColor:{value:new THREE.Color("#a1c69e")},
       uAlpha:{value:1}
     }
     let material02 = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms:uniforms02,depthWrite:false,
       vertexShader:document.getElementById('vertexShader').textContent,
       fragmentShader:document.getElementById('fragmentShader').textContent})
       
-    let StageShadow02 = new THREE.Mesh(new THREE.PlaneGeometry(10,10),material02);
+    let StageShadow02 = new THREE.Mesh(new THREE.PlaneGeometry(15,15),material02);
     StageShadow02.rotation.set(-Math.PI/2,0,0)
-    StageShadow02.position.set(0,-.2,0);
+    StageShadow02.position.set(0,-.13,0);
 
     Stage.add(StageShadow02);
 
@@ -600,25 +597,38 @@ export class SecondScene{
         let mate01 = new THREE.MeshMatcapMaterial({
           color:0xffffff,
           side:2,
-          matcap:this.RS.white
+          matcap:this.RS.SSwhite
         })
         let mate02 = new THREE.MeshMatcapMaterial({
           color:0xffffff,
           side:2,
-          matcap:this.RS.blue02
+          matcap:this.RS.SSblue
         })
         this.RS.Windmill.scene.children[""+i+""].children[0].material=mate01;
         this.RS.Windmill.scene.children[""+i+""].children[1].material=mate02;
+      } else if (this.RS.Windmill.scene.children[""+i+""].name == "Start"){
+        let mate01 = new THREE.MeshMatcapMaterial({
+          color:0xffffff,
+          side:2,
+          matcap:this.RS.SSStage
+        })
+        let mate02 = new THREE.MeshMatcapMaterial({
+          color:0xffffff,
+          side:2,
+          matcap:this.RS.SSStage02
+        })
+        this.RS.Windmill.scene.children[""+i+""].children[0].material=mate02;
+        this.RS.Windmill.scene.children[""+i+""].children[1].material=mate01;
       } else if (this.RS.Windmill.scene.children[""+i+""].name == "Goal"){
         let mate01 = new THREE.MeshMatcapMaterial({
           color:0xffffff,
           side:2,
-          matcap:this.RS.green01
+          matcap:this.RS.SSStage
         })
         let mate02 = new THREE.MeshMatcapMaterial({
           color:0xffffff,
           side:2,
-          matcap:this.RS.wood
+          matcap:this.RS.SSStage02
         })
         this.RS.Windmill.scene.children[""+i+""].children[0].material=mate01;
         this.RS.Windmill.scene.children[""+i+""].children[1].material=mate02;
@@ -626,7 +636,7 @@ export class SecondScene{
         let mate01 = new THREE.MeshMatcapMaterial({
           color:0xffffff,
           side:2,
-          matcap:this.RS.blue02
+          matcap:this.RS.SSblue
         })
         this.RS.Windmill.scene.children[""+i+""].material=mate01;
         let wmthree = new THREE.Mesh();
@@ -670,33 +680,33 @@ export class SecondScene{
         let mate01 = new THREE.MeshMatcapMaterial({
           color:0xffffff,
           side:2,
-          matcap:this.RS.wood
+          matcap:this.RS.SSwood
         })
         this.RS.Windmill.scene.children[""+i+""].material=mate01;
       } else if (this.RS.Windmill.scene.children[""+i+""].name == "Wall"){
         let mate01 = new THREE.MeshMatcapMaterial({
           color:0xffffff,
           side:2,
-          matcap:this.RS.blue02
+          matcap:this.RS.SSblue
         })
         this.RS.Windmill.scene.children[""+i+""].material=mate01;
       } else if (this.RS.Windmill.scene.children[""+i+""].name == "Bush"){
         let mate01 = new THREE.MeshMatcapMaterial({
           color:0xffffff,
           side:2,
-          matcap:this.RS.green01
+          matcap:this.RS.SStree
         })
         this.RS.Windmill.scene.children[""+i+""].material=mate01;
       } else if (this.RS.Windmill.scene.children[""+i+""].name == "Tree"){
         let mate01 = new THREE.MeshMatcapMaterial({
           color:0xffffff,
           side:2,
-          matcap:this.RS.green01
+          matcap:this.RS.SStree
         })
         let mate02 = new THREE.MeshMatcapMaterial({
           color:0xffffff,
           side:2,
-          matcap:this.RS.wood
+          matcap:this.RS.SSwood
         })
         this.RS.Windmill.scene.children[""+i+""].children[0].material=mate01;
         this.RS.Windmill.scene.children[""+i+""].children[1].material=mate02;
@@ -704,49 +714,36 @@ export class SecondScene{
         let mate01 = new THREE.MeshMatcapMaterial({
           color:0xffffff,
           side:2,
-          matcap:this.RS.green01
+          matcap:this.RS.SSStage
         })
         this.RS.Windmill.scene.children[""+i+""].material=mate01;
         this.GolfFlip.push(this.RS.Windmill.scene.children[""+i+""]);
-      } else if (this.RS.Windmill.scene.children[""+i+""].name == "Start"){
-        let mate01 = new THREE.MeshMatcapMaterial({
-          color:0xffffff,
-          side:2,
-          matcap:this.RS.green01
-        })
-        let mate02 = new THREE.MeshMatcapMaterial({
-          color:0xffffff,
-          side:2,
-          matcap:this.RS.wood
-        })
-        this.RS.Windmill.scene.children[""+i+""].children[0].material=mate02;
-        this.RS.Windmill.scene.children[""+i+""].children[1].material=mate01;
       } else if (this.RS.Windmill.scene.children[""+i+""].name == "Rock"){
         let mate01 = new THREE.MeshMatcapMaterial({
           color:0xffffff,
           side:2,
-          matcap:this.RS.white
+          matcap:this.RS.SSwhite
         })
         this.RS.Windmill.scene.children[""+i+""].material=mate01;
       } else if (this.RS.Windmill.scene.children[""+i+""].name == "Window"){
         let mate01 = new THREE.MeshMatcapMaterial({
           color:0xffffff,
           side:2,
-          matcap:this.RS.white
+          matcap:this.RS.SSwhite
         })
         this.RS.Windmill.scene.children[""+i+""].material=mate01;
       } else if (this.RS.Windmill.scene.children[""+i+""].name == "Pole"){
         let mate01 = new THREE.MeshMatcapMaterial({
           color:0xffffff,
           side:2,
-          matcap:this.RS.white
+          matcap:this.RS.SSwhite
         })
         this.RS.Windmill.scene.children[""+i+""].material=mate01;
       } else {
         let mate01 = new THREE.MeshMatcapMaterial({
           color:0xffffff,
           side:2,  
-          matcap:this.RS.white
+          matcap:this.RS.SSwhite
         })
         this.RS.Windmill.scene.children[""+i+""].material=mate01;
       }
@@ -768,7 +765,7 @@ export class SecondScene{
     let FlagMate = new THREE.MeshMatcapMaterial({
       color:0xec1c24,
       side:2,
-      matcap:this.RS.white,
+      matcap:this.RS.SSwhite,
       morphTargets:true,
     })
 
@@ -1014,7 +1011,7 @@ export class SecondScene{
 
     var quat = new CANNON.Quaternion(.5,0,0,.5);
     quat.normalize();
-    Cube007.addShape(new CANNON.Box(new CANNON.Vec3(.25,.25,.1)),new CANNON.Vec3(0,-0.25,0),quat);
+    Cube007.addShape(new CANNON.Box(new CANNON.Vec3(.25,.25,.1)),new CANNON.Vec3(0,-0.23,0),quat);
     this.world02.addBody(Cube007);
     this.StageCannnonArray.push(Cube007);
     

@@ -7,6 +7,7 @@ import { Resources } from './Resources.service';
 import { Line2 } from 'three/examples/jsm/lines/Line2';
 import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial';
 import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry';
+import { Mesh, MeshBasicMaterial } from 'three';
 
 @Injectable({
   providedIn: 'root'
@@ -32,14 +33,14 @@ export class ThirdScene{
     this.InitThirdWorld();
     this.CreateScoreMaterial();
     this.CreateBalloonCursor();
-    this.CreateIsland(15,-0.075,-.5);
+    this.CreateIsland(30,-0.075,-.5);
 
     
     this.StringM = new LineMaterial({
       color:0xeeeeee,
       linewidth:.0012,
     })
-    this.CreateGiftBalloon(10,3,0);
+    // this.CreateGiftBalloon(2,3,0);
 
     
     // this.RS.Lid.scene.position.set(15,2,0)
@@ -47,11 +48,12 @@ export class ThirdScene{
     // this.ThreeService.scene.add(something)
 
 
+  }
 
+  StartThirdScene(){
     this.AddEvent();
     this.ThirdSceneRender();
   }
-
 
   AddEvent(){
     this.ThreeService.canvas.addEventListener("click", throttle(this.ClickEvent,600));
@@ -99,6 +101,10 @@ export class ThirdScene{
   private SmokeTexture:THREE.Mesh;
   private SmokeTexture02:THREE.Mesh;
   private Bubble;
+  private BubbleObject;
+  private BubbleArray;
+  private HouseBubble;
+  private OuterSmoke;
   CreateIsland(Ix,Iy,Iz){
     // Material
     var ScaleMultiplier = 1.75;
@@ -113,30 +119,30 @@ export class ThirdScene{
     for(var i=0;i<this.RS.Island.scene.children.length;i++){
       if(this.RS.Island.scene.children[""+i+""].name=="Land"){
         let mate01 = new THREE.MeshMatcapMaterial({
-          color:0xffffff,side:2,matcap:this.RS.land,transparent:true,opacity:mateOpacity,
+          color:0xffffff,side:2,matcap:this.RS.TSland,transparent:true,opacity:mateOpacity,
         });
         this.RS.Island.scene.children[""+i+""].children[0].material=mate01;
         let mate02 = new THREE.MeshMatcapMaterial({
-          color:0xffffff,side:2,matcap:this.RS.tree,transparent:true,opacity:mateOpacity,
+          color:0xffffff,side:2,matcap:this.RS.TStree,transparent:true,opacity:mateOpacity,
         });
         this.RS.Island.scene.children[""+i+""].children[1].material=mate02;
       } else if(this.RS.Island.scene.children[""+i+""].name=="Tree01"||this.RS.Island.scene.children[""+i+""].name=="Tree02"){
           let mate01 = new THREE.MeshMatcapMaterial({
-            color:0xffffff,side:2,matcap:this.RS.wood03,transparent:true,opacity:mateOpacity,
+            color:0xffffff,side:2,matcap:this.RS.TSwood,transparent:true,opacity:mateOpacity,
           });
           this.RS.Island.scene.children[""+i+""].children[0].material=mate01;
           let mate02 = new THREE.MeshMatcapMaterial({
-            color:0xffffff,side:2,matcap:this.RS.tree,transparent:true,opacity:mateOpacity,
+            color:0xffffff,side:2,matcap:this.RS.TStree,transparent:true,opacity:mateOpacity,
           });
         this.RS.Island.scene.children[""+i+""].children[1].material=mate02;
         this.ThirdSceneObject.push(this.RS.Island.scene.children[""+i+""]);
       } else if(this.RS.Island.scene.children[""+i+""].name=="Mail"){
         let mate01 = new THREE.MeshMatcapMaterial({
-          color:0xffffff,side:2,matcap:this.RS.wood03,transparent:true,opacity:mateOpacity,
+          color:0xffffff,side:2,matcap:this.RS.TSwood,transparent:true,opacity:mateOpacity,
         });
         this.RS.Island.scene.children[""+i+""].children[0].material=mate01;
         let mate02 = new THREE.MeshMatcapMaterial({
-          color:0xcccccc,side:2,matcap:this.RS.wood03,transparent:true,opacity:mateOpacity,
+          color:0xcccccc,side:2,matcap:this.RS.TSwood,transparent:true,opacity:mateOpacity,
         });
         this.RS.Island.scene.children[""+i+""].children[1].material=mate02;
       } else if(this.RS.Island.scene.children[""+i+""].name=="Sea"){
@@ -197,13 +203,15 @@ export class ThirdScene{
     for(var i=0;i<this.RS.Hammer.scene.children.length;i++){
       if(this.RS.Hammer.scene.children[""+i+""].name=="Hammer"){
         let mate01 = new THREE.MeshMatcapMaterial({
-          color:0xffffff,side:2,matcap:this.RS.white03,transparent:true,opacity:mateOpacity,
+          color:0xffffff,side:0,matcap:this.RS.TSwood,transparent:true,opacity:mateOpacity,
         });
         let mate02 = new THREE.MeshMatcapMaterial({
-          color:0xfefefe,side:2,matcap:this.RS.wood03,transparent:true,opacity:mateOpacity,
+          color:0xffffff,side:0,matcap:this.RS.TSwood,transparent:true,opacity:mateOpacity,
         });
+        // handle
+        this.RS.Hammer.scene.children[""+i+""].children[1].material=mate01;
+        // hammer
         this.RS.Hammer.scene.children[""+i+""].children[0].material=mate02;
-        this.RS.Hammer.scene.children[""+i+""].children[1].material=mate02;
       }
     }
     this.RS.Hammer.scene.scale.set(2,2,2);
@@ -211,7 +219,7 @@ export class ThirdScene{
     // Smoke Texture Center
     var uniforms = {
       tShadow:{value:this.RS.SmokeTexture},
-      uShadowColor:{value:new THREE.Color("#ffffff")},
+      uShadowColor:{value:new THREE.Color("#f5f5f5")},
       uAlpha:{value:.4}
     }
     var material = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms,depthWrite:false,
@@ -220,22 +228,30 @@ export class ThirdScene{
       
     this.SmokeTexture = new THREE.Mesh(new THREE.PlaneGeometry(3,3),material);
     this.SmokeTexture.rotation.set(0,0,0)
-    this.SmokeTexture.position.set(Ix,Iy+.85,Iz+.75);
+    this.SmokeTexture.position.set(Ix,Iy+.85,Iz+.7);
     this.SmokeTexture.renderOrder=2;
 
-    // Smoke Texture 02
-    var uniforms = {
-      tShadow:{value:this.RS.SmokeTexture},
-      uShadowColor:{value:new THREE.Color("#f2f2f2")},
-      uAlpha:{value:.7}
+
+    // Outer Smoke
+    this.OuterSmoke=[];
+    for(var i=0;i<25;i++){
+      let OuterSmokeMesh = new THREE.Mesh(new THREE.CircleBufferGeometry(.1,12),new THREE.MeshBasicMaterial({color:0xf5f5f5,transparent:true,opacity:1,depthWrite:false}));
+      this.OuterSmoke.push(OuterSmokeMesh);
     }
-    var material = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms,depthWrite:false,
-      vertexShader:document.getElementById('vertexShader').textContent,
-      fragmentShader:document.getElementById('fragmentShader').textContent})
+
+    // // Smoke Texture 02
+    // var uniforms = {
+    //   tShadow:{value:this.RS.SmokeTexture},
+    //   uShadowColor:{value:new THREE.Color("#eeeeee")},
+    //   uAlpha:{value:.7}
+    // }
+    // var material = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms,depthWrite:false,
+    //   vertexShader:document.getElementById('vertexShader').textContent,
+    //   fragmentShader:document.getElementById('fragmentShader').textContent})
       
-    this.SmokeTexture02 = new THREE.Mesh(new THREE.PlaneGeometry(3,3),material);
-    this.SmokeTexture02.rotation.set(0,0,0)
-    this.SmokeTexture02.position.set(Ix,Iy+.85,Iz+.75);
+    // this.SmokeTexture02 = new THREE.Mesh(new THREE.PlaneGeometry(3,3),material);
+    // this.SmokeTexture02.rotation.set(0,0,0)
+    // this.SmokeTexture02.position.set(Ix,Iy+.85,Iz+.75);
 
     // Bubble Texture
     var uniforms = {
@@ -246,15 +262,37 @@ export class ThirdScene{
     var material = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms,depthWrite:false,
       vertexShader:document.getElementById('vertexShader').textContent,
       fragmentShader:document.getElementById('fragmentShader').textContent})
-    let tempBubble = new THREE.Mesh(new THREE.PlaneGeometry(3,3),material)
-    tempBubble.scale.set(.5,.5,.5);
-    tempBubble.rotation.set(0,0,0)
-    tempBubble.position.set(Ix-.05,Iy,Iz);
-    this.Bubble = [];
-    for(var i=0;i<5;i++){
-      let clone = tempBubble.clone();
-      this.Bubble.push(clone);
+
+    this.Bubble = new THREE.Mesh(new THREE.PlaneGeometry(3,3),material)
+    this.Bubble.scale.set(.5,.5,.5);
+    this.Bubble.rotation.set(0,0,0)
+    this.Bubble.position.set(Ix-.05,Iy,Iz);
+
+    // Bubble Object
+    this.BubbleObject = new THREE.Mesh(new THREE.CircleBufferGeometry(.25,16),new THREE.MeshBasicMaterial({depthWrite:false,opacity:0,transparent:true}));
+    this.BubbleObject.name="BubbleObject";
+    this.BubbleObject.position.set(Ix,Iy,Iz);
+
+    // Bubble Array 
+    let ba = new THREE.Mesh(new THREE.CircleBufferGeometry(.55,16),new THREE.MeshBasicMaterial({color:0xfceace,depthWrite:false}));
+    ba.position.set(Ix-.05,Iy,Iz);
+    this.BubbleArray = [];
+    for(var i=0;i<3;i++){
+      let clone = ba.clone();
+      this.BubbleArray.push(clone);
     }
+
+    // HouseBubble Texture
+    var uniforms = {
+      tShadow:{value:this.RS.HouseBubble},
+      uShadowColor:{value:new THREE.Color("#ffd25e")},
+      uAlpha:{value:1}
+    }
+    var material = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms,depthWrite:false,
+      vertexShader:document.getElementById('vertexShader').textContent,
+      fragmentShader:document.getElementById('fragmentShader').textContent})
+    this.HouseBubble = new THREE.Mesh(new THREE.PlaneGeometry(3,3),material)
+    this.HouseBubble.position.set(Ix-.05,Iy,Iz+.005);
 
     this.CreateTent(Ix,Iy,Iz,ScaleMultiplier);
     this.CreateHouse(Ix,Iy,Iz,ScaleMultiplier);
@@ -373,21 +411,21 @@ export class ThirdScene{
     for(var i=0;i<this.RS.Tent.scene.children.length;i++){
       if(this.RS.Tent.scene.children[""+i+""].name=="Tent"){
         let mate01 = new THREE.MeshMatcapMaterial({
-          color:0xffffff,side:2,matcap:this.RS.tent01,transparent:true,opacity:mateOpacity,
+          color:0xffffff,side:2,matcap:this.RS.TStent01,transparent:true,opacity:mateOpacity,
         });
         this.RS.Tent.scene.children[""+i+""].children[0].material=mate01;
         let mate02 = new THREE.MeshMatcapMaterial({
-          color:0xffffff,side:2,matcap:this.RS.tent02,transparent:true,opacity:mateOpacity,
+          color:0xffffff,side:2,matcap:this.RS.TStent02,transparent:true,opacity:mateOpacity,
         });
         this.RS.Tent.scene.children[""+i+""].children[1].material=mate02;
       } else if(this.RS.Tent.scene.children[""+i+""].name=="Pillar"){
         let mate01 = new THREE.MeshMatcapMaterial({
-          color:0xffffff,side:2,matcap:this.RS.wood03,transparent:true,opacity:mateOpacity,
+          color:0xffffff,side:2,matcap:this.RS.TSwood,transparent:true,opacity:mateOpacity,
         });
         this.RS.Tent.scene.children[""+i+""].material=mate01;
       } else if(this.RS.Tent.scene.children[""+i+""].name=="Rope"){
         let mate01 = new THREE.MeshMatcapMaterial({
-          color:0xffffff,side:2,matcap:this.RS.wood03,transparent:true,opacity:mateOpacity,
+          color:0xffffff,side:2,matcap:this.RS.TSwood,transparent:true,opacity:mateOpacity,
         });
         this.RS.Tent.scene.children[""+i+""].material=mate01;
       } 
@@ -422,28 +460,28 @@ export class ThirdScene{
 
     // blue
     var ma01 = new THREE.MeshMatcapMaterial({
-      color:0xE79D7C,side:2,matcap:this.RS.white03,transparent:true,opacity:mateOpacity,
+      color:0xE79D7C,side:2,matcap:this.RS.TSwhite,transparent:true,opacity:mateOpacity,
     });
     // let ma01params = {
     //   ma01: "#E79D7C",
     // }
     // // white
     var ma02 = new THREE.MeshMatcapMaterial({
-      color:0xfff3d8,side:2,matcap:this.RS.white03,transparent:true,opacity:mateOpacity,
+      color:0xfff3d8,side:2,matcap:this.RS.TSwhite,transparent:true,opacity:mateOpacity,
     });
     // let ma02params = {
     //   ma02: "#fff3d8",
     // }
     // // wood
     var ma03 = new THREE.MeshMatcapMaterial({
-      color:0xE7CE9B,side:2,matcap:this.RS.white03,transparent:true,opacity:mateOpacity,
+      color:0xE7CE9B,side:2,matcap:this.RS.TSwhite,transparent:true,opacity:mateOpacity,
     });
     // let ma03params = {
     //   ma03: "#E7CE9B",
     // }
     // // sea
     var ma04 = new THREE.MeshMatcapMaterial({
-      color:0xd3f5ff,side:2,matcap:this.RS.white03,transparent:true,opacity:mateOpacity,
+      color:0xd3f5ff,side:2,matcap:this.RS.TSwhite,transparent:true,opacity:mateOpacity,
     });
     // let ma04params = {
     //   ma04: "#d3f5ff",
@@ -468,15 +506,15 @@ export class ThirdScene{
     for(var i=0;i<this.RS.House.scene.children.length;i++){
       if(this.RS.House.scene.children[""+i+""].name=="House"){
         let mate01 = new THREE.MeshMatcapMaterial({
-          color:0xffffff,side:2,matcap:this.RS.wood03,transparent:true,opacity:mateOpacity,
+          color:0xffffff,side:2,matcap:this.RS.TSwood,transparent:true,opacity:mateOpacity,
         });
         this.RS.House.scene.children[""+i+""].children[0].material=mate01;
         let mate02 = new THREE.MeshMatcapMaterial({
-          color:0xffffff,side:2,matcap:this.RS.wood03,transparent:true,opacity:mateOpacity,
+          color:0xffffff,side:2,matcap:this.RS.TSwood,transparent:true,opacity:mateOpacity,
         });
         this.RS.House.scene.children[""+i+""].children[1].material=mate02;
         let mate03 = new THREE.MeshMatcapMaterial({
-          color:0xffffff,side:2,matcap:this.RS.wood03,transparent:true,opacity:mateOpacity,
+          color:0xffffff,side:2,matcap:this.RS.TSwood,transparent:true,opacity:mateOpacity,
         });
         this.RS.House.scene.children[""+i+""].children[2].material=mate03;
         
@@ -486,11 +524,11 @@ export class ThirdScene{
         this.RS.House.scene.children[""+i+""].children[2].material=ma01;
       } else if(this.RS.House.scene.children[""+i+""].name=="Door"){
         let mate01 = new THREE.MeshMatcapMaterial({
-          color:0xffffff,side:2,matcap:this.RS.wood03,transparent:true,opacity:mateOpacity,
+          color:0xffffff,side:2,matcap:this.RS.TSwood,transparent:true,opacity:mateOpacity,
         });
         this.RS.House.scene.children[""+i+""].children[0].material=mate01;
         let mate02 = new THREE.MeshMatcapMaterial({
-          color:0xeeeeee,side:2,matcap:this.RS.wood03,transparent:true,opacity:mateOpacity,
+          color:0xeeeeee,side:2,matcap:this.RS.TSwood,transparent:true,opacity:mateOpacity,
         });
         this.RS.House.scene.children[""+i+""].children[1].material=mate02;
 
@@ -498,11 +536,11 @@ export class ThirdScene{
         this.RS.House.scene.children[""+i+""].children[0].material=ma03;
       } else if(this.RS.House.scene.children[""+i+""].name=="Window"){
         let mate01 = new THREE.MeshMatcapMaterial({
-          color:0xffffff,side:2,matcap:this.RS.wood03,transparent:true,opacity:mateOpacity,
+          color:0xffffff,side:2,matcap:this.RS.TSwood,transparent:true,opacity:mateOpacity,
         });
         this.RS.House.scene.children[""+i+""].children[0].material=mate01;
         let mate02 = new THREE.MeshMatcapMaterial({
-          color:0xffffff,side:2,matcap:this.RS.white03,transparent:true,opacity:mateOpacity,
+          color:0xffffff,side:2,matcap:this.RS.TSwhite,transparent:true,opacity:mateOpacity,
         });
         var seaMate = new THREE.MeshBasicMaterial({color:0xaee3f2});
         this.RS.House.scene.children[""+i+""].children[1].material=mate02;
@@ -512,11 +550,11 @@ export class ThirdScene{
         this.RS.House.scene.children[""+i+""].children[1].material=ma04;
       } else if(this.RS.House.scene.children[""+i+""].name=="Lamp"){
         let mate01 = new THREE.MeshMatcapMaterial({
-          color:0xffffff,side:2,matcap:this.RS.white03,transparent:true,opacity:mateOpacity,
+          color:0xffffff,side:2,matcap:this.RS.TSwhite,transparent:true,opacity:mateOpacity,
         });
         this.RS.House.scene.children[""+i+""].children[0].material=mate01;
         let mate02 = new THREE.MeshMatcapMaterial({
-          color:0xffffff,side:2,matcap:this.RS.wood03,transparent:true,opacity:mateOpacity,
+          color:0xffffff,side:2,matcap:this.RS.TSwood,transparent:true,opacity:mateOpacity,
         });
         this.RS.House.scene.children[""+i+""].children[1].material=mate02;
 
@@ -525,7 +563,7 @@ export class ThirdScene{
         this.RS.House.scene.children[""+i+""].children[1].material=ma03;
       } else if(this.RS.House.scene.children[""+i+""].name=="SmokePipe"){
         let mate01 = new THREE.MeshMatcapMaterial({
-          color:0xffffff,side:2,matcap:this.RS.wood03,transparent:true,opacity:mateOpacity,
+          color:0xffffff,side:2,matcap:this.RS.TSwood,transparent:true,opacity:mateOpacity,
         });
         this.RS.House.scene.children[""+i+""].material=mate01;
         // testing
@@ -554,7 +592,7 @@ export class ThirdScene{
     this.RS.Rock.scene.scale.set(ScaleMultiplier,ScaleMultiplier,ScaleMultiplier)
     this.RS.Rock.scene.position.set(Ix+1.8,Iy,Iz+.2);
     let mate01 = new THREE.MeshMatcapMaterial({
-      color:0xe6e6e6,side:2,matcap:this.RS.white03,transparent:true,
+      color:0xe6e6e6,side:2,matcap:this.RS.TSwhite,transparent:true,
     });
     this.RS.Rock.scene.children["0"].material=mate01;
 
@@ -583,26 +621,33 @@ export class ThirdScene{
 
   BubbleUpgrade(){
     // First Bubble
-    this.ThreeService.scene.add(this.Bubble[0]);
-    gsap.fromTo(this.Bubble[0].scale,1.6,{x:.08,y:.08,z:.08},{ease:"none",x:.42,y:.42,z:.42});
-    gsap.fromTo(this.Bubble[0].rotation,4,{z:0},{ease:"none",z:"+="+Math.PI,repeat:-1});
-    gsap.fromTo(this.Bubble[0].position,1.6,{y:1.4},{ease:"none",y:1.9});
-    gsap.to(this.Bubble[0].position,.8,{ease:"none",x:"-=.05"});
-    gsap.to(this.Bubble[0].position,.8,{ease:"none",x:"+=.1",delay:.8});
+    this.ThreeService.scene.add(this.Bubble);
+    gsap.fromTo(this.Bubble.scale,1.6,{x:.08,y:.08,z:.08},{ease:"none",x:.48,y:.48,z:.48});
+    gsap.fromTo(this.Bubble.rotation,4,{z:0},{ease:"none",z:"+="+Math.PI,repeat:-1});
+    gsap.fromTo(this.Bubble.position,1.6,{y:1.4},{ease:"none",y:2.1});
+    gsap.fromTo(this.BubbleObject.position,1.6,{y:1.4},{ease:"none",y:2.1});
+    gsap.to(this.Bubble.position,.8,{ease:"none",x:"-=.05"});
+    gsap.to(this.Bubble.position,.8,{ease:"none",x:"+=.1",delay:.8,onComplete:()=>{
+      this.ThirdSceneObject.push(this.BubbleObject);
+      this.ThreeService.scene.add(this.BubbleObject);
+    }});
 
-    // this.ThreeService.scene.add(this.Bubble[1]);
-    // gsap.fromTo(this.Bubble[1].scale,1.6,{x:.2,y:.2,z:.2},{ease:"none",x:.3,y:.3,z:.3,delay:1.6});
-    // gsap.to(this.Bubble[1].position,1,{ease:"none",y:"+=.2",delay:1.6});
-    for(var i=1;i<3;i++){
-      let delay = i*.8;
-      this.ThreeService.scene.add(this.Bubble[i]);
-      gsap.fromTo(this.Bubble[i].scale,1.6,{x:.06,y:.06,z:.06},{ease:"none",x:.18,y:.18,z:.18,delay:delay,repeat:-1,repeatDelay:0});
-      gsap.fromTo(this.Bubble[i].rotation,6,{z:0},{ease:"none",z:"+="+Math.PI,repeat:-1,delay:delay});
-      
+    // HouseBubble
+    this.ThreeService.scene.add(this.HouseBubble);
+    gsap.fromTo(this.HouseBubble.scale,1.6,{x:.04,y:.04,z:.04},{ease:"none",x:.28,y:.28,z:.28});
+    gsap.fromTo(this.HouseBubble.position,1.6,{y:1.4},{ease:"none",y:2.1});
+    gsap.to(this.HouseBubble.position,.8,{ease:"none",x:"-=.05"});
+    gsap.to(this.HouseBubble.position,.8,{ease:"none",x:"+=.098",delay:.8});
 
-      gsap.fromTo(this.Bubble[i].position,1.6,{y:1.38},{ease:"none",y:1.8,delay:delay,repeat:-1,repeatDelay:0});
-      gsap.to(this.Bubble[i].position,.8,{ease:"none",x:"-=.075",delay:delay,repeat:-1,repeatDelay:.8});
-      gsap.to(this.Bubble[i].position,.8,{ease:"none",x:"+=.075",delay:.8+delay,repeat:-1,repeatDelay:.8});
+
+    for(var i=0;i<3;i++){
+      let delay = (i+1)*.6;
+      this.ThreeService.scene.add(this.BubbleArray[i]);
+      gsap.fromTo(this.BubbleArray[i].scale,1.8,{x:.04,y:.04,z:.04},{ease:"none",x:.18,y:.18,z:.18,delay:delay,repeat:-1,repeatDelay:0});
+
+      gsap.fromTo(this.BubbleArray[i].position,1.8,{y:1.5},{ease:"none",y:2.04,delay:delay,repeat:-1,repeatDelay:0});
+      gsap.to(this.BubbleArray[i].position,.9,{ease:"none",x:"-=.075",delay:delay,repeat:-1,repeatDelay:.9});
+      gsap.to(this.BubbleArray[i].position,.9,{ease:"none",x:"+=.075",delay:.8+delay,repeat:-1,repeatDelay:.9});
       
     }
   }
@@ -611,119 +656,178 @@ export class ThirdScene{
   private SmokeTexture02Array = [];
   UpgradeFunction(Ix,Iy,Iz){
     // Hammer
-    this.RS.Hammer.scene.position.set(Ix+.85,Iy+.9,Iz);
+    this.RS.Hammer.scene.position.set(Ix+.65,Iy+.9,Iz+.5);
     this.ThreeService.scene.add(this.RS.Hammer.scene);
-    gsap.fromTo(this.RS.Hammer.scene.rotation,.14,{z:0},{z:1.2,yoyo:true,repeat:3,ease:"none",onComplete:()=>{
-      this.RS.Hammer.scene.position.set(Ix-.8,Iy+1.1,Iz);
-      gsap.fromTo(this.RS.Hammer.scene.rotation,.14,{z:0},{z:-1.2,yoyo:true,repeat:3,ease:"none",onComplete:()=>{
-        this.RS.Hammer.scene.position.set(Ix+.65,Iy+1.25,Iz);
-        gsap.fromTo(this.RS.Hammer.scene.rotation,.14,{z:0},{z:1.2,yoyo:true,repeat:3,ease:"none",onComplete:()=>{
+    gsap.fromTo(this.RS.Hammer.scene.rotation,.15,{z:0},{z:1.2,yoyo:true,repeat:4,ease:"none",onComplete:()=>{
+      this.RS.Hammer.scene.position.set(Ix-.65,Iy+1.1,Iz+.5);
+      gsap.fromTo(this.RS.Hammer.scene.rotation,.15,{z:0},{z:-1.2,yoyo:true,repeat:4,ease:"none",onComplete:()=>{
+        this.RS.Hammer.scene.position.set(Ix+.55,Iy+1.25,Iz+.5);
+        gsap.fromTo(this.RS.Hammer.scene.rotation,.15,{z:0},{z:1.2,yoyo:true,repeat:4,ease:"none",onComplete:()=>{
           this.ThreeService.scene.remove(this.RS.Hammer.scene);
         }});
       }});
     }});
 
     // center
+    // gsap.set(this.SmokeTexture.position,{z:"+=.35"});
     for(var i=0;i<3;i++){
       if(this.SmokeTextureArray.length<3){
         let shadow = this.SmokeTexture.clone();
-        this.ThreeService.scene.add(shadow);
         this.SmokeTextureArray.push(shadow);
       }
 
       this.ThreeService.scene.add(this.SmokeTextureArray[i])
-      gsap.set(this.SmokeTextureArray[i].material.uniforms.uAlpha,{value:.4});
+      gsap.fromTo(this.SmokeTextureArray[i].material.uniforms.uAlpha,.3,{value:0},{value:.85});
+
+      // Position
+      switch(i){
+        case 0:gsap.set(this.SmokeTextureArray[i].position,{x:"-=.3",y:"-=.1"}); break;
+        case 1:gsap.set(this.SmokeTextureArray[i].position,{x:"+=0",y:"+=.15"}); break;
+        case 2:gsap.set(this.SmokeTextureArray[i].position,{x:"+=.3",y:"-=.1"}); break;
+      }
+
+      // gsap.set(this.SmokeTextureArray[i].position,{x:"+="+(Math.random()*.5-.25),y:"-=.0"});
 
       // Scale
-      gsap.fromTo(this.SmokeTextureArray[i].scale,1,{x:.4,y:.4,z:.4},{x:1.,y:1.,z:1.,ease:"none"});
+      gsap.fromTo(this.SmokeTextureArray[i].scale,.3,{x:.5,y:.5,z:.5},{x:1.5,y:1.5,z:1.5,ease:"none"});
 
       // Rotation
-      gsap.fromTo(this.SmokeTextureArray[i].rotation,4,{z:Math.random()*3.15},{z:"+="+(Math.random()*40-20),ease:"none"})
+      gsap.fromTo(this.SmokeTextureArray[i].rotation,2.5,{z:Math.random()*3},{z:"+="+(Math.random()*4+3),ease:"none"})
       
       // Explosion
-      gsap.to(this.SmokeTextureArray[i].material.uniforms.uAlpha,.1,{value:1.5,delay:1.4});
-      gsap.to(this.SmokeTextureArray[i].scale,.2,{x:1.8,y:1.8,z:1.8,delay:1.5});
-      gsap.to(this.SmokeTextureArray[i].scale,.2,{x:1.5,y:1.5,z:1.5,delay:1.7});
+      gsap.to(this.SmokeTextureArray[i].material.uniforms.uAlpha,.1,{value:1,delay:2.4});
+      gsap.delayedCall(2.4,()=>{
+        for(var j=5;j<10;j++){
+          this.ThreeService.scene.remove(this.OuterSmoke[j])
+        }
+        this.CraftingSmokes02(Ix,Iy,Iz,1.6);
+      })
+      gsap.to(this.SmokeTextureArray[i].scale,.2,{x:2.8,y:2.8,z:2.8,delay:2.5});
+      gsap.to(this.SmokeTextureArray[i].scale,.2,{x:2,y:2,z:2,delay:2.7});
+
+      
       let k = i;
-      gsap.to(this.SmokeTextureArray[i].material.uniforms.uAlpha,.2,{value:0,delay:1.7,ease:"none",onComplete:()=>{
+      gsap.to(this.SmokeTextureArray[i].material.uniforms.uAlpha,.2,{value:0,delay:2.7,ease:"none",onComplete:()=>{
         this.ThreeService.scene.remove(this.SmokeTextureArray[k])
       }});
     }
-    gsap.delayedCall(1.6,()=>{
+    gsap.delayedCall(2.7,()=>{
       this.ThreeService.scene.remove(this.RS.Tent.scene);
-      
       gsap.fromTo(this.RS.House.scene.scale,.4,{x:"-=.8",y:"-=1.6",z:"-=1.6"},{x:"+=.8",y:"+=1.6",z:"+=1.6",delay:.1,ease:"in"});
       gsap.to(this.RS.House.scene.scale,.15,{x:"-=.2",y:"-=.2",z:"-=.2",delay:.5,ease:"out"});
-      gsap.to(this.RS.House.scene.scale,.15,{x:"+=.2",y:"+=.2",z:"+=.2",delay:.65,ease:"in"});
+      gsap.to(this.RS.House.scene.scale,.15,{x:"+=.2",y:"+=.2",z:"+=.2",delay:.65,ease:"in",onComplete:()=>{this.SmokeTextureArray=[];}});
       this.ThreeService.scene.add(this.RS.House.scene);
       this.world03.addBody(this.BodyHouse)
+      
     })
 
-    // outer
-    gsap.delayedCall(.2,()=>{
-      for(var i=0;i<24;i++){
-        let shadow = this.SmokeTexture02.clone();
-        this.ThreeService.scene.add(shadow);
 
-        var delayI = i*.06;
-        // Scale
-        gsap.fromTo(shadow.scale,.5,{x:.6,y:.6,z:.6},{x:.01,y:.01,z:.01,delay:delayI,ease:"none"});
-  
-        // Position
-        gsap.fromTo(shadow.position,.5,{x:Ix+Math.random()*.5-.25,y:Iy+.5,z:Iz-.1},
-          {x:"+="+(Math.random()*2-1),y:"+="+(Math.random()*1+.6),z:.3,delay:delayI});
-  
-        // Rotation
-        gsap.fromTo(shadow.rotation,1,{z:Math.random()*3.15},{z:"+="+(Math.random()*10-5),ease:"none",delay:delayI})
-  
-        gsap.delayedCall(1+delayI,()=>{
-          this.ThreeService.scene.remove(shadow);
-        })
-      }
-    })
-
-    // last 
-    var randomArray=[];
-    randomArray = this.GenerateRandomPosition(10,-1.5,1.5,.7,2,1,1,1.5);
-    gsap.delayedCall(1.5,()=>{
+    let Something={value:0};
     for(var i=0;i<10;i++){
-        let shadow = this.SmokeTexture02.clone();
-        this.ThreeService.scene.add(shadow);
-
-        // Scale
-        gsap.fromTo(shadow.scale,.3,{x:1,y:1,z:1},{x:.01,y:.01,z:.01,ease:"none"});
-        
-        // Position
-        gsap.fromTo(shadow.position,.3,{x:Math.random()*.5-.25,y:.5,z:-.1},
-          {x:randomArray[i].x,y:randomArray[i].y,z:randomArray[i].z});
-
-        // Rotation
-        gsap.fromTo(shadow.rotation,1,{z:Math.random()*3.15},{z:"+="+(Math.random()*10-5),ease:"none"})
-
-        gsap.delayedCall(1,()=>{
-          this.ThreeService.scene.remove(shadow);
-        })
-      }
+      this.ThreeService.scene.add(this.OuterSmoke[i]);
+    }
+    // Crafting Smokes
+    gsap.delayedCall(.4,()=>{
+      this.CraftingSmokes(Ix,Iy,Iz,1);
     })
+    gsap.to(Something,.01,{value:1,yoyo:true,delay:0.4,repeat:2,repeatDelay:.8,onRepeat:()=>{
+      this.CraftingSmokes(Ix,Iy,Iz,1);
+    }})
+
+  }
+
+  CraftingSmokes(Ix,Iy,Iz,BaseScale){
+    let num = this.GenerateRandomPosition(10,.4,.5,.8,1,0,0,.2);
+    let rotation;
+    for(let j=0;j<10;j++){
+      var plusOrMinus;
+      if(j%2==0){
+        plusOrMinus=1;
+      } else {
+        plusOrMinus=-1;
+      };
+      if(j==0 || j==5){
+        plusOrMinus = Math.random() > .5 ? 1 : -1 ;
+      }
+
+      var delay=0;
+      if(j>4){
+        delay = .4;
+      }
+      // x:"+="+(.1*plusOrMinus),
+      gsap.fromTo(this.OuterSmoke[j].position,.38,{x:Ix,y:Iy+.8,z:Iz+.25},{x:"+="+(num[j].x*plusOrMinus),y:"+="+num[j].y,ease:"out",delay:delay});
+      gsap.to(this.OuterSmoke[j].position,.1,{y:"-=.1",ease:"none",delay:.28+delay});
+      
+      // Scale 
+      gsap.fromTo(this.OuterSmoke[j].scale,.25,{x:(Math.random()*2.4+1)*BaseScale,y:BaseScale},{x:.3,y:.3,ease:"none",delay:.15+delay});
+
+      // Rotation
+      rotation = this.ThreeService.PointToAngle(Ix,Iy+.7,Ix+(num[j].x*plusOrMinus),(Iy+.7)+num[j].y);
+      gsap.set(this.OuterSmoke[j].rotation,{z:rotation*Math.PI/180});
+
+      // Opacity
+      gsap.set(this.OuterSmoke[j].material,{opacity:.9,delay:delay});
+      gsap.to(this.OuterSmoke[j].material,.2,{opacity:0,ease:"none",delay:.35+delay});
+    }
+  }
+
+  CraftingSmokes02(Ix,Iy,Iz,BaseScale){
+    let num = this.GenerateRandomPosition(6,.6,.8,1.3,1.5,0,0,.6);
+    let rotation;
+    let numI=0;
+    for(let j=10;j<16;j++){
+      var plusOrMinus;
+      if(j%2==0){
+        plusOrMinus=1;
+      } else {
+        plusOrMinus=-1;
+      };
+
+      this.ThreeService.scene.add(this.OuterSmoke[j]);
+
+      gsap.fromTo(this.OuterSmoke[j].position,.38,{x:Ix,y:Iy+.9,z:Iz+.25},{x:"+="+(num[numI].x*plusOrMinus),y:"+="+num[numI].y,ease:"out"});
+      gsap.to(this.OuterSmoke[j].position,.1,{y:"-=.1",ease:"none",delay:.28});
+      
+      // Scale 
+      gsap.fromTo(this.OuterSmoke[j].scale,.25,{x:(Math.random()*2.4+1.2)*BaseScale,y:BaseScale},{x:.4,y:.4,ease:"none",delay:.15});
+
+      // Rotation
+      rotation = this.ThreeService.PointToAngle(Ix,Iy+.7,Ix+(num[numI].x*plusOrMinus),(Iy+.7)+num[numI].y);
+      gsap.set(this.OuterSmoke[j].rotation,{z:rotation*Math.PI/180});
+
+      // Opacity
+      gsap.set(this.OuterSmoke[j].material,{opacity:.9});
+      gsap.to(this.OuterSmoke[j].material,.2,{opacity:0,ease:"none",delay:.35});
+
+      numI++;
+    }
   }
 
   GenerateRandomPosition(n:number,minx,maxx,miny,maxy,minz,maxz,distance){
     let Array = [];
-    
+    let num=0;
     while(Array.length<n){
+      // Generate Random number
       var Vec3 = new THREE.Vector3(
         Math.random()*(maxx-minx+1)+minx,
         Math.random()*(maxy-miny+1)+miny,
         Math.random()*(maxz-minz+1)+minz
       );
+      // Check overlap with distance between points
       for(var j=0;j<Array.length;j++){
         var overlap:boolean=false;
         if(this.ThreeService.distance(Vec3.x,Vec3.y,Vec3.z,Array[j].x,Array[j].y,Array[j].z)<distance){
-          overlap=true;  
+          overlap=true;
+          num++;
+          break;
         }
       }
-      if(!overlap){
+      // if overlap not true, or already ran 10 times, push it.
+      if(!overlap || num>9){
         Array.push(Vec3);
+        console.log(num);
+        num=0;
+
       }
     }
     return Array;
@@ -805,7 +909,7 @@ export class ThirdScene{
         side:2,
         transparent:true,
         opacity:1,
-        matcap:this.RS.red
+        matcap:this.RS.TSred
       })
       s.children["0"].material=mate01;
       E.Balloon3d.add(s);
@@ -845,14 +949,14 @@ export class ThirdScene{
         side:2,
         transparent:true,
         opacity:1,
-        matcap:this.RS.red
+        matcap:this.RS.TSred
       })
       let mate03 = new THREE.MeshMatcapMaterial({
         color:0xfefefe,
         side:2,
         transparent:true,
         opacity:1,
-        matcap:this.RS.white
+        matcap:this.RS.TSwhite
       })
       E.BoxThree.children["0"].children[0].material=mate03;
       E.BoxThree.children["0"].children[1].material=mate02;
@@ -867,14 +971,14 @@ export class ThirdScene{
         side:2,
         transparent:true,
         opacity:1,
-        matcap:this.RS.red
+        matcap:this.RS.TSred
       })
       let mate05 = new THREE.MeshMatcapMaterial({
         color:0xfefefe,
         side:2,
         transparent:true,
         opacity:1,
-        matcap:this.RS.white
+        matcap:this.RS.TSwhite
       })
       E.BoxLid.children["0"].children[0].material=mate05;
       E.BoxLid.children["0"].children[1].material=mate04;
@@ -1088,11 +1192,11 @@ export class ThirdScene{
   CreateScoreMaterial(){
     // Score
     let Score01 = new THREE.Mesh(new THREE.BoxBufferGeometry(.05,.08,.005),
-      new THREE.MeshMatcapMaterial({color:0xffffff,matcap:this.RS.blue02,transparent:true}));
+      new THREE.MeshMatcapMaterial({color:0xffffff,matcap:this.RS.TStent01,transparent:true}));
     let Score02 = new THREE.Mesh(new THREE.BoxBufferGeometry(.08,.05,.005),
-      new THREE.MeshMatcapMaterial({color:0xffffff,matcap:this.RS.red,transparent:true}));
+      new THREE.MeshMatcapMaterial({color:0xffffff,matcap:this.RS.TSred,transparent:true}));
     let Score03 = new THREE.Mesh(new THREE.BoxBufferGeometry(.05,.08,.005),
-      new THREE.MeshMatcapMaterial({color:0xffffff,matcap:this.RS.yellow,transparent:true}));
+      new THREE.MeshMatcapMaterial({color:0xffffff,matcap:this.RS.TSyellow,transparent:true}));
     Score01.position.set(0,5,0)
     Score02.position.set(0,5,0)
     Score03.position.set(0,5,0)
@@ -1110,7 +1214,7 @@ export class ThirdScene{
       this.GolfScore.push(mesh03);
     }
     // let Score02 = new THREE.Mesh(new THREE.CylinderBufferGeometry(.04,.04,.02,8,1),
-    //   new THREE.MeshMatcapMaterial({color:0xffffff,matcap:this.RS.blue02,transparent:true}));
+    //   new THREE.MeshMatcapMaterial({color:0xffffff,matcap:this.RS.TStent01,transparent:true}));
     // Score02.position.set(0,5,0)
     // for(var i=0;i<this.ScoreMax/3;i++){
     //   let mesh = Score02.clone();
@@ -1146,14 +1250,14 @@ export class ThirdScene{
         side:2,
         transparent:true,
         opacity:1,
-        matcap:this.RS.yellow
+        matcap:this.RS.TSyellow
       })
       let mate02 = new THREE.MeshMatcapMaterial({
         color:0xeeeeee,
         side:2,
         transparent:true,
         opacity:1,
-        matcap:this.RS.yellow
+        matcap:this.RS.TSyellow
       })
 
       mesh.children["0"].children[0].children[0].material=mate01;
@@ -1302,7 +1406,7 @@ export class ThirdScene{
             var path = document.createElementNS(xmlns,"path");
             path.setAttributeNS(null, "d", "M6,-4C20,0 20,0 6,4C6,19 6,19 -2,7C-16,12 -16,12 -8,0C-16,-12 -16,-12 -2,-7C6,-19 6,-19 6,-4");
   
-            document.getElementById('welcome').appendChild(star);
+            document.getElementById('Main').appendChild(star);
             star.appendChild(path);
   
             // Set Position, rotate
@@ -1331,14 +1435,19 @@ export class ThirdScene{
             }
           }
         break;
+        case "BubbleObject":
+          gsap.to(this.HouseBubble.scale,.3,{x:.1,y:.1,z:.1,onComplete:()=>{this.ThreeService.scene.remove(this.HouseBubble);this.ThreeService.scene.remove(this.BubbleObject);}});
+          gsap.to(this.Bubble.scale,.3,{x:.1,y:.1,z:.1,onComplete:()=>{this.ThreeService.scene.remove(this.Bubble);}});
+          for(let i=0;i<this.BubbleArray.length;i++){
+            gsap.to(this.BubbleArray[i].scale,.3,{x:.01,y:.01,z:.01,onComplete:()=>{this.ThreeService.scene.remove(this.BubbleArray[i]);}});
+          }
+          this.UpgradeFunction(30,-0.075,0);
+        break;
       }
       switch (intersect[0].object.parent.name){
         case "Tree01":
         case "Tree02":
-
-          // this.RS.Hammer.scene.position.set(15,2,0);
-          // this.ThreeService.scene.add(this.RS.Hammer.scene);
-          this.BubbleUpgrade();
+          // this.UpgradeFunction(15,-0.075,0);
 
           if(intersect[0].object.parent.name == "Tree01"){
             if(!this.Tree01CoinDroped){
@@ -1357,7 +1466,7 @@ export class ThirdScene{
               }
             }
           }
-          // this.UpgradeFunction(15,-0.075,0);
+
           var Vector = new THREE.Vector3();
 
           // Vibrate
@@ -1371,7 +1480,7 @@ export class ThirdScene{
             for(var i=0;i<4;i++){
               let leaf = document.createElement('div');
               leaf.className = "leaf";
-              document.getElementById('welcome').appendChild(leaf);
+              document.getElementById('Main').appendChild(leaf);
   
               Vector.setFromMatrixPosition(intersect[0].object.parent.matrixWorld);
               
@@ -1392,7 +1501,7 @@ export class ThirdScene{
               gsap.fromTo(leaf,1.5,{css:{scale:Math.random()*.5+.5}},{css:{scale:.01},delay:i*.2,ease:"none"});
 
               gsap.delayedCall(2,()=>{
-                document.getElementById('welcome').removeChild(leaf);
+                document.getElementById('Main').removeChild(leaf);
               })
             }
           })
@@ -1408,7 +1517,7 @@ export class ThirdScene{
           var plus1 = document.createElement('div');
           plus1.innerHTML = "+1";
           plus1.className = "plus1";
-          document.getElementById('welcome').appendChild(plus1);
+          document.getElementById('Main').appendChild(plus1);
 
           var Vector = new THREE.Vector3()
           Vector.setFromMatrixPosition(intersect[0].object.matrixWorld);
@@ -1427,11 +1536,11 @@ export class ThirdScene{
           // Check If Enough to Upgrade
           this.CoinPickedUp++;
           if(this.CoinPickedUp==5){
-            this.UpgradeFunction(15,-0.075,0);
+            this.BubbleUpgrade();
           }
           
           gsap.delayedCall(1,()=>{
-            document.getElementById('welcome').removeChild(plus1);
+            document.getElementById('Main').removeChild(plus1);
             this.ThreeService.scene.remove(intersect[0].object.parent.parent.parent);
           })
           break;
@@ -1487,7 +1596,7 @@ export class ThirdScene{
       this.ThirdSceneRender();
     });
 
-    this.ThirdRaycaster();
+    // this.ThirdRaycaster();
     this.world03.step(1 / this.ThreeService.fps);
     this.RenderMouseCursor();
     // this.debugger03.update();

@@ -5,6 +5,7 @@ import { FirstScene } from './FirstScene.service';
 import { NextScene } from "./NextScene.service";
 import { SecondScene } from './SecondScene.service';
 import { ThirdScene } from './ThirdScene.service';
+import { gsap } from 'gsap';
 
 @Component({
   selector: 'app-welcome',
@@ -12,7 +13,7 @@ import { ThirdScene } from './ThirdScene.service';
   styleUrls: ['./welcome.component.scss']
 })
 export class WelcomeComponent implements OnInit {
-  private welcomeCanvas = 'welcomeCanvas';
+  private welcomeCanvas = 'ThreeJSCanvas';
   private ScenePhase:number;
 
   constructor(
@@ -25,38 +26,40 @@ export class WelcomeComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.RS.ResourcesCompleted.subscribe((value)=>{
-      if(value){
-        console.log('Loaded')
-        this.ThreeService.InitThree(this.welcomeCanvas);
-        this.ThreeService.FirstInit();
-        this.NS.nextStageFunction();
-        this.FS.InitFirstScene();
-        this.TS.InitThirdScene();
-        this.NS.ScenePhaseChange.subscribe((value)=>{
-          if(value==1){
-            this.FS.CancelFirstScene();
-            console.log('canceled first scene')
-          }
-        });
-        // this.SS.InitSecondScene();
+    this.ThreeService.InitThree(this.welcomeCanvas);
+    this.ThreeService.FirstInit();
+    // this.RS.ResourcesCompleted.subscribe((value)=>{
+    //   if(value){
+    //     console.log('Loaded')
+    //     this.Start();
+    //   }
+    // });
+    // this.RS.InitResources();
 
-        // this.Start();
-      }
-    });
-    this.RS.InitResources();
   }
 
   Start(){
-    this.ThreeService.InitThree(this.welcomeCanvas);
-    this.ThreeService.FirstInit();
     this.FS.InitFirstScene();
     this.SS.InitSecondScene();
     this.NS.nextStageFunction();
+    
+    // gradient
+    // var rule = CSSRulePlugin.getRule(".canvas:before");
+
     this.NS.ScenePhaseChange.subscribe((value)=>{
-      if(value==1){
-        this.FS.CancelFirstScene();
-        console.log('canceled first scene')
+      switch(value){
+        case 1: 
+          document.getElementById('Main').classList.add('BG2');
+          this.FS.CancelFirstScene();
+          this.SS.StartSecondScene();
+          this.TS.InitThirdScene();
+        break;
+        case 2:
+          gsap.set('.Background',{css:{background:"linear-gradient( to bottom,#c9e9f2 0%,#c9e9f2 33%,#aee3f2 33%,#aee3f2 100%)"}});
+          document.getElementById('Main').classList.remove('BG2');
+          this.SS.CancelSecondScene();
+          this.TS.StartThirdScene();
+        break;
       }
     });
   }

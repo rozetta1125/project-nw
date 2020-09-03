@@ -1,24 +1,133 @@
-#welcome{
+#Main{
   // pointer-events: none;
   user-select: none;
   position: relative;
-  z-index: 0;
+  z-index: 1;
+
 }
 
-canvas {
-    // position: absolute;
-    // top:0;
-    // left:0;
-    max-width: 100%;
-    max-height: 100%;
-    z-index: 3;
-    background: linear-gradient(to bottom, #f0d4c8 0%, #f0d4c8 35%, #eee2d9 35%, #eee2d9 100%);
-    // background: #848484;
-    // background: linear-gradient(to bottom, #dbbbaa 0%, #dfc1b1 35%, #e6d7c8 35%, #e6d7c8  100%);
-    // background: #aee3f2;
-    background: linear-gradient(to bottom, #c9e9f2 0%, #c9e9f2 35%, #aee3f2 35%, #aee3f2  100%);
-    // A3E1FF 8ac2ef
+// .Background{
+//   // background: linear-gradient(
+//   //   to bottom,
+//   //   #eddbcd 0%,
+//   //   #eee2d9 100%
+//   // );
+//   // f0d4c8
+//   width:100vw;
+//   height: 100vh;
+//   background:#eee2d9;
+//   // background: linear-gradient(
+//   //   to bottom,
+//   //   #f0d4c8 0%,
+//   //   #f0d4c8 33%,
+//   //   #eee2d9 33%,
+//   //   #eee2d9 100%
+//   // );
+//   // background: linear-gradient(
+//   //   to bottom,
+//   // #c9e9f2 0%,
+//   // #c9e9f2 35%,
+//   // #aee3f2 35%,
+//   // #aee3f2 100%
+//   // );
+// }
+
+// .Background.BG2::before{
+//   transform:translateX(0%);
+// }
+
+// .Background::before{
+//   content: "";
+//   position: absolute;
+//   top: 0;
+//   left: 0;
+//   width: 100%;
+//   height: 100%;
+//   transform:translateX(100%);
+//   background: linear-gradient(
+//     to bottom,
+//     #f0d4c8 0%,
+//     #f0d4c8 33%,
+//     #eee2d9 33%,
+//     #eee2d9 100%
+//   );
+//   opacity: 1;
+//   transition: transform 1.2s;
+//   transition-timing-function: ease;
+//   z-index: -1;
+// }
+
+
+.Background{
+  // background: linear-gradient(
+  //   to bottom,
+  //   #eddbcd 0%,
+  //   #eee2d9 100%
+  // );
+  width:100vw;
+  height: 100vh;
+  // f0d4c8
+  background: linear-gradient(
+    to bottom,
+    #f0d4c8 0%,
+    #f0d4c8 33%,
+    #eee2d9 33%,
+    #eee2d9 100%
+  );
+  // background: linear-gradient(
+  //   to bottom,
+  // #c9e9f2 0%,
+  // #c9e9f2 35%,
+  // #aee3f2 35%,
+  // #aee3f2 100%
+  // );
 }
+
+.Background.BG2::before{
+  opacity: 1;
+}
+
+.Background::before{
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  // background: linear-gradient(
+  //   to bottom,
+  // #f0d4c8 0%,
+  // #f0d4c8 33%,
+  // #eee2d9 33%,
+  // #eee2d9 100%
+  // );
+  background: linear-gradient(
+    to bottom,
+  #bbdeb8 0%,
+  #bbdeb8 33%,
+  #cce6ca 33%,
+  #cce6ca 100%
+  );
+  opacity: 0;
+  transition: opacity .8s;
+  transition-timing-function: linear;
+  z-index: -1;
+}
+
+#ThreeJSCanvas{
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.background {
+  z-index: 3;
+  // background: #848484;
+  // background: linear-gradient(to bottom, #dbbbaa 0%, #dfc1b1 35%, #e6d7c8 35%, #e6d7c8  100%);
+  // background: #aee3f2;
+  // background: linear-gradient(to bottom, #c9e9f2 0%, #c9e9f2 35%, #aee3f2 35%, #aee3f2  100%);
+  // A3E1FF 8ac2ef
+}
+
 
 @mixin phone {
     @media (max-width: 599px) { @content; }
@@ -44,32 +153,30 @@ canvas {
         stroke-dashoffset: 270;
     }
     .outer{
+        width: 22px;
+        height: 22px;
+        border:none;
+        // border:3px solid #d0b17b;
+        background: #d0b17b;
+        border-radius: 50%;
+        top:0;
+        left:0;
+        right:0;
+        bottom: 0;
+        position: absolute;
     }
-    // .outer{
-    //     width: 22px;
-    //     height: 22px;
-    //     border:none;
-    //     // border:3px solid #d0b17b;
-    //     background: #d0b17b;
-    //     border-radius: 50%;
-    //     top:0;
-    //     left:0;
-    //     right:0;
-    //     bottom: 0;
-    //     position: absolute;
-    // }
-    // .dot{
-    //     position: absolute;
-    //     transform: scale(0.75);
-    //     top:18px;
-    //     left:18px;
-    //     right:0;
-    //     bottom: 0;
-    //     width:10px;
-    //     height: 10px;
-    //     background: #d0b17b;
-    //     border-radius: 50%;
-    // }
+    .dot{
+        position: absolute;
+        transform: scale(0.75);
+        top:18px;
+        left:18px;
+        right:0;
+        bottom: 0;
+        width:10px;
+        height: 10px;
+        background: #d0b17b;
+        border-radius: 50%;
+    }
 }
 .svg-line{
     width: 100%;
@@ -152,7 +259,7 @@ canvas {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    opacity: 1;
+    opacity: 0;
     visibility: visible;
     .mid{
         width:190px;

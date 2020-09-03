@@ -127,20 +127,24 @@ export class ThreeService {
 
 
     // this.GoalAngle.set(0,1.4,8);
-    this.GoalAngle.set(0,1.4,8);
+    this.GoalAngle.set(0,1.3,8);
     this.camera.position.copy(this.GoalAngle);
-    this.camera.lookAt(new THREE.Vector3(0,0,0));
+    this.camera.lookAt(new THREE.Vector3(-12,0,0));
 
-    this.Goal.set(0,1,0)
+    this.Goal.set(-12,1,0)
     this.EasedGoal.copy(this.Goal);
 
-
+    // gsap.delayedCall(1+1,()=>{
+    //    document.getElementById('Main').classList.add('BG2');
+    // });
+    
+    // gsap.to(this.Goal,1,{delay:1+1,x:0,ease:"inOut"})
     // OrbitControls
-    this.controls = new OrbitControls(this.camera, this.canvas);
-    this.controls.target.set(0,1,0);
-    this.controls.update();
-    this.controls.enableRotate = true;
-    this.gui.add(this.controls,'enableRotate');
+    // this.controls = new OrbitControls(this.camera, this.canvas);
+    // this.controls.target.set(0,1,0);
+    // this.controls.update();
+    // this.controls.enableRotate = true;
+    // this.gui.add(this.controls,'enableRotate');
 
 
 
@@ -171,19 +175,19 @@ export class ThreeService {
     
   
     var bg = this.gui.addFolder("Background");
-    // bg.addColor(bgparams, "background")
-    //   .onChange(() => {
-    //     canvas.setAttribute("style","background:linear-gradient(to bottom, "+ bgparams.background+" 0%,"+bgparams.background02+" 100%);");
-    //   });
-    // bg.addColor(bgparams, "background02")
-    //   .onChange(() => {
-    //     canvas.setAttribute("style","background:linear-gradient(to bottom, "+ bgparams.background+" 0%,"+bgparams.background02+" 100%);");
-    //   });
-
     bg.addColor(bgparams, "background")
       .onChange(() => {
-        canvas.setAttribute("style","background:"+ bgparams.background+";");
+        canvas.setAttribute("style","background:linear-gradient(to bottom, "+ bgparams.background+" 0%," + bgparams.background+" 35%," + bgparams.background02+" 35%," +bgparams.background02+" 100%);");
       });
+    bg.addColor(bgparams, "background02")
+      .onChange(() => {
+        canvas.setAttribute("style","background:linear-gradient(to bottom, "+ bgparams.background+" 0%," + bgparams.background+" 35%," + bgparams.background02+" 35%," +bgparams.background02+" 100%);");
+      });
+
+    // bg.addColor(bgparams, "background")
+    //   .onChange(() => {
+    //     canvas.setAttribute("style","background:"+ bgparams.background+";");
+    //   });
   }
 
 
@@ -192,18 +196,20 @@ export class ThreeService {
 
     this.ScenePhase=1;
 
+    this.Loading();
     this.AddEvent();
     this.BOOPMaterial();
     // this.ThirdInit();
     // this.CreateBalloonCursor();
+    
+    // document.addEventListener('mousemove',e=>{
+    //   // cursor.setAttribute("style","top:"+e.pageY+"px;left:"+e.pageX+"px;");
+    //   // gsap.to(cursor,.3,{css:{left:e.pageX,top:e.pageY}})
+    //   console.log("asdf")
+    // },false);
 
-    let cursor = document.querySelector('.cursor');
-
-    document.addEventListener('mousemove',e=>{
-      cursor.setAttribute("style","top:"+e.pageY+"px;left:"+e.pageX+"px;");
-    });
-    document.addEventListener('mousedown',this.CursorDown,false);
-    document.addEventListener('mouseup',this.CursorUp,false);
+    // document.addEventListener('mousedown',this.CursorDown,false);
+    // document.addEventListener('mouseup',this.CursorUp,false);
     
 
     this.canvas.addEventListener("mousemove", (e) => {
@@ -282,23 +288,21 @@ export class ThreeService {
     // }
   }
 
-
-
-  private GoalEasing = .2;
+  private GoalEasing = .1;
   render() {
     requestAnimationFrame(() => {
       this.render();
     });
 
-    this.controls.update();
+    // this.controls.update();
 
     // Camera 
-    // this.EasedGoal.x+=(this.Goal.x - this.EasedGoal.x) * this.GoalEasing;
-    // this.EasedGoal.y+=(this.Goal.y - this.EasedGoal.y) * this.GoalEasing;
-    // this.EasedGoal.z+=(this.Goal.z - this.EasedGoal.z) * this.GoalEasing;
+    this.EasedGoal.x+=(this.Goal.x - this.EasedGoal.x) * this.GoalEasing;
+    this.EasedGoal.y+=(this.Goal.y - this.EasedGoal.y) * this.GoalEasing;
+    this.EasedGoal.z+=(this.Goal.z - this.EasedGoal.z) * this.GoalEasing;
 
-    // this.camera.position.copy(this.EasedGoal).add(this.GoalAngle.clone().normalize().multiplyScalar(this.GoalAngle.z))
-    // this.camera.lookAt(this.EasedGoal,0,0);
+    this.camera.position.copy(this.EasedGoal).add(this.GoalAngle.clone().normalize().multiplyScalar(this.GoalAngle.z))
+    this.camera.lookAt(this.EasedGoal,0,0);
 
     // Calculate FPS
     this.now = performance.now();
@@ -310,6 +314,27 @@ export class ThreeService {
 
 
     this.renderer.render(this.scene, this.camera);
+  }
+
+
+  Loading(){
+    let blue = this.textureLoader.load('assets/matcaps/01/97ADD9.png');
+    blue.encoding=THREE.sRGBEncoding;
+
+    let mate = new THREE.MeshMatcapMaterial({
+      matcap:blue,
+      color:0xffffff,
+      side:2
+    })
+    let Mesh = new THREE.Mesh(new THREE.CylinderBufferGeometry(.4,.4,.2,16,1,false,0,Math.PI),mate);
+    Mesh.rotation.set(Math.PI/2,-Math.PI/4,0)
+    Mesh.position.set(-12,0,0);
+    this.scene.add(Mesh);
+
+    gsap.to(Mesh.position,1,{x:"+=1",repeat:-1,repeatDelay:1,ease:"out"});
+    gsap.to(Mesh.position,1,{x:"-=1",repeat:-1,repeatDelay:1,ease:"out",delay:1});
+    gsap.to(Mesh.rotation,1,{y:"-="+Math.PI/2,repeat:-1,repeatDelay:1});
+    gsap.to(Mesh.rotation,1,{y:"+="+Math.PI/2,repeat:-1,repeatDelay:1,delay:1});
   }
 
   BOOPArray=[];
@@ -354,8 +379,6 @@ export class ThreeService {
     this.BOOPCurrent++;
   }
 
-
-
   // private CursorMoveObject: CANNON.Body;
   // CreateCursorMoveObject() {
   //   this.CursorMoveObject = new CANNON.Body({ mass: 0 });
@@ -364,6 +387,12 @@ export class ThreeService {
   //   this.world.addBody(this.CursorMoveObject);
   // }
 
+  PointToAngle(x1,y1,x2,y2){
+    var deltaX = x2-x1;
+    var deltaY = y2-y1;
+    var rad = Math.atan2(deltaY,deltaX);
+    return rad * (180/Math.PI);
+  }
 
   distanceVec2(x,y,x2,y2){
     var a = x-x2;

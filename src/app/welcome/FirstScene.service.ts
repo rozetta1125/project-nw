@@ -64,6 +64,7 @@ export class FirstScene {
   private TrainPosition = [];
   private FerrisShadow = new THREE.Object3D();
   private FerrisShadows = [];
+  private FlagMixer;
   CreateParkObject() {
     this.SetCarnival();
     this.SetSwing();
@@ -121,17 +122,17 @@ export class FirstScene {
         let mate01 = new THREE.MeshMatcapMaterial({
           color: 0xffffff,
           side: 2,
-          matcap: this.RS.white
+          matcap: this.RS.FSwhite
         })
         let mate02 = new THREE.MeshMatcapMaterial({
           color: 0xffffff,
           side: 2,
-          matcap: this.RS.blue01
+          matcap: this.RS.FSblue
         })
         let mate03 = new THREE.MeshMatcapMaterial({
           color: 0xffffff,
           side: 2,
-          matcap: this.RS.white
+          matcap: this.RS.FSwhite
         })
         this.RS.Swing.scene.children["" + i + ""].children[0].material = mate01;
         this.RS.Swing.scene.children["" + i + ""].children[1].material = mate02;
@@ -170,14 +171,14 @@ export class FirstScene {
         let mate01 = new THREE.MeshMatcapMaterial({
           color: 0xffffff,
           side: 2,
-          matcap: this.RS.blue01
+          matcap: this.RS.FSblue
         })
         this.RS.Swing.scene.children["" + i + ""].material = mate01;
       } else {
         let mate01 = new THREE.MeshMatcapMaterial({
           color: 0xffffff,
           side: 2,
-          matcap: this.RS.white
+          matcap: this.RS.FSwhite
         })
         this.RS.Swing.scene.children["" + i + ""].material = mate01;
       }
@@ -197,20 +198,27 @@ export class FirstScene {
         let mate01 = new THREE.MeshMatcapMaterial({
           color: 0xffffff,
           side: 2,
-          matcap: this.RS.white
+          matcap: this.RS.FSwhite
         })
         let mate02 = new THREE.MeshMatcapMaterial({
           color: 0xffffff,
           side: 2,
-          matcap: this.RS.blue01
+          matcap: this.RS.FSblue
         })
         this.RS.Carnival.scene.children[""+i+""].children[0].material = mate02;
         this.RS.Carnival.scene.children[""+i+""].children[1].material = mate01;
+      } else if (this.RS.Carnival.scene.children[i].name == "CarnivalStar1"){
+        let mate01 = new THREE.MeshMatcapMaterial({
+          color: 0xffffff,
+          side: 2,
+          matcap: this.RS.FSblue
+        })
+        this.RS.Carnival.scene.children[""+i+""].material = mate01
       } else {
         let mate01 = new THREE.MeshMatcapMaterial({
           color: 0xffffff,
           side: 2,
-          matcap: this.RS.white
+          matcap: this.RS.FSwhite
         })
         this.RS.Carnival.scene.children[""+i+""].material = mate01
       }
@@ -225,7 +233,7 @@ export class FirstScene {
     let uniforms00 = {
       tShadow: { value: this.RS.CarnivalShadow02 },
       uShadowColor: { value: new THREE.Color("#000000") },
-      uAlpha: { value: .3 }
+      uAlpha: { value: .16 }
     }
     let material00 = new THREE.ShaderMaterial({
       wireframe: false, transparent: true, uniforms: uniforms00, depthWrite: false,
@@ -235,19 +243,19 @@ export class FirstScene {
 
     let shadow00 = new THREE.Mesh(new THREE.PlaneBufferGeometry(1.8, 1.8), material00)
     shadow00.rotation.set(-Math.PI / 2, 0, 0)
-    shadow00.position.set(0, .165, 0.54)
+    shadow00.position.set(0, .16, 0.54)
     this.ThreeService.scene.add(shadow00)
 
     let Carnivalshadow01 = shadow00.clone();
     Carnivalshadow01.scale.set(.5, .5, .5);
-    Carnivalshadow01.position.set(0.105, .201, 0.54)
+    Carnivalshadow01.position.set(0.105, .197, 0.54)
     Carnivalshadow01.rotation.set(-Math.PI / 2, 0, 0)
     this.ThreeService.scene.add(Carnivalshadow01);
 
     let uniforms = {
       tShadow: { value: this.RS.CarnivalShadow01 },
       uShadowColor: { value: new THREE.Color("#000000") },
-      uAlpha: { value: .3 }
+      uAlpha: { value: .32 }
     }
     let material = new THREE.ShaderMaterial({
       wireframe: false, transparent: true, uniforms, depthWrite: false,
@@ -255,21 +263,21 @@ export class FirstScene {
       fragmentShader: document.getElementById('fragmentShader').textContent
     });
 
-    let shadow = new THREE.Mesh(new THREE.PlaneBufferGeometry(.63, .63), material)
+    let shadow = new THREE.Mesh(new THREE.PlaneBufferGeometry(.66, .66), material)
     shadow.rotation.set(-Math.PI / 2, 0, 0)
-    shadow.position.set(-0.603, .164, 0)
+    shadow.position.set(-0.603, .16, 0)
     shadow3d.add(shadow);
 
     let shadow02 = shadow.clone();
-    shadow02.position.set(0.603, .164, 0)
+    shadow02.position.set(0.603, .16, 0)
     shadow3d.add(shadow02);
 
     let shadow03 = shadow.clone();
-    shadow03.position.set(0, .164, -0.603)
+    shadow03.position.set(0, .16, -0.603)
     shadow3d.add(shadow03);
 
     let shadow04 = shadow.clone();
-    shadow04.position.set(0, .164, 0.603)
+    shadow04.position.set(0, .16, 0.603)
     shadow3d.add(shadow04);
 
 
@@ -295,12 +303,12 @@ export class FirstScene {
         let mate01 = new THREE.MeshMatcapMaterial({
           color: 0xffffff,
           side: 2,
-          matcap: this.RS.blue01
+          matcap: this.RS.FSblue
         })
         let mate02 = new THREE.MeshMatcapMaterial({
           color: 0xffffff,
           side: 2,
-          matcap: this.RS.pink
+          matcap: this.RS.FSpink
         })
         PlanePart = this.RS.CarnivalPlane.scene.children[i].clone();
         PlanePart.children["0"].material = mate01;
@@ -309,7 +317,7 @@ export class FirstScene {
         let mate02 = new THREE.MeshMatcapMaterial({
           color: 0xffffff,
           side: 2,
-          matcap: this.RS.blue01
+          matcap: this.RS.FSblue
         })
         this.RS.CarnivalPlane.scene.children["" + i + ""].material = mate02;
         Fan = this.RS.CarnivalPlane.scene.children[i].clone();
@@ -367,6 +375,28 @@ export class FirstScene {
     this.ParkObjects.push(this.CarnivalPlane4)
     this.ThreeService.scene.add(this.CarnivalPlane4);
 
+
+    // // Flag
+    // this.FlagMixer = new THREE.AnimationMixer(this.RS.Flag01.scene);
+    // this.FlagMixer.timeScale = 1;
+
+    // let animation = this.FlagMixer.clipAction(this.RS.Flag01.animations[0]);
+    // animation.play();
+
+    // this.RS.Flag01.scene.children[0].scale.set(1,1,.8);
+    // this.RS.Flag01.scene.children[0].position.set(0,0,0);
+
+    // let FlagMate = new THREE.MeshMatcapMaterial({
+    //   color:0x97ADD9,
+    //   side:2,
+    //   matcap:this.RS.SSwhite,
+    //   morphTargets:true,
+    // })
+
+    // this.RS.Flag01.scene.children["0"].material = FlagMate;
+    // this.RS.Flag01.scene.position.set(.37, 1.9, 0.54);
+
+    // this.ThreeService.scene.add(this.RS.Flag01.scene);
   }
 
   SetTrain(){
@@ -407,14 +437,14 @@ export class FirstScene {
         let mate02 = new THREE.MeshMatcapMaterial({
           color: 0xffffff,
           side: 2,
-          matcap: this.RS.blue01
+          matcap: this.RS.FSblue
         })
         this.RS.Train.scene.children[""+i+""].material = mate02
       } else if (this.RS.Train.scene.children[i].name == "SmokePipe") {
         let mate02 = new THREE.MeshMatcapMaterial({
           color: 0xffffff,
           side: 2,
-          matcap: this.RS.blue01
+          matcap: this.RS.FSblue
         })
         this.RS.Train.scene.children[""+i+""].material = mate02
         this.SmokePipe.push(this.RS.Train.scene.children[i]);
@@ -422,12 +452,12 @@ export class FirstScene {
         let mate01 = new THREE.MeshMatcapMaterial({
           color: 0xffffff,
           side: 2,
-          matcap: this.RS.white
+          matcap: this.RS.FSwhite
         })
         let mate02 = new THREE.MeshMatcapMaterial({
           color: 0xffffff,
           side: 2,
-          matcap: this.RS.blue01
+          matcap: this.RS.FSblue
         })
         this.RS.Train.scene.children[""+i+""].children[0].material = mate02;
         this.RS.Train.scene.children[""+i+""].children[1].material = mate01;
@@ -447,9 +477,9 @@ export class FirstScene {
     this.RS.FerrisWheel.scene.position.set(.4, .035, -1.02);
     this.RS.FerrisWheel.scene.rotation.set(0, -30 * Math.PI / 180, 0);
 
-    var texture = this.ThreeService.textureLoader.load('assets/shadow/Ferris01.png');
+
     let uniforms00 = {
-      tShadow: { value: texture },
+      tShadow: { value: this.RS.FerrisShadow01 },
       uShadowColor: { value: new THREE.Color("#000000") },
       uAlpha: { value: .3 }
     }
@@ -465,9 +495,9 @@ export class FirstScene {
     this.ThreeService.scene.add(shadow01);
 
 
-    var texture = this.ThreeService.textureLoader.load('assets/shadow/Ferris02.png');
+
     let uniforms = {
-      tShadow: { value: texture },
+      tShadow: { value: this.RS.FerrisShadow02 },
       uShadowColor: { value: new THREE.Color("#000000") },
       uAlpha: { value: .3 }
     }
@@ -491,14 +521,14 @@ export class FirstScene {
         let mate02 = new THREE.MeshMatcapMaterial({
           color: 0xffffff,
           side: 2,
-          matcap: this.RS.blue01
+          matcap: this.RS.FSblue
         })
         this.RS.FerrisWheel.scene.children[i].material = mate02
       } else if (this.RS.FerrisWheel.scene.children[i].name == "FerrisWheel00") {
         let mate01 = new THREE.MeshMatcapMaterial({
           color: 0xffffff,
           side: 2,
-          matcap: this.RS.white
+          matcap: this.RS.FSwhite
         })
         this.RS.FerrisWheel.scene.children[i].material = mate01
         shadow01.position.x = this.RS.FerrisWheel.scene.children[i].position.x - .003
@@ -507,7 +537,7 @@ export class FirstScene {
         let mate01 = new THREE.MeshMatcapMaterial({
           color: 0xffffff,
           side: 2,
-          matcap: this.RS.white
+          matcap: this.RS.FSwhite
         })
         this.RS.FerrisWheel.scene.children[i].material = mate01
       }
@@ -534,12 +564,12 @@ export class FirstScene {
         let mate01 = new THREE.MeshMatcapMaterial({
           color: 0xffffff,
           side: 2,
-          matcap: this.RS.white
+          matcap: this.RS.FSwhite
         })
         let mate03 = new THREE.MeshMatcapMaterial({
           color: 0xffffff,
           side: 2,
-          matcap: this.RS.pink
+          matcap: this.RS.FSpink
         })
         this.RS.Ferris.scene.children[i].children[1].material = mate03
         this.RS.Ferris.scene.children[i].children[0].material = mate01
@@ -551,12 +581,12 @@ export class FirstScene {
         let mate01 = new THREE.MeshMatcapMaterial({
           color: 0xffffff,
           side: 2,
-          matcap: this.RS.white
+          matcap: this.RS.FSwhite
         })
         let mate02 = new THREE.MeshMatcapMaterial({
           color: 0xffffff,
           side: 2,
-          matcap: this.RS.blue01
+          matcap: this.RS.FSblue
         })
         this.RS.Ferris.scene.children[i].children[1].material = mate02
         this.RS.Ferris.scene.children[i].children[0].material = mate01
@@ -568,12 +598,12 @@ export class FirstScene {
         let mate01 = new THREE.MeshMatcapMaterial({
           color: 0xffffff,
           side: 2,
-          matcap: this.RS.white
+          matcap: this.RS.FSwhite
         })
         let mate03 = new THREE.MeshMatcapMaterial({
           color: 0xffffff,
           side: 2,
-          matcap: this.RS.pink
+          matcap: this.RS.FSpink
         })
         this.RS.Ferris.scene.children[i].children[1].material = mate03
         this.RS.Ferris.scene.children[i].children[0].material = mate01
@@ -585,12 +615,12 @@ export class FirstScene {
         let mate01 = new THREE.MeshMatcapMaterial({
           color: 0xffffff,
           side: 2,
-          matcap: this.RS.white
+          matcap: this.RS.FSwhite
         })
         let mate02 = new THREE.MeshMatcapMaterial({
           color: 0xffffff,
           side: 2,
-          matcap: this.RS.blue01
+          matcap: this.RS.FSblue
         })
         this.RS.Ferris.scene.children[i].children[1].material = mate02
         this.RS.Ferris.scene.children[i].children[0].material = mate01
@@ -602,12 +632,12 @@ export class FirstScene {
         let mate01 = new THREE.MeshMatcapMaterial({
           color: 0xffffff,
           side: 2,
-          matcap: this.RS.white
+          matcap: this.RS.FSwhite
         })
         let mate03 = new THREE.MeshMatcapMaterial({
           color: 0xffffff,
           side: 2,
-          matcap: this.RS.pink
+          matcap: this.RS.FSpink
         })
         this.RS.Ferris.scene.children[i].children[1].material = mate03
         this.RS.Ferris.scene.children[i].children[0].material = mate01
@@ -619,12 +649,12 @@ export class FirstScene {
         let mate01 = new THREE.MeshMatcapMaterial({
           color: 0xffffff,
           side: 2,
-          matcap: this.RS.white
+          matcap: this.RS.FSwhite
         })
         let mate02 = new THREE.MeshMatcapMaterial({
           color: 0xffffff,
           side: 2,
-          matcap: this.RS.blue01
+          matcap: this.RS.FSblue
         })
         this.RS.Ferris.scene.children[i].children[1].material = mate02
         this.RS.Ferris.scene.children[i].children[0].material = mate01
@@ -636,12 +666,12 @@ export class FirstScene {
         let mate01 = new THREE.MeshMatcapMaterial({
           color: 0xffffff,
           side: 2,
-          matcap: this.RS.white
+          matcap: this.RS.FSwhite
         })
         let mate03 = new THREE.MeshMatcapMaterial({
           color: 0xffffff,
           side: 2,
-          matcap: this.RS.pink
+          matcap: this.RS.FSpink
         })
         this.RS.Ferris.scene.children[i].children[1].material = mate03
         this.RS.Ferris.scene.children[i].children[0].material = mate01
@@ -653,12 +683,12 @@ export class FirstScene {
         let mate01 = new THREE.MeshMatcapMaterial({
           color: 0xffffff,
           side: 2,
-          matcap: this.RS.white
+          matcap: this.RS.FSwhite
         })
         let mate02 = new THREE.MeshMatcapMaterial({
           color: 0xffffff,
           side: 2,
-          matcap: this.RS.blue01
+          matcap: this.RS.FSblue
         })
         this.RS.Ferris.scene.children[i].children[1].material = mate02
         this.RS.Ferris.scene.children[i].children[0].material = mate01
@@ -666,7 +696,7 @@ export class FirstScene {
         let mate01 = new THREE.MeshMatcapMaterial({
           color: 0xffffff,
           side: 2,
-          matcap: this.RS.white
+          matcap: this.RS.FSwhite
         })
         this.RS.Ferris.scene.children[i].material = mate01
       }
@@ -703,7 +733,7 @@ export class FirstScene {
     this.Smoke = new THREE.Mesh(new THREE.SphereBufferGeometry(.04, 10, 10));
     for (var i = 0; i < 80; i++) {
       let smokeClone = this.Smoke.clone();
-      let mate = new THREE.MeshMatcapMaterial({ transparent: true,color:0xffffff, matcap: this.RS.white, opacity: 0, depthWrite: false });
+      let mate = new THREE.MeshMatcapMaterial({ transparent: true,color:0xffffff, matcap: this.RS.FSwhite, opacity: 0, depthWrite: false });
       smokeClone.material = mate;
       this.Smokes.push(smokeClone);
       this.ThreeService.scene.add(smokeClone);
@@ -750,7 +780,7 @@ export class FirstScene {
     this.Runanimation();
 
     // Mouse
-    this.MouseRaycaster();
+    // this.MouseRaycaster();
   }
 
   MouseRaycaster(){
@@ -789,6 +819,9 @@ export class FirstScene {
     } 
     if (this.mixer02){
       this.mixer02.update(this.diff);
+    }
+    if (this.FlagMixer){
+      this.FlagMixer.update(this.diff);
     }
   }
 

@@ -73,10 +73,14 @@ export class NextScene{
     gsap.to(this.ThreeService.Goal,1.5,{ease:"in",x:this.NextGoal});
     
 
-    if(this.ScenePhase==1){
-      gsap.to(this.ThreeService.GoalAngle,1.5,{ease:"in",y:2.2});
-    } 
-
+    switch(this.ScenePhase){
+      case 1:
+        gsap.to(this.ThreeService.GoalAngle,1.5,{ease:"in",y:2.1,z:7.6});
+      break;
+      case 2:
+        gsap.to(this.ThreeService.GoalAngle,1.5,{ease:"in",y:1.6});
+      break;
+    }
     this.CurrentGoal+=15;
     this.NextGoal+=15;
 
@@ -99,14 +103,14 @@ export class NextScene{
   
   nextCancel(){
     console.log('cancel')
-    gsap.to('#nextStage .nextLeft',.3,{ease:"Power1.out",css:{left:0+"px"}});
-    gsap.to('#nextStage .mid .svg',.3,{ease:"Power1.out",css:{width:200+"px"}});
-    gsap.to(this.ThreeService.Goal,.3,{ease:"Power1.out",x:this.CurrentGoal})
+    gsap.to('#nextStage .nextLeft',.4,{ease:"out",css:{left:0+"px"}});
+    gsap.to('#nextStage .mid .svg',.4,{ease:"out",css:{width:200+"px"}});
+    gsap.to(this.ThreeService.Goal,.4,{ease:"out",x:this.CurrentGoal})
   }
 
   restart(){
-    gsap.set('#nextStage .nextLeft',{ease:"Power1.out",css:{left:0+"px"}});
-    gsap.set('#nextStage .mid .svg',{ease:"Power1.out",css:{width:200+"px"}});
+    gsap.set('#nextStage .nextLeft',{ease:"out",css:{left:0+"px"}});
+    gsap.set('#nextStage .mid .svg',{ease:"out",css:{width:200+"px"}});
     gsap.to('#nextStage',.5,{ease:"in",css:{opacity:1}});
     gsap.set('#nextStage',{css:{visibility:"visible"},delay:.5});
   }
