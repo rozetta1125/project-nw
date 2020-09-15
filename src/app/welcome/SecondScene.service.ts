@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import * as CANNON from 'cannon';
 import { Injectable } from '@angular/core';
-import { gsap,TimelineLite } from 'gsap';
+import { TweenMax,TimelineLite,Power0,Power1 } from 'gsap';
 import { ThreeService } from './three.service';
 import { Resources } from './Resources.service';
 
@@ -45,7 +45,7 @@ export class SecondScene{
   StartSecondScene(){
     this.SecondSceneRender();
     this.addEvent();
-    gsap.delayedCall(1,()=>{
+    TweenMax.delayedCall(1,()=>{
       this.MiniGolf();
       this.world02.gravity.set(0, -10, 0);
     })
@@ -77,9 +77,9 @@ export class SecondScene{
       //
       this.ThreeService.canvas.removeEventListener("mousemove", this.isGolfing, false);
       this.Golfing=false;
-      gsap.set('.circle',{css:{strokeDashoffset: 270}});
-      gsap.set('.circle .innerCircle',{css:{strokeDashoffset: 270}});
-      gsap.set('.svg-line',{css:{opacity:0}});
+      TweenMax.set('.circle',{css:{strokeDashoffset: 270}});
+      TweenMax.set('.circle .innerCircle',{css:{strokeDashoffset: 270}});
+      TweenMax.set('.svg-line',{css:{opacity:0}});
 
       this.ThreeService.scene.remove(this.GolfString);
 
@@ -97,8 +97,8 @@ export class SecondScene{
     this.Golfing=true;
     this.GolfState.value=2;
     this.ThreeService.scene.add(this.GolfString);
-    gsap.set('.circle .innerCircle',{css:{strokeDashoffset: 0}});
-    gsap.set('.svg-line',{css:{opacity:1}});
+    TweenMax.set('.circle .innerCircle',{css:{strokeDashoffset: 0}});
+    TweenMax.set('.svg-line',{css:{opacity:1}});
   }
 
   CancelSecondScene(){
@@ -238,12 +238,12 @@ export class SecondScene{
       this.GolfPercent = 270 - (this.GolfDistance/maxDistance * 100)*2.7;
       
 
-      // gsap.set('.circle',{css:{strokeDashoffset: this.GolfPercent > 0 ? this.GolfPercent : 0}});
+      // TweenMax.set('.circle',{css:{strokeDashoffset: this.GolfPercent > 0 ? this.GolfPercent : 0}});
 
 
       var angleRadians = 180 + (Math.atan2(this.ThreeService.BasePosition.y-this.FBasePosition.y,this.ThreeService.BasePosition.x-this.FBasePosition.x) * 180/Math.PI);
-      // gsap.set('#lgrad',{attr:{gradientTransform:"rotate("+angleRadians+" 0.5 0.5)"}});
-      // gsap.set('.svg-line .line',{attr:{x1:this.FBasePosition.x,y1:this.FBasePosition.y,x2:this.ThreeService.BasePosition.x,y2:this.ThreeService.BasePosition.y}});
+      // TweenMax.set('#lgrad',{attr:{gradientTransform:"rotate("+angleRadians+" 0.5 0.5)"}});
+      // TweenMax.set('.svg-line .line',{attr:{x1:this.FBasePosition.x,y1:this.FBasePosition.y,x2:this.ThreeService.BasePosition.x,y2:this.ThreeService.BasePosition.y}});
     }
   }
 
@@ -297,17 +297,17 @@ export class SecondScene{
         // If Success
       } else {
         // If Failed
-        gsap.to(this.GolfThrees[i].scale,.25,{x:.1,y:.1,z:.1,ease:"none"});
-        gsap.to(this.GolfShadows[i].scale,.25,{x:.1,y:.1,z:.1,ease:"none"});
+        TweenMax.to(this.GolfThrees[i].scale,.25,{x:.1,y:.1,z:.1,ease:Power0.easeNone});
+        TweenMax.to(this.GolfShadows[i].scale,.25,{x:.1,y:.1,z:.1,ease:Power0.easeNone});
         this.world02.remove(this.GolfCannons[i]);
-        gsap.delayedCall(.25,()=>{
+        TweenMax.delayedCall(.25,()=>{
           this.ThreeService.BOOP(this.GolfCannons[i].position.x,this.GolfCannons[i].position.y,this.GolfCannons[i].position.z)
         })
       }
     }
 
     // Start another
-    gsap.delayedCall(.7,()=>{
+    TweenMax.delayedCall(.7,()=>{
       this.MiniGolf();
     });
   }
@@ -322,7 +322,7 @@ export class SecondScene{
     // P
     var Position = new THREE.Vector3();
     Position.setFromMatrixPosition(this.StageThreeArray[0].matrixWorld);
-    gsap.fromTo(this.GolfFlip[0].rotation,1,{x:0},{x:-Math.PI});
+    TweenMax.fromTo(this.GolfFlip[0].rotation,1,{x:0},{x:-Math.PI});
 
     if(this.GolfThrees.length>0){
       this.GolfN++;
@@ -341,15 +341,15 @@ export class SecondScene{
       this.GolfCannons[this.GolfN].velocity.set(.09,6,-.18);
       this.GolfCannons[this.GolfN].angularVelocity.set(0,0,0);
         
-      gsap.set(this.GolfThrees[this.GolfN].scale,{x:1,y:1,z:1,delay:.1});
-      gsap.set(this.GolfShadows[this.GolfN].scale,{x:1,y:1,z:1,delay:.1});
+      TweenMax.set(this.GolfThrees[this.GolfN].scale,{x:1,y:1,z:1,delay:.1});
+      TweenMax.set(this.GolfShadows[this.GolfN].scale,{x:1,y:1,z:1,delay:.1});
 
       this.GolfState.value=0;
 
-      gsap.delayedCall(.5,()=>{
+      TweenMax.delayedCall(.5,()=>{
         this.GolfCannons[this.GolfN].collisionFilterMask=1;
       })
-      gsap.delayedCall(1,()=>{
+      TweenMax.delayedCall(1,()=>{
         this.GolfState.value=1;
       })
 
@@ -369,10 +369,10 @@ export class SecondScene{
       body.position.set(Position.x,Position.y - .6,Position.z);
       body.velocity.set(.09,6,-.18);
       this.GolfState.value=0;
-      gsap.delayedCall(.5,()=>{
+      TweenMax.delayedCall(.5,()=>{
         body.collisionFilterMask=1;
       })
-      gsap.delayedCall(1,()=>{
+      TweenMax.delayedCall(1,()=>{
         this.GolfState.value=1;
       })
 
@@ -382,8 +382,8 @@ export class SecondScene{
       body.addEventListener('collide',(e)=>{
         if(e.body.material.name=="GoalMaterial"){
           body.collisionFilterGroup=2;
-          gsap.to(this.GolfThrees[k].scale,.25,{x:.2,y:.2,z:.2,ease:"none",delay:.15});
-          gsap.to(this.GolfShadows[k].scale,.25,{x:.2,y:.2,z:.2,ease:"none",delay:.15});
+          TweenMax.to(this.GolfThrees[k].scale,.25,{x:.2,y:.2,z:.2,ease:Power0.easeNone,delay:.15});
+          TweenMax.to(this.GolfShadows[k].scale,.25,{x:.2,y:.2,z:.2,ease:Power0.easeNone,delay:.15});
           this.ScoreFunction(body.position);
         }
       });
@@ -490,19 +490,19 @@ export class SecondScene{
         var PoDuration = .35 + DD;
         
         // Position
-        gsap.fromTo(this.GolfScore[i].position,PoDuration,
+        TweenMax.fromTo(this.GolfScore[i].position,PoDuration,
           {x:Po.x,z:Po.z},
-          {x:ranX,z:ranZ,delay:randomDelay,ease:"power1.out"});
+          {x:ranX,z:ranZ,delay:randomDelay,ease:Power1.easeOut});
 
 
-        gsap.fromTo(this.GolfScore[i].position,PoDuration/2,{y:Po.y},{ease:"power1.out",y:DD+.4,delay:randomDelay})
-        gsap.to(this.GolfScore[i].position,PoDuration/2,{ease:"power1.in",delay:(PoDuration/2)+randomDelay,y:0.28})
+        TweenMax.fromTo(this.GolfScore[i].position,PoDuration/2,{y:Po.y},{ease:Power1.easeOut,y:DD+.4,delay:randomDelay})
+        TweenMax.to(this.GolfScore[i].position,PoDuration/2,{ease:Power1.easeIn,delay:(PoDuration/2)+randomDelay,y:0.28})
 
         // Rotation
-        gsap.fromTo(this.GolfScore[i].rotation,PoDuration,{x:0,y:0,z:0},{x:Math.random()*24-12,y:Math.random()*24-12,z:Math.random()*24-12,delay:randomDelay,ease:"none"});
+        TweenMax.fromTo(this.GolfScore[i].rotation,PoDuration,{x:0,y:0,z:0},{x:Math.random()*24-12,y:Math.random()*24-12,z:Math.random()*24-12,delay:randomDelay,ease:Power0.easeNone});
 
         // Scale
-        gsap.fromTo(this.GolfScore[i].scale,PoDuration,{x:1,y:1,z:1},{delay:PoDuration+.1,x:.1,y:.1,z:.1})
+        TweenMax.fromTo(this.GolfScore[i].scale,PoDuration,{x:1,y:1,z:1},{delay:PoDuration+.1,x:.1,y:.1,z:.1})
       } else {
         i--;
       }
@@ -644,38 +644,38 @@ export class SecondScene{
         this.windmillthree.push(wmthree);
 
         // three
-        gsap.fromTo(this.RS.Windmill.scene.children[""+i+""].rotation,10,{y:0},{y:-Math.PI*2,ease:"none",repeat:-1})
+        TweenMax.fromTo(this.RS.Windmill.scene.children[""+i+""].rotation,10,{y:0},{y:-Math.PI*2,repeat:-1,ease:Power0.easeNone})
         // cannon
-        gsap.fromTo(wmthree.rotation,10,{z:-31.5*Math.PI/180},{z:-31.5*Math.PI/180-Math.PI*2,ease:"none",repeat:-1})
+        TweenMax.fromTo(wmthree.rotation,10,{z:-31.5*Math.PI/180},{z:-31.5*Math.PI/180-Math.PI*2,ease:Power0.easeNone,repeat:-1})
 
         // 4 shadow 
-        gsap.fromTo(StageShadow03.rotation,10,{z:0*Math.PI/180},{z:-360*Math.PI/180,ease:"none",delay:.3,repeat:-1})
-        var ShadowTween = gsap.timeline({repeat:-1,delay:.3,repeatDelay:2.5});
-        ShadowTween.to(StageShadow03.scale,.75,{x:1,y:1,ease:"none",})
-        ShadowTween.to(StageShadow03.scale,.75,{x:.3,y:.3,ease:"none",delay:.75})
-        ShadowTween.to(StageShadow03.scale,1.75,{x:.45,y:.45,ease:"none",delay:3})
-        ShadowTween.to(StageShadow03.scale,.5,{x:.5,y:.5,ease:"none",})
+        TweenMax.fromTo(StageShadow03.rotation,10,{z:0*Math.PI/180},{z:-360*Math.PI/180,ease:Power0.easeNone,delay:.3,repeat:-1})
+        var ShadowTween = new TimelineLite({repeat:-1,delay:.3,repeatDelay:2.5});
+        ShadowTween.to(StageShadow03.scale,.75,{x:1,y:1,ease:Power0.easeNone,})
+        ShadowTween.to(StageShadow03.scale,.75,{x:.3,y:.3,ease:Power0.easeNone,delay:.75})
+        ShadowTween.to(StageShadow03.scale,1.75,{x:.45,y:.45,ease:Power0.easeNone,delay:3})
+        ShadowTween.to(StageShadow03.scale,.5,{x:.5,y:.5,ease:Power0.easeNone,})
 
-        gsap.fromTo(StageShadow0302.rotation,10,{z:0*Math.PI/180},{z:-360*Math.PI/180,ease:"none",delay:2.8,repeat:-1})
-        var ShadowTween02 = gsap.timeline({repeat:-1,delay:2.8,repeatDelay:2.5});
-        ShadowTween02.to(StageShadow0302.scale,.75,{x:1,y:1,ease:"none",})
-        ShadowTween02.to(StageShadow0302.scale,.75,{x:.3,y:.3,ease:"none",delay:.75})
-        ShadowTween02.to(StageShadow0302.scale,1.75,{x:.45,y:.45,ease:"none",delay:3})
-        ShadowTween02.to(StageShadow0302.scale,.5,{x:.5,y:.5,ease:"none"})
+        TweenMax.fromTo(StageShadow0302.rotation,10,{z:0*Math.PI/180},{z:-360*Math.PI/180,ease:Power0.easeNone,delay:2.8,repeat:-1})
+        var ShadowTween02 = new TimelineLite({repeat:-1,delay:2.8,repeatDelay:2.5});
+        ShadowTween02.to(StageShadow0302.scale,.75,{x:1,y:1,ease:Power0.easeNone,})
+        ShadowTween02.to(StageShadow0302.scale,.75,{x:.3,y:.3,ease:Power0.easeNone,delay:.75})
+        ShadowTween02.to(StageShadow0302.scale,1.75,{x:.45,y:.45,ease:Power0.easeNone,delay:3})
+        ShadowTween02.to(StageShadow0302.scale,.5,{x:.5,y:.5,ease:Power0.easeNone})
 
-        gsap.fromTo(StageShadow0303.rotation,10,{z:0*Math.PI/180},{z:-360*Math.PI/180,ease:"none",delay:5.3,repeat:-1})
-        var ShadowTween03 = gsap.timeline({repeat:-1,delay:5.3,repeatDelay:2.5});
-        ShadowTween03.to(StageShadow0303.scale,.75,{x:1,y:1,ease:"none",})
-        ShadowTween03.to(StageShadow0303.scale,.75,{x:.3,y:.3,ease:"none",delay:.75})
-        ShadowTween03.to(StageShadow0303.scale,1.75,{x:.45,y:.45,ease:"none",delay:3})
-        ShadowTween03.to(StageShadow0303.scale,.5,{x:.5,y:.5,ease:"none"})
+        TweenMax.fromTo(StageShadow0303.rotation,10,{z:0*Math.PI/180},{z:-360*Math.PI/180,ease:Power0.easeNone,delay:5.3,repeat:-1})
+        var ShadowTween03 = new TimelineLite({repeat:-1,delay:5.3,repeatDelay:2.5});
+        ShadowTween03.to(StageShadow0303.scale,.75,{x:1,y:1,ease:Power0.easeNone,})
+        ShadowTween03.to(StageShadow0303.scale,.75,{x:.3,y:.3,ease:Power0.easeNone,delay:.75})
+        ShadowTween03.to(StageShadow0303.scale,1.75,{x:.45,y:.45,ease:Power0.easeNone,delay:3})
+        ShadowTween03.to(StageShadow0303.scale,.5,{x:.5,y:.5,ease:Power0.easeNone})
 
-        gsap.fromTo(StageShadow0304.rotation,10,{z:0*Math.PI/180},{z:-360*Math.PI/180,ease:"none",delay:7.8,repeat:-1})
-        var ShadowTween04 = gsap.timeline({repeat:-1,delay:7.8,repeatDelay:2.5});
-        ShadowTween04.to(StageShadow0304.scale,.75,{x:1,y:1,ease:"none",})
-        ShadowTween04.to(StageShadow0304.scale,.75,{x:.3,y:.3,ease:"none",delay:.75})
-        ShadowTween04.to(StageShadow0304.scale,1.75,{x:.45,y:.45,ease:"none",delay:3})
-        ShadowTween04.to(StageShadow0304.scale,.5,{x:.5,y:.5,ease:"none"})
+        TweenMax.fromTo(StageShadow0304.rotation,10,{z:0*Math.PI/180},{z:-360*Math.PI/180,ease:Power0.easeNone,delay:7.8,repeat:-1})
+        var ShadowTween04 = new TimelineLite({repeat:-1,delay:7.8,repeatDelay:2.5});
+        ShadowTween04.to(StageShadow0304.scale,.75,{x:1,y:1,ease:Power0.easeNone,})
+        ShadowTween04.to(StageShadow0304.scale,.75,{x:.3,y:.3,ease:Power0.easeNone,delay:.75})
+        ShadowTween04.to(StageShadow0304.scale,1.75,{x:.45,y:.45,ease:Power0.easeNone,delay:3})
+        ShadowTween04.to(StageShadow0304.scale,.5,{x:.5,y:.5,ease:Power0.easeNone})
       } else if (this.RS.Windmill.scene.children[""+i+""].name == "Bench"){
         let mate01 = new THREE.MeshMatcapMaterial({
           color:0xffffff,
@@ -1015,7 +1015,7 @@ export class SecondScene{
     this.world02.addBody(Cube007);
     this.StageCannnonArray.push(Cube007);
     
-    gsap.delayedCall(1,()=>{
+    TweenMax.delayedCall(1,()=>{
       this.SetStageCannonPosition();
     })
   }

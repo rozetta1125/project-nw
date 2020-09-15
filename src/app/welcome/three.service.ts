@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import * as CANNON from 'cannon';
-import { gsap } from 'gsap';
+import { TweenMax, Power1, TimelineLite, TimelineMax, Power0 } from 'gsap';
 import * as OrbitControls from 'three-orbitcontrols';
 import GLTFLoader from 'three-gltf-loader';
 // import thisWork from 'three-dragcontrols';
@@ -8,7 +8,7 @@ import { Injectable } from '@angular/core';
 import * as dat from 'dat.gui';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader';
 import { Resources } from './Resources.service';
-
+import { Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -38,11 +38,6 @@ export class ThreeService {
   fps:number;
   private now:number;
 
-  private meshes03 = [];
-  private bodies03 = [];
-
-  private Remeshes03 = [];
-  private Rebodies03 = [];
   smokeThree: THREE.Mesh;
   FETHREE = new THREE.Group();
   FETap = new THREE.Mesh();
@@ -78,14 +73,11 @@ export class ThreeService {
   private intersection = new THREE.Vector3();
 
 
-
-
-  private DynamicShadows = [];
-  private ScenePhase:number;
-
   Goal = new THREE.Vector3();
   EasedGoal = new THREE.Vector3();
   GoalAngle = new THREE.Vector3();
+
+  public Loader: Subject<Boolean> = new Subject<Boolean>();
   
   
   InitThree(elementId: string): void {
@@ -127,18 +119,20 @@ export class ThreeService {
 
 
     // this.GoalAngle.set(0,1.4,8);
-    this.GoalAngle.set(0,1.3,8);
+    this.GoalAngle.set(0,1.3,8.25);
     this.camera.position.copy(this.GoalAngle);
-    this.camera.lookAt(new THREE.Vector3(-12,0,0));
+    this.camera.lookAt(new THREE.Vector3(-15,0,0));
 
-    this.Goal.set(-12,1,0)
+    this.Goal.set(-15,1,0)
     this.EasedGoal.copy(this.Goal);
+    
+    // TweenMax.to('#cursor',2,{css:{top:"+=500",left:"+=500"}})
 
-    // gsap.delayedCall(1+1,()=>{
+    // TweenMax.delayedCall(1+1,()=>{
     //    document.getElementById('Main').classList.add('BG2');
     // });
     
-    // gsap.to(this.Goal,1,{delay:1+1,x:0,ease:"inOut"})
+    // TweenMax.to(this.Goal,1,{delay:1+1,x:0,ease:"inOut"})
     // OrbitControls
     // this.controls = new OrbitControls(this.camera, this.canvas);
     // this.controls.target.set(0,1,0);
@@ -190,21 +184,16 @@ export class ThreeService {
     //   });
   }
 
-
-  private BaseMatcap;
+  
   FirstInit(): void {
-
-    this.ScenePhase=1;
-
     this.Loading();
     this.AddEvent();
     this.BOOPMaterial();
-    // this.ThirdInit();
-    // this.CreateBalloonCursor();
+    
     
     // document.addEventListener('mousemove',e=>{
     //   // cursor.setAttribute("style","top:"+e.pageY+"px;left:"+e.pageX+"px;");
-    //   // gsap.to(cursor,.3,{css:{left:e.pageX,top:e.pageY}})
+    //   // TweenMax.to(cursor,.3,{css:{left:e.pageX,top:e.pageY}})
     //   console.log("asdf")
     // },false);
 
@@ -227,7 +216,7 @@ export class ThreeService {
     //     if (this.collided) {
     //       this.FirstCursor.copy(this.LastCursor);
     //     } else {
-    //       TweenLite.to(this.FirstCursor, .5, {
+    //       TweenMax.to(this.FirstCursor, .5, {
     //         x: this.LastCursor.x,
     //         y: this.LastCursor.y, z: this.LastCursor.z
     //       })
@@ -238,12 +227,12 @@ export class ThreeService {
 
   CursorDown = ()=>{
     let outer = document.querySelector('.cursor .svg-cursor');
-    gsap.to(outer,.2,{css:{scale:.7}});
+    TweenMax.to(outer,.2,{css:{scale:.7}});
   }
 
   CursorUp = ()=>{
     let outer = document.querySelector('.cursor .svg-cursor');
-    gsap.to(outer,.2,{css:{scale:1}});
+    TweenMax.to(outer,.2,{css:{scale:1}});
   }
 
 
@@ -318,7 +307,7 @@ export class ThreeService {
 
 
   Loading(){
-    let blue = this.textureLoader.load('assets/matcaps/01/97ADD9.png');
+    let blue = this.textureLoader.load('assets/matcaps/01/E39FA1.png');
     blue.encoding=THREE.sRGBEncoding;
 
     let mate = new THREE.MeshMatcapMaterial({
@@ -326,16 +315,111 @@ export class ThreeService {
       color:0xffffff,
       side:2
     })
-    let Mesh = new THREE.Mesh(new THREE.CylinderBufferGeometry(.4,.4,.2,16,1,false,0,Math.PI),mate);
-    Mesh.rotation.set(Math.PI/2,-Math.PI/4,0)
-    Mesh.position.set(-12,0,0);
-    this.scene.add(Mesh);
 
-    gsap.to(Mesh.position,1,{x:"+=1",repeat:-1,repeatDelay:1,ease:"out"});
-    gsap.to(Mesh.position,1,{x:"-=1",repeat:-1,repeatDelay:1,ease:"out",delay:1});
-    gsap.to(Mesh.rotation,1,{y:"-="+Math.PI/2,repeat:-1,repeatDelay:1});
-    gsap.to(Mesh.rotation,1,{y:"+="+Math.PI/2,repeat:-1,repeatDelay:1,delay:1});
+    let pink = this.textureLoader.load('assets/matcaps/01/E39FA1.png');
+    pink.encoding=THREE.sRGBEncoding;
+
+    let mate02 = new THREE.MeshMatcapMaterial({
+      matcap:pink,
+      color:0xffffff,
+      side:2
+    })
+
+    let Loader = new THREE.Object3D();
+    this.scene.add(Loader);
+    Loader.position.set(-15.35,.2,0);
+    Loader.rotation.set(5*Math.PI/180,0*Math.PI/180,0);
+
+
+    let Texture = this.textureLoader.load('assets/shadow/Cylinder.png');
+    let uniforms = {
+      tShadow:{value:Texture},
+      uShadowColor:{value:new THREE.Color("#c0a68e")},
+      uAlpha:{value:.75}
+    }
+    let material = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms,depthWrite:false,
+      vertexShader:document.getElementById('vertexShader').textContent,
+      fragmentShader:document.getElementById('fragmentShader').textContent})
+      
+    let shadow = new THREE.Mesh(new THREE.PlaneGeometry(5,5),material);
+    shadow.rotation.set(-Math.PI/2,0,0)
+
+    this.scene.add(shadow);
+    shadow.position.set(Loader.position.x,-.2,Loader.position.z);
+
+
+    let Texture02 = this.textureLoader.load('assets/shadow/Sphere.png');
+    let uniforms02 = {
+      tShadow:{value:Texture02},
+      uShadowColor:{value:new THREE.Color("#d6b3b4")},
+      uAlpha:{value:1}
+    }
+    // c0a68e
+    let material02 = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms:uniforms02,depthWrite:false,
+      vertexShader:document.getElementById('vertexShader').textContent,
+      fragmentShader:document.getElementById('fragmentShader').textContent})
+      
+    let shadow02 = new THREE.Mesh(new THREE.PlaneGeometry(.8,.2),material02);
+    shadow02.rotation.set(-Math.PI/2,0,0)
+
+    shadow02.position.set(0,-.099,.02);
+    
+    let GLB;
+    this.loader.load('assets/model/Loader03.glb',(gltf)=>{ 
+      GLB = gltf.scene;
+
+      let Sphere;
+      let Cylinder;
+      for(var i=0;i<GLB.children.length;i++){
+        if(GLB.children[i].name=="Sphere"){
+          Sphere = GLB.children[i];
+          GLB.children[i].material = mate;
+        } else {
+          Cylinder = GLB.children[i];
+          GLB.children[i].material = mate02;
+        }
+      }
+
+
+      Sphere.position.x-=.3;
+      Sphere.position.z=.02;
+      Sphere.add(shadow02);
+      Loader.add(Cylinder);
+      Loader.add(Sphere);
+
+
+
+      this.Loader.next(true);
+      TweenMax.to(shadow.position,1,{x:"+=.6",ease:Power1.easeInOut,repeat:-1,yoyo:true})
+      TweenMax.to(Loader.position,1,{x:"+=.6",ease:Power1.easeInOut,repeat:-1,yoyo:true})
+
+      TweenMax.to(Sphere.position,1,{x:"+=.6",ease:Power1.easeInOut,repeat:-1,delay:.88,yoyo:true})
+      TweenMax.to(shadow02.scale,1,{x:"-=.6",ease:Power1.easeInOut,repeat:-1,delay:.88,yoyo:true})
+      
+      TweenMax.fromTo(Loader.rotation,1,{z:30*Math.PI/180},{z:-30*Math.PI/180,ease:Power1.easeInOut,repeat:-1,yoyo:true});
+
+
+      // Text and NextScene
+      TweenMax.to('.Text',2,{css:{opacity:1},delay:2,ease:Power1.easeOut});
+      TweenMax.to('.Text',2,{css:{opacity:0},delay:4,ease:Power1.easeIn});
+      TweenMax.set('.Text',{css:{visibility:"hidden"},delay:6});
+
+      TweenMax.to('#nextStage',2,{ease:Power1.easeOut,delay:2,css:{opacity:1}});
+      TweenMax.set('#nextStage',{css:{visibility:"visible"},delay:2});
+    });
+
+
+    // let Next;
+    // this.loader.load('assets/model/NextButton.glb',(gltf)=>{ 
+    //   Next = gltf.scene;
+    //   Next.position.set(-9,0,0);
+    //   // Next.scale.set(1.6,1.6,1.6);
+    //   Next.rotation.set(90*Math.PI/180,0,0);
+    //   Next.children[0].material=mate;
+    //   this.scene.add(Next);
+    // });
   }
+
 
   BOOPArray=[];
   BOOPCurrent=0;
@@ -372,9 +456,9 @@ export class ThreeService {
 
     this.BOOPArray[this.BOOPCurrent].position.set(Ox, Oy, Oz);
     for(var i=0;i<this.BOOPArray[this.BOOPCurrent].children.length;i++){
-      gsap.fromTo(this.BOOPArray[this.BOOPCurrent].children[i].children[0].position,.3,{x:0},{x:"+=.17"});
-      gsap.fromTo(this.BOOPArray[this.BOOPCurrent].children[i].children[0].scale,.75,{x:1,y:1,z:1},{x:.1,y:.1,z:.1});
-      gsap.fromTo(this.BOOPArray[this.BOOPCurrent].children[i].children[0].material,.1,{opacity:1},{opacity:0,delay:1});
+      TweenMax.fromTo(this.BOOPArray[this.BOOPCurrent].children[i].children[0].position,.3,{x:0},{x:"+=.17"});
+      TweenMax.fromTo(this.BOOPArray[this.BOOPCurrent].children[i].children[0].scale,.75,{x:1,y:1,z:1},{x:.1,y:.1,z:.1});
+      TweenMax.fromTo(this.BOOPArray[this.BOOPCurrent].children[i].children[0].material,.1,{opacity:1},{opacity:0,delay:1});
     }
     this.BOOPCurrent++;
   }

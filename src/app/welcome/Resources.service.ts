@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { Injectable } from '@angular/core';
-import { TimelineLite,gsap } from 'gsap';
+import { TimelineLite,TweenLite } from 'gsap';
 import GLTFLoader from 'three-gltf-loader';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader';
 import { variable } from '@angular/compiler/src/output/output_ast';
@@ -80,7 +80,7 @@ export class Resources{
     // 1
     this.textureLoader.load('assets/matcaps/01/F5F5F5.png',(texture)=>{ this.FSwhite=texture; this.FSwhite.encoding=THREE.sRGBEncoding; });
     this.textureLoader.load('assets/matcaps/01/97ADD9.png',(texture)=>{ this.FSblue=texture; this.FSblue.encoding=THREE.sRGBEncoding; });
-    this.textureLoader.load('assets/matcaps/01/E7B2B7.png',(texture)=>{ this.FSpink=texture; this.FSpink.encoding=THREE.sRGBEncoding; });
+    this.textureLoader.load('assets/matcaps/01/E7ABB1.png',(texture)=>{ this.FSpink=texture; this.FSpink.encoding=THREE.sRGBEncoding; });
 
     // 2
     this.textureLoader.load('assets/matcaps/02/F5F5F5.png',(texture)=>{ this.SSwhite=texture; this.SSwhite.encoding=THREE.sRGBEncoding; });

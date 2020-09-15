@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { Injectable } from '@angular/core';
-import { TimelineLite,gsap } from 'gsap';
+import { TimelineLite,TweenMax,Power1 } from 'gsap';
 import { ThreeService } from './three.service';
 import { Resources } from './Resources.service';
 
@@ -140,33 +140,33 @@ export class FirstScene {
         this.SwingS.push(this.RS.Swing.scene.children["" + i + ""]);
 
         this.SwingTween.pause();
-        this.SwingTween.to(this.RS.Swing.scene.children["" + i + ""].rotation, 1.8, { ease: "power1.inOut", y: 15 * Math.PI / 180 })
-        this.SwingTween.to(this.RS.Swing.scene.children["" + i + ""].rotation, 1.8, { ease: "power1.inOut", y: -15 * Math.PI / 180 })
-        this.SwingTween.to(this.RS.Swing.scene.children["" + i + ""].rotation, 2, { ease: "power1.inOut", y: 25 * Math.PI / 180 })
-        this.SwingTween.to(this.RS.Swing.scene.children["" + i + ""].rotation, 2, { ease: "power1.inOut", y: -25 * Math.PI / 180 })
-        this.SwingTween.to(this.RS.Swing.scene.children["" + i + ""].rotation, 2, { ease: "power1.inOut", y: 35 * Math.PI / 180 })
-        this.SwingTween.to(this.RS.Swing.scene.children["" + i + ""].rotation, 2, { ease: "power1.inOut", y: -35 * Math.PI / 180 })
-        this.SwingTween.to(this.RS.Swing.scene.children["" + i + ""].rotation, 2, { ease: "power1.inOut", y: 45 * Math.PI / 180 })
-        this.SwingTween.to(this.RS.Swing.scene.children["" + i + ""].rotation, 2, { ease: "power1.inOut", y: -45 * Math.PI / 180 })
-        this.SwingTween.to(this.RS.Swing.scene.children["" + i + ""].rotation, 2.1, { ease: "power1.inOut", y: 50 * Math.PI / 180 })
-        this.SwingTween.to(this.RS.Swing.scene.children["" + i + ""].rotation, 2.1, { ease: "power1.inOut", y: -50 * Math.PI / 180 })
-        this.SwingTween.to(this.RS.Swing.scene.children["" + i + ""].rotation, 2.2, { ease: "power1.inOut", y: 45 * Math.PI / 180 })
-        this.SwingTween.to(this.RS.Swing.scene.children["" + i + ""].rotation, 2.2, { ease: "power1.inOut", y: -45 * Math.PI / 180 })
-        this.SwingTween.to(this.RS.Swing.scene.children["" + i + ""].rotation, 2.2, { ease: "power1.inOut", y: 40 * Math.PI / 180 })
-        this.SwingTween.to(this.RS.Swing.scene.children["" + i + ""].rotation, 2.2, { ease: "power1.inOut", y: -40 * Math.PI / 180 })
-        this.SwingTween.to(this.RS.Swing.scene.children["" + i + ""].rotation, 2, { ease: "power1.inOut", y: 30 * Math.PI / 180 })
-        this.SwingTween.to(this.RS.Swing.scene.children["" + i + ""].rotation, 2, { ease: "power1.inOut", y: -30 * Math.PI / 180 })
-        this.SwingTween.to(this.RS.Swing.scene.children["" + i + ""].rotation, 1.8, { ease: "power1.inOut", y: 15 * Math.PI / 180 })
-        this.SwingTween.to(this.RS.Swing.scene.children["" + i + ""].rotation, 1.6, { ease: "power1.inOut", y: -12 * Math.PI / 180 })
-        this.SwingTween.to(this.RS.Swing.scene.children["" + i + ""].rotation, 1.4, { ease: "power1.inOut", y: 12 * Math.PI / 180 })
-        this.SwingTween.to(this.RS.Swing.scene.children["" + i + ""].rotation, 1.2, { ease: "power1.inOut", y: -8 * Math.PI / 180 })
-        this.SwingTween.to(this.RS.Swing.scene.children["" + i + ""].rotation, 1, { ease: "power1.inOut", y: 6 * Math.PI / 180 })
-        this.SwingTween.to(this.RS.Swing.scene.children["" + i + ""].rotation, .9, { ease: "power1.inOut", y: -4 * Math.PI / 180 })
-        this.SwingTween.to(this.RS.Swing.scene.children["" + i + ""].rotation, .8, { ease: "power1.inOut", y: 2 * Math.PI / 180 })
-        this.SwingTween.to(this.RS.Swing.scene.children["" + i + ""].rotation, .6, { ease: "power1.inOut", y: -1 * Math.PI / 180 })
-        this.SwingTween.to(this.RS.Swing.scene.children["" + i + ""].rotation, .4, { ease: "power1.inOut", y: 1 * Math.PI / 180 })
-        this.SwingTween.to(this.RS.Swing.scene.children["" + i + ""].rotation, .3, { ease: "power1.inOut", y: -.5 * Math.PI / 180 })
-        this.SwingTween.to(this.RS.Swing.scene.children["" + i + ""].rotation, .2, { ease: "power1.inOut", y: 0 * Math.PI / 180 })
+        this.SwingTween.to(this.RS.Swing.scene.children["" + i + ""].rotation, 1.8, { ease: Power1.easeInOut, y: 15 * Math.PI / 180 })
+        this.SwingTween.to(this.RS.Swing.scene.children["" + i + ""].rotation, 1.8, { ease: Power1.easeInOut, y: -15 * Math.PI / 180 })
+        this.SwingTween.to(this.RS.Swing.scene.children["" + i + ""].rotation, 2, { ease: Power1.easeInOut, y: 25 * Math.PI / 180 })
+        this.SwingTween.to(this.RS.Swing.scene.children["" + i + ""].rotation, 2, { ease: Power1.easeInOut, y: -25 * Math.PI / 180 })
+        this.SwingTween.to(this.RS.Swing.scene.children["" + i + ""].rotation, 2, { ease: Power1.easeInOut, y: 35 * Math.PI / 180 })
+        this.SwingTween.to(this.RS.Swing.scene.children["" + i + ""].rotation, 2, { ease: Power1.easeInOut, y: -35 * Math.PI / 180 })
+        this.SwingTween.to(this.RS.Swing.scene.children["" + i + ""].rotation, 2, { ease: Power1.easeInOut, y: 45 * Math.PI / 180 })
+        this.SwingTween.to(this.RS.Swing.scene.children["" + i + ""].rotation, 2, { ease: Power1.easeInOut, y: -45 * Math.PI / 180 })
+        this.SwingTween.to(this.RS.Swing.scene.children["" + i + ""].rotation, 2.1, { ease: Power1.easeInOut, y: 50 * Math.PI / 180 })
+        this.SwingTween.to(this.RS.Swing.scene.children["" + i + ""].rotation, 2.1, { ease: Power1.easeInOut, y: -50 * Math.PI / 180 })
+        this.SwingTween.to(this.RS.Swing.scene.children["" + i + ""].rotation, 2.2, { ease: Power1.easeInOut, y: 45 * Math.PI / 180 })
+        this.SwingTween.to(this.RS.Swing.scene.children["" + i + ""].rotation, 2.2, { ease: Power1.easeInOut, y: -45 * Math.PI / 180 })
+        this.SwingTween.to(this.RS.Swing.scene.children["" + i + ""].rotation, 2.2, { ease: Power1.easeInOut, y: 40 * Math.PI / 180 })
+        this.SwingTween.to(this.RS.Swing.scene.children["" + i + ""].rotation, 2.2, { ease: Power1.easeInOut, y: -40 * Math.PI / 180 })
+        this.SwingTween.to(this.RS.Swing.scene.children["" + i + ""].rotation, 2, { ease: Power1.easeInOut, y: 30 * Math.PI / 180 })
+        this.SwingTween.to(this.RS.Swing.scene.children["" + i + ""].rotation, 2, { ease: Power1.easeInOut, y: -30 * Math.PI / 180 })
+        this.SwingTween.to(this.RS.Swing.scene.children["" + i + ""].rotation, 1.8, { ease: Power1.easeInOut, y: 15 * Math.PI / 180 })
+        this.SwingTween.to(this.RS.Swing.scene.children["" + i + ""].rotation, 1.6, { ease: Power1.easeInOut, y: -12 * Math.PI / 180 })
+        this.SwingTween.to(this.RS.Swing.scene.children["" + i + ""].rotation, 1.4, { ease: Power1.easeInOut, y: 12 * Math.PI / 180 })
+        this.SwingTween.to(this.RS.Swing.scene.children["" + i + ""].rotation, 1.2, { ease: Power1.easeInOut, y: -8 * Math.PI / 180 })
+        this.SwingTween.to(this.RS.Swing.scene.children["" + i + ""].rotation, 1, { ease: Power1.easeInOut, y: 6 * Math.PI / 180 })
+        this.SwingTween.to(this.RS.Swing.scene.children["" + i + ""].rotation, .9, { ease: Power1.easeInOut, y: -4 * Math.PI / 180 })
+        this.SwingTween.to(this.RS.Swing.scene.children["" + i + ""].rotation, .8, { ease: Power1.easeInOut, y: 2 * Math.PI / 180 })
+        this.SwingTween.to(this.RS.Swing.scene.children["" + i + ""].rotation, .6, { ease: Power1.easeInOut, y: -1 * Math.PI / 180 })
+        this.SwingTween.to(this.RS.Swing.scene.children["" + i + ""].rotation, .4, { ease: Power1.easeInOut, y: 1 * Math.PI / 180 })
+        this.SwingTween.to(this.RS.Swing.scene.children["" + i + ""].rotation, .3, { ease: Power1.easeInOut, y: -.5 * Math.PI / 180 })
+        this.SwingTween.to(this.RS.Swing.scene.children["" + i + ""].rotation, .2, { ease: Power1.easeInOut, y: 0 * Math.PI / 180 })
       } else if (this.RS.Swing.scene.children[i].name == "Star02") {
         let mate01 = new THREE.MeshMatcapMaterial({
           color: 0xffffff,
@@ -224,7 +224,7 @@ export class FirstScene {
       }
     }
     this.CarnivalTween.pause();
-    this.CarnivalTween.to(this.RS.Carnival.scene.rotation, 40, { ease: "power1.inOut", y: this.RS.Carnival.scene.rotation.y - Math.PI * 6 });
+    this.CarnivalTween.to(this.RS.Carnival.scene.rotation, 40, { ease: Power1.easeInOut, y: this.RS.Carnival.scene.rotation.y - Math.PI * 6 });
     
     this.ThreeService.scene.add(this.RS.Carnival.scene);
     this.ParkObjects.push(this.RS.Carnival.scene)
@@ -283,11 +283,11 @@ export class FirstScene {
 
     shadow3d.position.set(-0.01, 0, .54);
     this.ThreeService.scene.add(shadow3d)
-    this.CarnivalTween.to(shadow3d.rotation, 40, { ease: "power1.inOut", y: shadow3d.rotation.y - Math.PI * 6 }, '-=40')
-    this.CarnivalTween.to(shadow3d.children[0].rotation, 40, { ease: "power1.inOut", z: shadow3d.rotation.z + Math.PI * 6 }, '-=40')
-    this.CarnivalTween.to(shadow3d.children[1].rotation, 40, { ease: "power1.inOut", z: shadow3d.rotation.z + Math.PI * 6 }, '-=40')
-    this.CarnivalTween.to(shadow3d.children[2].rotation, 40, { ease: "power1.inOut", z: shadow3d.rotation.z + Math.PI * 6 }, '-=40')
-    this.CarnivalTween.to(shadow3d.children[3].rotation, 40, { ease: "power1.inOut", z: shadow3d.rotation.z + Math.PI * 6 }, '-=40')
+    this.CarnivalTween.to(shadow3d.rotation, 40, { ease: Power1.easeInOut, y: shadow3d.rotation.y - Math.PI * 6 }, '-=40')
+    this.CarnivalTween.to(shadow3d.children[0].rotation, 40, { ease: Power1.easeInOut, z: shadow3d.rotation.z + Math.PI * 6 }, '-=40')
+    this.CarnivalTween.to(shadow3d.children[1].rotation, 40, { ease: Power1.easeInOut, z: shadow3d.rotation.z + Math.PI * 6 }, '-=40')
+    this.CarnivalTween.to(shadow3d.children[2].rotation, 40, { ease: Power1.easeInOut, z: shadow3d.rotation.z + Math.PI * 6 }, '-=40')
+    this.CarnivalTween.to(shadow3d.children[3].rotation, 40, { ease: Power1.easeInOut, z: shadow3d.rotation.z + Math.PI * 6 }, '-=40')
 
 
     // Plane
@@ -335,7 +335,7 @@ export class FirstScene {
     Plane01.children[1].children[1].name = "Plane01";
     this.PlaneTween01.pause();
     this.PlaneTween01.to(Plane01.children[0].rotation, 5, { x: Math.PI * 10 });
-    this.CarnivalTween.to(Plane01.position, 2, { ease: "power1.inOut", y: .65, repeat: 11, yoyo: true }, '-=36');
+    this.CarnivalTween.to(Plane01.position, 2, { ease: Power1.easeInOut, y: .65, repeat: 11, yoyo: true }, '-=36');
     this.CarnivalPlane4.add(Plane01)
 
     Plane02 = Plane01.clone();
@@ -345,7 +345,7 @@ export class FirstScene {
     Plane02.rotation.set(0, (-90 - 4) * Math.PI / 180, 0)
     this.PlaneTween02.pause();
     this.PlaneTween02.to(Plane02.children[0].rotation, 5, { x: Math.PI * 10 });
-    this.CarnivalTween.to(Plane02.position, 2, { ease: "power1.inOut", y: .65, repeat: 11, yoyo: true }, '-=33');
+    this.CarnivalTween.to(Plane02.position, 2, { ease: Power1.easeInOut, y: .65, repeat: 11, yoyo: true }, '-=33');
     this.CarnivalPlane4.add(Plane02)
 
     Plane03 = Plane01.clone();
@@ -356,7 +356,7 @@ export class FirstScene {
     Plane03.rotation.set(0, (-180 - 4) * Math.PI / 180, 0)
     this.PlaneTween03.pause();
     this.PlaneTween03.to(Plane03.children[0].rotation, 5, { x: Math.PI * 10 });
-    this.CarnivalTween.to(Plane03.position, 2, { ease: "power1.inOut", y: .65, repeat: 11, yoyo: true }, '-=34');
+    this.CarnivalTween.to(Plane03.position, 2, { ease: Power1.easeInOut, y: .65, repeat: 11, yoyo: true }, '-=34');
     this.CarnivalPlane4.add(Plane03)
 
     Plane04 = Plane01.clone();
@@ -367,11 +367,11 @@ export class FirstScene {
     Plane04.rotation.set(0, (-270 - 4) * Math.PI / 180, 0)
     this.PlaneTween04.pause();
     this.PlaneTween04.to(Plane04.children[0].rotation, 5, { x: Math.PI * 10 });
-    this.CarnivalTween.to(Plane04.position, 2, { ease: "power1.inOut", y: .65, repeat: 11, yoyo: true }, '-=35');
+    this.CarnivalTween.to(Plane04.position, 2, { ease: Power1.easeInOut, y: .65, repeat: 11, yoyo: true }, '-=35');
     this.CarnivalPlane4.add(Plane04)
 
     this.CarnivalPlane4.position.set(-0.01, 0, .54)
-    this.CarnivalTween.to(this.CarnivalPlane4.rotation, 40, { ease: "power1.inOut", y: this.CarnivalPlane4.rotation.y - Math.PI * 6 }, '-=40');
+    this.CarnivalTween.to(this.CarnivalPlane4.rotation, 40, { ease: Power1.easeInOut, y: this.CarnivalPlane4.rotation.y - Math.PI * 6 }, '-=40');
     this.ParkObjects.push(this.CarnivalPlane4)
     this.ThreeService.scene.add(this.CarnivalPlane4);
 
@@ -780,20 +780,16 @@ export class FirstScene {
     this.Runanimation();
 
     // Mouse
-    // this.MouseRaycaster();
+    this.MouseRaycaster();
   }
 
   MouseRaycaster(){
     this.ThreeService.raycaster.setFromCamera(this.ThreeService.mouse,this.ThreeService.camera);
     var intersect = this.ThreeService.raycaster.intersectObjects(this.ParkObjects,true)
-    let outer = document.querySelector('.cursor .outer');
-    let inner = document.querySelector('.cursor .inner');
     if(intersect.length>0){
-      gsap.to(outer,.2,{attr:{r:22}});
-      gsap.to(inner,.2,{attr:{r:19}});
+      document.body.style.cursor="pointer";
     } else {
-      gsap.to(outer,.2,{attr:{r:13}});
-      gsap.to(inner,.2,{attr:{r:0}});
+      document.body.style.cursor="default";
     }
 
   }
@@ -854,7 +850,7 @@ export class FirstScene {
               this.FerrisAnimation.play().reset();
             }
             this.FerrisWheelShadow();
-            gsap.delayedCall(25, () => {
+            TweenMax.delayedCall(25, () => {
               this.FerrisAnimation = null;
             });
           }
@@ -952,7 +948,7 @@ export class FirstScene {
               this.TrainAnimation.play().reset();
             }
             this.TrainSmoke();
-            gsap.delayedCall(20, () => {
+            TweenMax.delayedCall(20, () => {
               this.TrainAnimation = null;
             });
           }
@@ -969,21 +965,21 @@ export class FirstScene {
       this.SmokeI = 0;
     }
     // Shadow
-    gsap.to(this.TrainPosition[0].position, .1, { x: this.TrainPosition[2].position.x, z: this.TrainPosition[2].position.z, delay: .1 })
-    gsap.to(this.TrainPosition[1].position, .1, { x: this.TrainPosition[3].position.x, z: this.TrainPosition[3].position.z, delay: .1 })
+    TweenMax.to(this.TrainPosition[0].position, .1, { x: this.TrainPosition[2].position.x, z: this.TrainPosition[2].position.z, delay: .1 })
+    TweenMax.to(this.TrainPosition[1].position, .1, { x: this.TrainPosition[3].position.x, z: this.TrainPosition[3].position.z, delay: .1 })
 
     this.TrainPosition[0].rotation.y = this.TrainPosition[2].rotation.y;
     this.TrainPosition[1].rotation.y = this.TrainPosition[3].rotation.y;
     // Position
-    gsap.fromTo(this.Smokes[this.SmokeI].position, 1.6,
+    TweenMax.fromTo(this.Smokes[this.SmokeI].position, 1.6,
       { x: this.SmokePipe[0].position.x, z: this.SmokePipe[0].position.z, y: this.SmokePipe[0].position.y },
       { x: this.SmokePipe[0].position.x + (.3 - Math.random() * .3), z: this.SmokePipe[0].position.z + (.3 - Math.random() * .3), y: this.SmokePipe[0].position.y + Math.random() * .4 + .4 });
     // Scale
-    gsap.fromTo(this.Smokes[this.SmokeI].scale, 1.6,
+    TweenMax.fromTo(this.Smokes[this.SmokeI].scale, 1.6,
       { x: 1, z: 1, y: 1 },
       { x: .1, z: .1, y: .1, ease: "none" });
     // // Opacity
-    gsap.fromTo(this.Smokes[this.SmokeI].material, 1.6,
+    TweenMax.fromTo(this.Smokes[this.SmokeI].material, 1.6,
       { opacity: 1 },
       { opacity: 0, ease: "none" });
     this.SmokeI++;

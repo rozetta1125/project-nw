@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { Injectable } from '@angular/core';
-import { gsap } from 'gsap';
+import { TweenMax,Power1 } from 'gsap';
 import { ThreeService } from './three.service';
 import { Subject } from 'rxjs';
 
@@ -16,13 +16,13 @@ export class NextScene{
   }
 
   private firstClientX:number=0;
-  private CurrentGoal:number=0;
-  private NextGoal:number=15;
+  private CurrentGoal:number=-15;
+  private NextGoal:number=0;
   private onNextLeft:boolean=false;
 
   nextStageFunction(){
-    // this.ScenePhase = 0;
-    // this.ScenePhaseChange.next(this.ScenePhase);
+    this.ScenePhase = -1;
+    this.ScenePhaseChange.next(this.ScenePhase);
     // let Mesh = new THREE.Mesh(new THREE.BoxBufferGeometry(.5,.5,.5))
     // Mesh.position.set(15,0,0);
     // this.ThreeService.scene.add(Mesh);
@@ -59,43 +59,51 @@ export class NextScene{
       if(num>=250){
         this.Succeed();
       } else {
-        gsap.set(this.ThreeService.Goal,{x:(this.CurrentGoal+num*.01)});
-        gsap.set('#nextStage .nextLeft',{css:{left:num+"px"}});
-        gsap.set('#nextStage .mid .svg',{css:{width:(200-num)+"px"}});
+        TweenMax.set(this.ThreeService.Goal,{x:(this.CurrentGoal+num*.01)});
+        TweenMax.set('#nextStage .nextLeft',{css:{left:num+"px"}});
+        TweenMax.set('#nextStage .mid .svg',{css:{width:(200-num)+"px"}});
       }
     }
   }
 
   Succeed(){
+    // Phase, Camera, Goal
     this.ScenePhase += 1;
     this.ScenePhaseChange.next(this.ScenePhase);
     console.log('Go to Scene'+this.ScenePhase);
-    gsap.to(this.ThreeService.Goal,1.5,{ease:"in",x:this.NextGoal});
+    TweenMax.to(this.ThreeService.Goal,2,{ease:Power1.easeInOut,x:this.NextGoal});
     
-
     switch(this.ScenePhase){
       case 1:
-        gsap.to(this.ThreeService.GoalAngle,1.5,{ease:"in",y:2.1,z:7.6});
+        TweenMax.to(this.ThreeService.GoalAngle,1.5,{ease:Power1.easeInOut,y:2.1,z:8});
       break;
       case 2:
-        gsap.to(this.ThreeService.GoalAngle,1.5,{ease:"in",y:1.6});
+        TweenMax.to(this.ThreeService.GoalAngle,1.5,{ease:Power1.easeInOut,y:1.6});
       break;
     }
     this.CurrentGoal+=15;
     this.NextGoal+=15;
 
-    gsap.to('#nextStage',.5,{ease:"in",css:{opacity:0}});
-    gsap.set('#nextStage',{css:{visibility:"hidden"},delay:.4});
+
+    // NextScene Animation 
+    TweenMax.to('#nextStage .nextLeft',.15,{css:{opacity:0},ease:Power1.easeInOut});
+    TweenMax.set('#nextStage .mid',{css:{opacity:0}});
+    TweenMax.to('.active',.3,{xPercent:100,delay:.15,ease:Power1.easeInOut});
+    TweenMax.to('#nextStage',.3,{ease:Power1.easeInOut,css:{opacity:0},delay:.7});
+    TweenMax.set('#nextStage',{css:{visibility:"hidden"},delay:1});
     
     // var offsetl = document.querySelector('#nextStage .nextRight') as HTMLElement;
-    // gsap.to('#nextStage .nextLeft',.2,{css:{left:offsetl.offsetLeft+"px"}});
-    // gsap.to('#nextStage .mid .svg',.2,{css:{width:0+"px"}});
+    // TweenMax.to('#nextStage .nextLeft',.2,{css:{left:offsetl.offsetLeft+"px"}});
+    // TweenMax.to('#nextStage .mid .svg',.2,{css:{width:0+"px"}});
 
+
+    // Remove event
     document.removeEventListener("mousemove", this.Moving, false);
     this.firstClientX=0;
     this.onNextLeft=false;
 
-    gsap.delayedCall(1.5,()=>{
+    // Restart After ?s
+    TweenMax.delayedCall(3.5,()=>{
       this.restart();
     })
   }
@@ -103,16 +111,20 @@ export class NextScene{
   
   nextCancel(){
     console.log('cancel')
-    gsap.to('#nextStage .nextLeft',.4,{ease:"out",css:{left:0+"px"}});
-    gsap.to('#nextStage .mid .svg',.4,{ease:"out",css:{width:200+"px"}});
-    gsap.to(this.ThreeService.Goal,.4,{ease:"out",x:this.CurrentGoal})
+    TweenMax.to('#nextStage .nextLeft',.4,{ease:Power1.easeOut,css:{left:0+"px"}});
+    TweenMax.to('#nextStage .mid .svg',.4,{ease:Power1.easeOut,css:{width:200+"px"}});
+    TweenMax.to(this.ThreeService.Goal,.4,{ease:Power1.easeOut,x:this.CurrentGoal})
   }
 
   restart(){
-    gsap.set('#nextStage .nextLeft',{ease:"out",css:{left:0+"px"}});
-    gsap.set('#nextStage .mid .svg',{ease:"out",css:{width:200+"px"}});
-    gsap.to('#nextStage',.5,{ease:"in",css:{opacity:1}});
-    gsap.set('#nextStage',{css:{visibility:"visible"},delay:.5});
+    TweenMax.set('#nextStage .nextLeft',{css:{opacity:1}});
+    TweenMax.set('#nextStage .mid',{css:{opacity:1}});
+    TweenMax.set('.active',{xPercent:0});
+
+    TweenMax.set('#nextStage .nextLeft',{ease:Power1.easeInOut,css:{left:0+"px"}});
+    TweenMax.set('#nextStage .mid .svg',{ease:Power1.easeInOut,css:{width:200+"px"}});
+    TweenMax.to('#nextStage',1,{ease:Power1.easeInOut,css:{opacity:1}});
+    TweenMax.set('#nextStage',{css:{visibility:"visible"},delay:.5});
   }
 }
 
