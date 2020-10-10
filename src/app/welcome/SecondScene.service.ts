@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import * as CANNON from 'cannon';
 import { Injectable } from '@angular/core';
-import { TweenMax,TimelineLite,Power0,Power1 } from 'gsap';
+import { TweenMax,TimelineMax,Power0,Power1 } from 'gsap';
 import { ThreeService } from './three.service';
 import { Resources } from './Resources.service';
 
@@ -26,17 +26,17 @@ export class SecondScene{
     this.GolfString = new THREE.Object3D();
     let material = new THREE.MeshBasicMaterial({color:0xffffff});
     let arrow = new THREE.Mesh(
-      new THREE.CylinderBufferGeometry(.075,.075,.01,3),material
+      new THREE.CylinderBufferGeometry(.08,.08,.01,3),material
     )
-    arrow.position.set(0,0,0.45);
+    arrow.position.set(0,0,0.48);
     let box = new THREE.Mesh(
-      new THREE.BoxBufferGeometry(.05,.01,.1),material
+      new THREE.BoxBufferGeometry(.042,.01,.09),material
     )
-    box.position.set(0,0,0.3);
+    box.position.set(0,0,0.33);
     let box02 = new THREE.Mesh(
-      new THREE.BoxBufferGeometry(.05,.01,.1),material
+      new THREE.BoxBufferGeometry(.042,.01,.09),material
     )
-    box02.position.set(0,0,0.15);
+    box02.position.set(0,0,0.18);
     this.GolfString.add(arrow);
     this.GolfString.add(box);
     this.GolfString.add(box02);
@@ -77,9 +77,10 @@ export class SecondScene{
       //
       this.ThreeService.canvas.removeEventListener("mousemove", this.isGolfing, false);
       this.Golfing=false;
-      TweenMax.set('.circle',{css:{strokeDashoffset: 270}});
-      TweenMax.set('.circle .innerCircle',{css:{strokeDashoffset: 270}});
+      TweenMax.set('.circle',{css:{strokeDashoffset: 345}});
+      TweenMax.set('.circle .innerCircle',{css:{strokeDashoffset: 345}});
       TweenMax.set('.svg-line',{css:{opacity:0}});
+      TweenMax.set('#Golf',{css:{opacity:0}});
 
       this.ThreeService.scene.remove(this.GolfString);
 
@@ -99,6 +100,7 @@ export class SecondScene{
     this.ThreeService.scene.add(this.GolfString);
     TweenMax.set('.circle .innerCircle',{css:{strokeDashoffset: 0}});
     TweenMax.set('.svg-line',{css:{opacity:1}});
+    TweenMax.set('#Golf',{css:{opacity:1}});
   }
 
   CancelSecondScene(){
@@ -167,17 +169,20 @@ export class SecondScene{
     this.world02 = new CANNON.World();
     this.world02.gravity.set(0, 0, 0);
 
-    var shape = new CANNON.Plane();
-    var PlaneBody = new CANNON.Body({ mass: 0,material:this.PlaneMaterial });
-    PlaneBody.addShape(shape);
-    PlaneBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -Math.PI / 2);
-    PlaneBody.position.set(0, -.2, 0);
-    this.world02.addBody(PlaneBody)
-
     this.GolfCMaterial = new CANNON.Material("GolfCMaterial");
     this.GoalMaterial = new CANNON.Material("GoalMaterial");
     this.GolfStageMaterial = new CANNON.Material("GolfStageMaterial");
     this.PlaneMaterial = new CANNON.Material("PlaneMaterial");
+
+
+    // Plane for Goal to land
+    var shape = new CANNON.Plane();
+    var PlaneBody = new CANNON.Body({ mass: 0,material:this.PlaneMaterial });
+    PlaneBody.addShape(shape);
+    PlaneBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -Math.PI / 2);
+    PlaneBody.position.set(0, -.4, 0);
+    this.world02.addBody(PlaneBody)
+
 
     // let Contact = new CANNON.ContactMaterial(this.GolfCMaterial,this.PlaneMaterial,{
     //   // friction:0.01,
@@ -194,19 +199,34 @@ export class SecondScene{
     // this.world02.addContactMaterial(Contact);
     this.debugger = new CannonDebugRenderer(this.ThreeService.scene, this.world02);
 
-    // First time
+    // Create GolfBall Clone
     if(this.GolfClone==null){
+      var light = new THREE.AmbientLight( 0xf5f5f5,2 ); // soft white light
+      this.ThreeService.scene.add( light );
+
+      var geometry = new THREE.SphereBufferGeometry( .09, 32, 16 );
+      var map = this.ThreeService.textureLoader.load('assets/textures/golfball.jpg');
       // white
+      // var mate = new THREE.MeshPhysicalMaterial( {
+      //   metalness: 0.5,
+      //   roughness: 0.5,
+      //   color: 0xffffff,
+      //   normalMap:map,
+      // });
       let mate = new THREE.MeshMatcapMaterial({
         color:0xffffff,
+        normalMap:map,
+        side:2,
+        normalScale:new THREE.Vector2(4,4),
         matcap:this.RS.SSwhite,
       })
 
+
       // THREE
-      this.GolfClone = new THREE.Mesh(
-        new THREE.SphereBufferGeometry(.09,16,16),
-        mate
-      )
+      // this.GolfClone = this.RS.GolfBall.scene.children[0];
+      // this.GolfClone.material=mate;
+      this.GolfClone =  new THREE.Mesh( geometry, mate );
+      // this.GolfClone.scale.set(10,10,10);
       this.GolfClone.position.set(0,6,0)
     }
   }
@@ -221,6 +241,7 @@ export class SecondScene{
   private GolfString:THREE.Object3D;
   private GolfDistance:number;
   private GolfPercent:number;
+  private GolfPercent02:number;
   RenderGolfCursor(){
     if(this.GolfCannons[this.GolfN] && this.Golfing){
       this.FBpos=this.GolfCannons[this.GolfN].position;
@@ -235,15 +256,16 @@ export class SecondScene{
 
       var maxDistance = 4;
       
-      this.GolfPercent = 270 - (this.GolfDistance/maxDistance * 100)*2.7;
+      this.GolfPercent = 345 - (this.GolfDistance/maxDistance * 100)*3.45;
+      this.GolfPercent02 = Math.round(100-this.GolfPercent/345*100);
+      this.GolfPercent02 > 100 ? this.GolfPercent02=100 : this.GolfPercent02;
+      document.getElementById("Percent").innerHTML=""+ this.GolfPercent02;
       
-
-      // TweenMax.set('.circle',{css:{strokeDashoffset: this.GolfPercent > 0 ? this.GolfPercent : 0}});
-
+      TweenMax.set('.circle',{css:{strokeDashoffset: this.GolfPercent > 0 ? this.GolfPercent : 0}});
 
       var angleRadians = 180 + (Math.atan2(this.ThreeService.BasePosition.y-this.FBasePosition.y,this.ThreeService.BasePosition.x-this.FBasePosition.x) * 180/Math.PI);
-      // TweenMax.set('#lgrad',{attr:{gradientTransform:"rotate("+angleRadians+" 0.5 0.5)"}});
-      // TweenMax.set('.svg-line .line',{attr:{x1:this.FBasePosition.x,y1:this.FBasePosition.y,x2:this.ThreeService.BasePosition.x,y2:this.ThreeService.BasePosition.y}});
+      TweenMax.set('#lgrad',{attr:{gradientTransform:"rotate("+angleRadians+" 0.5 0.5)"}});
+      TweenMax.set('.svg-line .line',{attr:{x1:this.FBasePosition.x,y1:this.FBasePosition.y,x2:this.ThreeService.BasePosition.x,y2:this.ThreeService.BasePosition.y}});
     }
   }
 
@@ -381,10 +403,7 @@ export class SecondScene{
       let k = this.GolfN;
       body.addEventListener('collide',(e)=>{
         if(e.body.material.name=="GoalMaterial"){
-          body.collisionFilterGroup=2;
-          TweenMax.to(this.GolfThrees[k].scale,.25,{x:.2,y:.2,z:.2,ease:Power0.easeNone,delay:.15});
-          TweenMax.to(this.GolfShadows[k].scale,.25,{x:.2,y:.2,z:.2,ease:Power0.easeNone,delay:.15});
-          this.ScoreFunction(body.position);
+          this.ScoreFunction(this.GoalPosition);
         }
       });
 
@@ -397,7 +416,7 @@ export class SecondScene{
       // SHADOW
       let uniforms = {
         tShadow:{value:this.RS.GolfShadow},
-        uShadowColor:{value:new THREE.Color("#a1c69e")},
+        uShadowColor:{value:new THREE.Color("#a5bc98")},
         uAlpha:{value:1}
       }
       let material = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms,depthWrite:false,
@@ -413,18 +432,24 @@ export class SecondScene{
     }
   }
 
-  // 24 for each function call,3 material, 4 usage at the same time.
-  private ScoreMax = 6*3*4;
+  // 10 for each function call * 3 material, 2 usage at the same time.
+  private ScoreMax = 10*3*2;
   private ScoreCurrent = 0;
   private ScoreLast = 0;
   CreateScoreMaterial(){
     // Score
-    let Score01 = new THREE.Mesh(new THREE.BoxBufferGeometry(.05,.08,.005),
-      new THREE.MeshMatcapMaterial({color:0xffffff,matcap:this.RS.SSblue,transparent:true}));
-    let Score02 = new THREE.Mesh(new THREE.BoxBufferGeometry(.08,.05,.005),
-      new THREE.MeshMatcapMaterial({color:0xffffff,matcap:this.RS.SSred,transparent:true}));
-    let Score03 = new THREE.Mesh(new THREE.BoxBufferGeometry(.05,.08,.005),
-      new THREE.MeshMatcapMaterial({color:0xffffff,matcap:this.RS.SSyellow,transparent:true}));
+    // let Score01 = new THREE.Mesh(new THREE.BoxBufferGeometry(.05,.08,.005),
+    //   new THREE.MeshMatcapMaterial({color:0xffffff,matcap:this.RS.SSblue,transparent:true}));
+    // let Score02 = new THREE.Mesh(new THREE.BoxBufferGeometry(.08,.05,.005),
+    //   new THREE.MeshMatcapMaterial({color:0xffffff,matcap:this.RS.SSred,transparent:true}));
+    // let Score03 = new THREE.Mesh(new THREE.BoxBufferGeometry(.05,.08,.005),
+    //   new THREE.MeshMatcapMaterial({color:0xffffff,matcap:this.RS.SSyellow,transparent:true}));
+    let Score01 = new THREE.Mesh(new THREE.CircleBufferGeometry(.045,16),
+    new THREE.MeshMatcapMaterial({color:0xffffff,matcap:this.RS.SSblue,transparent:true,side:2}));
+    let Score02 = new THREE.Mesh(new THREE.CircleBufferGeometry(.045,16),
+      new THREE.MeshMatcapMaterial({color:0xffffff,matcap:this.RS.SSred,transparent:true,side:2}));
+    let Score03 = new THREE.Mesh(new THREE.CircleBufferGeometry(.045,16),
+      new THREE.MeshMatcapMaterial({color:0xffffff,matcap:this.RS.SSyellow,transparent:true,side:2}));
     Score01.position.set(0,5,0)
     Score02.position.set(0,5,0)
     Score03.position.set(0,5,0)
@@ -464,45 +489,48 @@ export class SecondScene{
   }
 
   private ScoreDistance = .25;
-  ScoreFunction(Po:CANNON.Vec3){
-    console.log(this.ScoreCurrent);
+  ScoreFunction(Po:THREE.Vector3){
     if(this.ScoreCurrent >= this.ScoreMax){
-      this.ScoreCurrent=24;
+      this.ScoreCurrent=30;
       this.ScoreLast=0;
     } else {
-      this.ScoreCurrent+=24;
+      this.ScoreCurrent+=30;
     }
 
     var j=0;
     for(var i=this.ScoreLast;i<this.ScoreCurrent;i++){
 
-      var ranX = Po.x + Math.random()*1.2-.6;
-      var ranZ = Po.z + Math.random()*1.2-.6;
+      var ranX00 = Po.x + Math.random()*.2-.1;
+      var ranZ00 = Po.z + Math.random()*.2-.1;
+      var ranY00 = -.1 - Math.random()*.1;
+
+      var ranX = Po.x + Math.random()*1.4-.7;
+      var ranZ = Po.z + Math.random()*1.4-.7;
 
       var distance = this.ThreeService.distanceVec2(ranX,ranZ,Po.x,Po.z);
       if(distance>this.ScoreDistance){
         var randomDelay = j;
-        j+=.01;
+        j+=.004;
 
         // Distance duration
         var DD = (distance - this.ScoreDistance);
 
-        var PoDuration = .35 + DD;
+        var PoDuration = .25 + DD;
         
         // Position
-        TweenMax.fromTo(this.GolfScore[i].position,PoDuration,
-          {x:Po.x,z:Po.z},
+        TweenMax.fromTo(this.GolfScore[i].position,PoDuration*1.2,
+          {x:ranX00,z:ranZ00},
           {x:ranX,z:ranZ,delay:randomDelay,ease:Power1.easeOut});
 
 
-        TweenMax.fromTo(this.GolfScore[i].position,PoDuration/2,{y:Po.y},{ease:Power1.easeOut,y:DD+.4,delay:randomDelay})
-        TweenMax.to(this.GolfScore[i].position,PoDuration/2,{ease:Power1.easeIn,delay:(PoDuration/2)+randomDelay,y:0.28})
+        TweenMax.fromTo(this.GolfScore[i].position,PoDuration/2.2,{y:ranY00},{ease:Power1.easeOut,y:DD*1.2+.1,delay:randomDelay})
+        TweenMax.to(this.GolfScore[i].position,PoDuration/2.2,{ease:Power1.easeIn,delay:(PoDuration/2)+randomDelay,y:-.05})
 
         // Rotation
-        TweenMax.fromTo(this.GolfScore[i].rotation,PoDuration,{x:0,y:0,z:0},{x:Math.random()*24-12,y:Math.random()*24-12,z:Math.random()*24-12,delay:randomDelay,ease:Power0.easeNone});
+        TweenMax.fromTo(this.GolfScore[i].rotation,PoDuration,{x:0,y:0,z:0},{x:Math.random()*20-10,y:Math.random()*20-10,delay:randomDelay,ease:Power0.easeNone});
 
         // Scale
-        TweenMax.fromTo(this.GolfScore[i].scale,PoDuration,{x:1,y:1,z:1},{delay:PoDuration+.1,x:.1,y:.1,z:.1})
+        TweenMax.fromTo(this.GolfScore[i].scale,PoDuration,{x:1,y:1,z:1},{delay:PoDuration/2,x:.1,y:.1,z:.1,ease:Power0.easeNone})
       } else {
         i--;
       }
@@ -521,9 +549,9 @@ export class SecondScene{
   private GolfShadows = [];
   GolfStageCannon(){
     let Stage = new THREE.Object3D();
-    this.ThreeService.scene.add(Stage)
+    this.ThreeService.scene.add(Stage);
 
-    let StageRotation = -25*Math.PI/180;
+    let StageRotation = -26*Math.PI/180;
 
     Stage.position.set(15,-.07,-1.5);
     // Stage.scale.set(1.1,1.1,1.1);
@@ -534,7 +562,7 @@ export class SecondScene{
 
     let uniforms = {
       tShadow:{value:this.RS.WindmillShadow01},
-      uShadowColor:{value:new THREE.Color("#a1c69e")},
+      uShadowColor:{value:new THREE.Color("#a5bc98")},
       uAlpha:{value:1}
     }
     let material = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms,depthWrite:false,
@@ -549,7 +577,7 @@ export class SecondScene{
 
     let uniforms02 = {
       tShadow:{value:this.RS.WindmillShadow02},
-      uShadowColor:{value:new THREE.Color("#a1c69e")},
+      uShadowColor:{value:new THREE.Color("#a5bc98")},
       uAlpha:{value:1}
     }
     let material02 = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms:uniforms02,depthWrite:false,
@@ -595,7 +623,7 @@ export class SecondScene{
     for(var i=0;i<this.RS.Windmill.scene.children.length;i++){
       if(this.RS.Windmill.scene.children[""+i+""].name == "Windmill"){
         let mate01 = new THREE.MeshMatcapMaterial({
-          color:0xffffff,
+          color:0xf5f5f5,
           side:2,
           matcap:this.RS.SSwhite
         })
@@ -613,7 +641,7 @@ export class SecondScene{
           matcap:this.RS.SSStage
         })
         let mate02 = new THREE.MeshMatcapMaterial({
-          color:0xffffff,
+          color:0xeeeeee,
           side:2,
           matcap:this.RS.SSStage02
         })
@@ -626,7 +654,7 @@ export class SecondScene{
           matcap:this.RS.SSStage
         })
         let mate02 = new THREE.MeshMatcapMaterial({
-          color:0xffffff,
+          color:0xeeeeee,
           side:2,
           matcap:this.RS.SSStage02
         })
@@ -650,35 +678,35 @@ export class SecondScene{
 
         // 4 shadow 
         TweenMax.fromTo(StageShadow03.rotation,10,{z:0*Math.PI/180},{z:-360*Math.PI/180,ease:Power0.easeNone,delay:.3,repeat:-1})
-        var ShadowTween = new TimelineLite({repeat:-1,delay:.3,repeatDelay:2.5});
+        var ShadowTween = new TimelineMax({repeat:-1,delay:.3,repeatDelay:2.5});
         ShadowTween.to(StageShadow03.scale,.75,{x:1,y:1,ease:Power0.easeNone,})
         ShadowTween.to(StageShadow03.scale,.75,{x:.3,y:.3,ease:Power0.easeNone,delay:.75})
         ShadowTween.to(StageShadow03.scale,1.75,{x:.45,y:.45,ease:Power0.easeNone,delay:3})
         ShadowTween.to(StageShadow03.scale,.5,{x:.5,y:.5,ease:Power0.easeNone,})
 
         TweenMax.fromTo(StageShadow0302.rotation,10,{z:0*Math.PI/180},{z:-360*Math.PI/180,ease:Power0.easeNone,delay:2.8,repeat:-1})
-        var ShadowTween02 = new TimelineLite({repeat:-1,delay:2.8,repeatDelay:2.5});
+        var ShadowTween02 = new TimelineMax({repeat:-1,delay:2.8,repeatDelay:2.5});
         ShadowTween02.to(StageShadow0302.scale,.75,{x:1,y:1,ease:Power0.easeNone,})
         ShadowTween02.to(StageShadow0302.scale,.75,{x:.3,y:.3,ease:Power0.easeNone,delay:.75})
         ShadowTween02.to(StageShadow0302.scale,1.75,{x:.45,y:.45,ease:Power0.easeNone,delay:3})
         ShadowTween02.to(StageShadow0302.scale,.5,{x:.5,y:.5,ease:Power0.easeNone})
 
         TweenMax.fromTo(StageShadow0303.rotation,10,{z:0*Math.PI/180},{z:-360*Math.PI/180,ease:Power0.easeNone,delay:5.3,repeat:-1})
-        var ShadowTween03 = new TimelineLite({repeat:-1,delay:5.3,repeatDelay:2.5});
+        var ShadowTween03 = new TimelineMax({repeat:-1,delay:5.3,repeatDelay:2.5});
         ShadowTween03.to(StageShadow0303.scale,.75,{x:1,y:1,ease:Power0.easeNone,})
         ShadowTween03.to(StageShadow0303.scale,.75,{x:.3,y:.3,ease:Power0.easeNone,delay:.75})
         ShadowTween03.to(StageShadow0303.scale,1.75,{x:.45,y:.45,ease:Power0.easeNone,delay:3})
         ShadowTween03.to(StageShadow0303.scale,.5,{x:.5,y:.5,ease:Power0.easeNone})
 
         TweenMax.fromTo(StageShadow0304.rotation,10,{z:0*Math.PI/180},{z:-360*Math.PI/180,ease:Power0.easeNone,delay:7.8,repeat:-1})
-        var ShadowTween04 = new TimelineLite({repeat:-1,delay:7.8,repeatDelay:2.5});
+        var ShadowTween04 = new TimelineMax({repeat:-1,delay:7.8,repeatDelay:2.5});
         ShadowTween04.to(StageShadow0304.scale,.75,{x:1,y:1,ease:Power0.easeNone,})
         ShadowTween04.to(StageShadow0304.scale,.75,{x:.3,y:.3,ease:Power0.easeNone,delay:.75})
         ShadowTween04.to(StageShadow0304.scale,1.75,{x:.45,y:.45,ease:Power0.easeNone,delay:3})
         ShadowTween04.to(StageShadow0304.scale,.5,{x:.5,y:.5,ease:Power0.easeNone})
       } else if (this.RS.Windmill.scene.children[""+i+""].name == "Bench"){
         let mate01 = new THREE.MeshMatcapMaterial({
-          color:0xffffff,
+          color:0xeeeeee,
           side:2,
           matcap:this.RS.SSwood
         })
@@ -720,7 +748,7 @@ export class SecondScene{
         this.GolfFlip.push(this.RS.Windmill.scene.children[""+i+""]);
       } else if (this.RS.Windmill.scene.children[""+i+""].name == "Rock"){
         let mate01 = new THREE.MeshMatcapMaterial({
-          color:0xffffff,
+          color:0xeeeeee,
           side:2,
           matcap:this.RS.SSwhite
         })
@@ -754,23 +782,23 @@ export class SecondScene{
 
     // FLAG 
     this.FlagMixer = new THREE.AnimationMixer(this.RS.Flag.scene);
-    this.FlagMixer.timeScale = 1;
+    this.FlagMixer.timeScale = .75;
 
     let animation = this.FlagMixer.clipAction(this.RS.Flag.animations[0]);
     animation.play();
 
-    this.RS.Flag.scene.children[0].scale.set(1,1,1);
+    this.RS.Flag.scene.children[0].scale.set(.95,.95,.95);
     this.RS.Flag.scene.children[0].position.set(0,0,0);
 
     let FlagMate = new THREE.MeshMatcapMaterial({
-      color:0xec1c24,
+      color:0xef5350,
       side:2,
       matcap:this.RS.SSwhite,
       morphTargets:true,
     })
 
     this.RS.Flag.scene.children["0"].material = FlagMate;
-    this.RS.Flag.scene.position.set(.38,.75,-2);
+    this.RS.Flag.scene.position.set(.35,.625,-2);
 
     Stage.add(this.RS.Flag.scene);
 
@@ -800,7 +828,14 @@ export class SecondScene{
     Cube001.addShape(new CANNON.Box(new CANNON.Vec3(sizeX,sizeY,sizeZ)),new CANNON.Vec3(0,0,-.2));
     Cube001.addShape(new CANNON.Box(new CANNON.Vec3(sizeX*.08,.07,sizeZ*.5)),new CANNON.Vec3(-sizeX,.04,-.3-.2));
     Cube001.addShape(new CANNON.Box(new CANNON.Vec3(sizeX*.08,.07,sizeZ*.5)),new CANNON.Vec3(sizeX,.04,-.3-.2));
+    // 4 layer
     var shape = this.CreateCANNONCirclePlane(0,.12,.73,0*Math.PI/180,180*Math.PI/180,20);
+    Cube001.addShape(shape,new CANNON.Vec3(0,0,-.13-.2))
+    var shape = this.CreateCANNONCirclePlane(0,.12,.76,0*Math.PI/180,180*Math.PI/180,20);
+    Cube001.addShape(shape,new CANNON.Vec3(0,0,-.13-.2))
+    var shape = this.CreateCANNONCirclePlane(0,.12,.82,0*Math.PI/180,180*Math.PI/180,20);
+    Cube001.addShape(shape,new CANNON.Vec3(0,0,-.13-.2))
+    var shape = this.CreateCANNONCirclePlane(0,.12,.86,0*Math.PI/180,180*Math.PI/180,20);
     Cube001.addShape(shape,new CANNON.Vec3(0,0,-.13-.2))
 
     this.world02.addBody(Cube001)
@@ -920,8 +955,6 @@ export class SecondScene{
     this.StageCannnonArray.push(Cube004)
 
 
-
-
     sizeX = .142;
     sizeY = .42;
     sizeZ = .03;
@@ -987,6 +1020,7 @@ export class SecondScene{
     this.StageCannnonArray.push(Cube006);
     
 
+    // THREE 07 ( Goal Bottom )
     sizeX = .15;
     sizeY = .2;
     sizeZ = .15;
@@ -999,7 +1033,7 @@ export class SecondScene{
       Ry:0,
       Rz:0,
     }
-    // THREE 07
+
     let Cube07 = new THREE.Mesh(new THREE.BoxBufferGeometry(sizeX*2,sizeY*2,sizeZ*2),StageMaterial);
     Cube07.position.set(CG07.x,CG07.y,CG07.z);
     Cube07.rotation.set(CG07.Rx*Math.PI/180,CG07.Ry*Math.PI/180,CG07.Rz*Math.PI/180);
@@ -1011,15 +1045,52 @@ export class SecondScene{
 
     var quat = new CANNON.Quaternion(.5,0,0,.5);
     quat.normalize();
-    Cube007.addShape(new CANNON.Box(new CANNON.Vec3(.25,.25,.1)),new CANNON.Vec3(0,-0.23,0),quat);
+    Cube007.addShape(new CANNON.Box(new CANNON.Vec3(.25,.25,.1)),new CANNON.Vec3(0,-0.4,0),quat);
     this.world02.addBody(Cube007);
     this.StageCannnonArray.push(Cube007);
-    
-    TweenMax.delayedCall(1,()=>{
+
+
+    // Other Stuff (boxplane, tree, rock, bench)
+    sizeX = .2;
+    sizeY = .2;
+    sizeZ = .2;
+
+    let CG08 = {
+      x:0,
+      y:0,
+      z:0,
+      Rx:0,
+      Ry:0,
+      Rz:0,
+    }
+    // THREE 08
+    let Cube08 = new THREE.Mesh(new THREE.BoxBufferGeometry(sizeX*2,sizeY*2,sizeZ*2),StageMaterial);
+    Cube08.position.set(CG08.x,CG08.y,CG08.z);
+    Cube08.rotation.set(CG08.Rx*Math.PI/180,CG08.Ry*Math.PI/180,CG08.Rz*Math.PI/180);
+    Stage.add(Cube08);
+    this.StageThreeArray.push(Cube08);
+
+    // CANNON 08
+    let Cube008 = new CANNON.Body({mass:0,material:this.GolfStageMaterial});
+
+    var quat = new CANNON.Quaternion(.5,0,0,.5);
+    quat.normalize();
+    Cube008.addShape(new CANNON.Box(new CANNON.Vec3(5,10,.1)),new CANNON.Vec3(5.25,-.225,0),quat);
+    Cube008.addShape(new CANNON.Box(new CANNON.Vec3(5,10,.1)),new CANNON.Vec3(-5.25,-.225,0),quat);
+    Cube008.addShape(new CANNON.Box(new CANNON.Vec3(5,5,.1)),new CANNON.Vec3(0,-.225,-8),quat);
+    Cube008.addShape(new CANNON.Box(new CANNON.Vec3(5,5,.1)),new CANNON.Vec3(0,-.225,8),quat);
+
+
+    this.world02.addBody(Cube008);
+    this.StageCannnonArray.push(Cube008);
+
+
+    TweenMax.delayedCall(2,()=>{
       this.SetStageCannonPosition();
     })
   }
 
+  private GoalPosition = new THREE.Vector3();
   SetStageCannonPosition(){
     var Position = new THREE.Vector3();
     var Quaternion = new THREE.Quaternion();
@@ -1031,6 +1102,11 @@ export class SecondScene{
       // Q
       Quaternion.setFromRotationMatrix(this.StageThreeArray[i].matrixWorld)
       this.StageCannnonArray[i].quaternion.set(Quaternion.x,Quaternion.y,Quaternion.z,Quaternion.w);
+
+      // Goal Position
+      if(i==6){
+        this.GoalPosition.copy(Position);
+      }
     }
   }
 

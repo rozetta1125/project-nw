@@ -75,7 +75,7 @@ export class NextScene{
     
     switch(this.ScenePhase){
       case 1:
-        TweenMax.to(this.ThreeService.GoalAngle,1.5,{ease:Power1.easeInOut,y:2.1,z:8});
+        TweenMax.to(this.ThreeService.GoalAngle,1.5,{ease:Power1.easeInOut,y:2,z:8});
       break;
       case 2:
         TweenMax.to(this.ThreeService.GoalAngle,1.5,{ease:Power1.easeInOut,y:1.6});
@@ -103,7 +103,7 @@ export class NextScene{
     this.onNextLeft=false;
 
     // Restart After ?s
-    TweenMax.delayedCall(3.5,()=>{
+    TweenMax.delayedCall(1,()=>{
       this.restart();
     })
   }

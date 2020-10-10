@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { Injectable } from '@angular/core';
-import { TimelineLite,TweenMax,Power1 } from 'gsap';
+import { TimelineMax,TweenMax,Power1 } from 'gsap';
 import { ThreeService } from './three.service';
 import { Resources } from './Resources.service';
 
@@ -59,7 +59,7 @@ export class FirstScene {
   private SwingS = [];
   private FerrisAnimation;
   private TrainAnimation;
-  private SwingTween = new TimelineLite();
+  private SwingTween = new TimelineMax();
   private SmokePipe = [];
   private TrainPosition = [];
   private FerrisShadow = new THREE.Object3D();
@@ -81,7 +81,7 @@ export class FirstScene {
     let uniforms00 = {
       tShadow: { value: this.RS.SwingShadow01 },
       uShadowColor: { value: new THREE.Color("#000000") },
-      uAlpha: { value: .4 }
+      uAlpha: { value: .5 }
     }
     let material00 = new THREE.ShaderMaterial({
       wireframe: false, transparent: true, uniforms: uniforms00, depthWrite: false,
@@ -174,6 +174,7 @@ export class FirstScene {
           matcap: this.RS.FSblue
         })
         this.RS.Swing.scene.children["" + i + ""].material = mate01;
+        // this.RS.Swing.scene.remove(this.RS.Swing.scene.children["" + i + ""])
       } else {
         let mate01 = new THREE.MeshMatcapMaterial({
           color: 0xffffff,
@@ -255,7 +256,7 @@ export class FirstScene {
     let uniforms = {
       tShadow: { value: this.RS.CarnivalShadow01 },
       uShadowColor: { value: new THREE.Color("#000000") },
-      uAlpha: { value: .32 }
+      uAlpha: { value: .35 }
     }
     let material = new THREE.ShaderMaterial({
       wireframe: false, transparent: true, uniforms, depthWrite: false,
@@ -263,7 +264,7 @@ export class FirstScene {
       fragmentShader: document.getElementById('fragmentShader').textContent
     });
 
-    let shadow = new THREE.Mesh(new THREE.PlaneBufferGeometry(.66, .66), material)
+    let shadow = new THREE.Mesh(new THREE.PlaneBufferGeometry(.7, .7), material)
     shadow.rotation.set(-Math.PI / 2, 0, 0)
     shadow.position.set(-0.603, .16, 0)
     shadow3d.add(shadow);
@@ -439,7 +440,8 @@ export class FirstScene {
           side: 2,
           matcap: this.RS.FSblue
         })
-        this.RS.Train.scene.children[""+i+""].material = mate02
+        this.RS.Train.scene.children[""+i+""].material = mate02;
+        this.RS.Train.scene.children[""+i+""].scale.y=1.4;
       } else if (this.RS.Train.scene.children[i].name == "SmokePipe") {
         let mate02 = new THREE.MeshMatcapMaterial({
           color: 0xffffff,
@@ -531,6 +533,7 @@ export class FirstScene {
           matcap: this.RS.FSwhite
         })
         this.RS.FerrisWheel.scene.children[i].material = mate01
+
         shadow01.position.x = this.RS.FerrisWheel.scene.children[i].position.x - .003
         shadow01.position.z = this.RS.FerrisWheel.scene.children[i].position.z + .08
       } else {
@@ -548,7 +551,7 @@ export class FirstScene {
 
     // 8 Ferris
     this.mixer01 = new THREE.AnimationMixer(this.RS.Ferris.scene);
-    this.mixer01.timeScale = .04;
+    this.mixer01.timeScale = .1;
 
     this.RS.Ferris.scene.scale.set(.9, .9, .9);
     this.RS.Ferris.scene.position.set(.4, .035, -1.02);
@@ -558,9 +561,18 @@ export class FirstScene {
     for (var i = 0; i < this.RS.Ferris.scene.children.length; i++) {
       if (this.RS.Ferris.scene.children[i].name == "F01") {
         this.TweenF01.pause();
-        this.TweenF01.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: .7 })
-        this.TweenF01.to(this.RS.Ferris.scene.children[i].rotation, 2, { z: -.7 });
-        this.TweenF01.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: 0 });
+        var t = .15;
+        this.TweenF01.to(this.RS.Ferris.scene.children[i].rotation, .75, { z: t,ease:Power1.easeOut })
+        this.TweenF01.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: -t*1.2,ease:Power1.easeInOut }) 
+        this.TweenF01.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: t*1.6,ease:Power1.easeInOut })
+        this.TweenF01.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: -t*1.6,ease:Power1.easeInOut })
+        this.TweenF01.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: t*1.2,ease:Power1.easeInOut })
+        this.TweenF01.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: -t*1.2,ease:Power1.easeInOut })
+        this.TweenF01.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: t*.6,ease:Power1.easeInOut })
+        this.TweenF01.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: -t*.6,ease:Power1.easeInOut })
+        this.TweenF01.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: 0,ease:Power1.easeInOut })
+
+
         let mate01 = new THREE.MeshMatcapMaterial({
           color: 0xffffff,
           side: 2,
@@ -575,9 +587,16 @@ export class FirstScene {
         this.RS.Ferris.scene.children[i].children[0].material = mate01
       } else if (this.RS.Ferris.scene.children[i].name == "F02") {
         this.TweenF02.pause();
-        this.TweenF02.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: .7 })
-        this.TweenF02.to(this.RS.Ferris.scene.children[i].rotation, 2, { z: -.7 });
-        this.TweenF02.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: 0 });
+        var t = .15;
+        this.TweenF02.to(this.RS.Ferris.scene.children[i].rotation, .75, { z: t,ease:Power1.easeOut })
+        this.TweenF02.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: -t*1.2,ease:Power1.easeInOut }) 
+        this.TweenF02.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: t*1.6,ease:Power1.easeInOut })
+        this.TweenF02.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: -t*1.6,ease:Power1.easeInOut })
+        this.TweenF02.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: t*1.2,ease:Power1.easeInOut })
+        this.TweenF02.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: -t*1.2,ease:Power1.easeInOut })
+        this.TweenF02.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: t*.6,ease:Power1.easeInOut })
+        this.TweenF02.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: -t*.6,ease:Power1.easeInOut })
+        this.TweenF02.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: 0,ease:Power1.easeInOut })
         let mate01 = new THREE.MeshMatcapMaterial({
           color: 0xffffff,
           side: 2,
@@ -592,9 +611,16 @@ export class FirstScene {
         this.RS.Ferris.scene.children[i].children[0].material = mate01
       } else if (this.RS.Ferris.scene.children[i].name == "F03") {
         this.TweenF03.pause();
-        this.TweenF03.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: .7 })
-        this.TweenF03.to(this.RS.Ferris.scene.children[i].rotation, 2, { z: -.7 });
-        this.TweenF03.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: 0 });
+        var t = .15;
+        this.TweenF03.to(this.RS.Ferris.scene.children[i].rotation, .75, { z: t,ease:Power1.easeOut })
+        this.TweenF03.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: -t*1.2,ease:Power1.easeInOut }) 
+        this.TweenF03.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: t*1.6,ease:Power1.easeInOut })
+        this.TweenF03.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: -t*1.6,ease:Power1.easeInOut })
+        this.TweenF03.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: t*1.2,ease:Power1.easeInOut })
+        this.TweenF03.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: -t*1.2,ease:Power1.easeInOut })
+        this.TweenF03.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: t*.6,ease:Power1.easeInOut })
+        this.TweenF03.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: -t*.6,ease:Power1.easeInOut })
+        this.TweenF03.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: 0,ease:Power1.easeInOut })
         let mate01 = new THREE.MeshMatcapMaterial({
           color: 0xffffff,
           side: 2,
@@ -609,9 +635,16 @@ export class FirstScene {
         this.RS.Ferris.scene.children[i].children[0].material = mate01
       } else if (this.RS.Ferris.scene.children[i].name == "F04") {
         this.TweenF04.pause();
-        this.TweenF04.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: .7 })
-        this.TweenF04.to(this.RS.Ferris.scene.children[i].rotation, 2, { z: -.7 });
-        this.TweenF04.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: 0 });
+        var t = .15;
+        this.TweenF04.to(this.RS.Ferris.scene.children[i].rotation, .75, { z: t,ease:Power1.easeOut })
+        this.TweenF04.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: -t*1.2,ease:Power1.easeInOut }) 
+        this.TweenF04.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: t*1.6,ease:Power1.easeInOut })
+        this.TweenF04.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: -t*1.6,ease:Power1.easeInOut })
+        this.TweenF04.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: t*1.2,ease:Power1.easeInOut })
+        this.TweenF04.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: -t*1.2,ease:Power1.easeInOut })
+        this.TweenF04.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: t*.6,ease:Power1.easeInOut })
+        this.TweenF04.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: -t*.6,ease:Power1.easeInOut })
+        this.TweenF04.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: 0,ease:Power1.easeInOut })
         let mate01 = new THREE.MeshMatcapMaterial({
           color: 0xffffff,
           side: 2,
@@ -626,9 +659,16 @@ export class FirstScene {
         this.RS.Ferris.scene.children[i].children[0].material = mate01
       } else if (this.RS.Ferris.scene.children[i].name == "F05") {
         this.TweenF05.pause();
-        this.TweenF05.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: .7 })
-        this.TweenF05.to(this.RS.Ferris.scene.children[i].rotation, 2, { z: -.7 });
-        this.TweenF05.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: 0 });
+        var t = .15;
+        this.TweenF05.to(this.RS.Ferris.scene.children[i].rotation, .75, { z: t,ease:Power1.easeOut })
+        this.TweenF05.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: -t*1.2,ease:Power1.easeInOut }) 
+        this.TweenF05.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: t*1.6,ease:Power1.easeInOut })
+        this.TweenF05.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: -t*1.6,ease:Power1.easeInOut })
+        this.TweenF05.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: t*1.2,ease:Power1.easeInOut })
+        this.TweenF05.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: -t*1.2,ease:Power1.easeInOut })
+        this.TweenF05.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: t*.6,ease:Power1.easeInOut })
+        this.TweenF05.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: -t*.6,ease:Power1.easeInOut })
+        this.TweenF05.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: 0,ease:Power1.easeInOut })
         let mate01 = new THREE.MeshMatcapMaterial({
           color: 0xffffff,
           side: 2,
@@ -643,9 +683,16 @@ export class FirstScene {
         this.RS.Ferris.scene.children[i].children[0].material = mate01
       } else if (this.RS.Ferris.scene.children[i].name == "F06") {
         this.TweenF06.pause();
-        this.TweenF06.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: .7 })
-        this.TweenF06.to(this.RS.Ferris.scene.children[i].rotation, 2, { z: -.7 });
-        this.TweenF06.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: 0 });
+        var t = .15;
+        this.TweenF06.to(this.RS.Ferris.scene.children[i].rotation, .75, { z: t,ease:Power1.easeOut })
+        this.TweenF06.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: -t*1.2,ease:Power1.easeInOut }) 
+        this.TweenF06.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: t*1.6,ease:Power1.easeInOut })
+        this.TweenF06.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: -t*1.6,ease:Power1.easeInOut })
+        this.TweenF06.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: t*1.2,ease:Power1.easeInOut })
+        this.TweenF06.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: -t*1.2,ease:Power1.easeInOut })
+        this.TweenF06.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: t*.6,ease:Power1.easeInOut })
+        this.TweenF06.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: -t*.6,ease:Power1.easeInOut })
+        this.TweenF06.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: 0,ease:Power1.easeInOut })
         let mate01 = new THREE.MeshMatcapMaterial({
           color: 0xffffff,
           side: 2,
@@ -660,9 +707,16 @@ export class FirstScene {
         this.RS.Ferris.scene.children[i].children[0].material = mate01
       } else if (this.RS.Ferris.scene.children[i].name == "F07") {
         this.TweenF07.pause();
-        this.TweenF07.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: .7 })
-        this.TweenF07.to(this.RS.Ferris.scene.children[i].rotation, 2, { z: -.7 });
-        this.TweenF07.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: 0 });
+        var t = .15;
+        this.TweenF07.to(this.RS.Ferris.scene.children[i].rotation, .75, { z: t,ease:Power1.easeOut })
+        this.TweenF07.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: -t*1.2,ease:Power1.easeInOut }) 
+        this.TweenF07.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: t*1.6,ease:Power1.easeInOut })
+        this.TweenF07.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: -t*1.6,ease:Power1.easeInOut })
+        this.TweenF07.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: t*1.2,ease:Power1.easeInOut })
+        this.TweenF07.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: -t*1.2,ease:Power1.easeInOut })
+        this.TweenF07.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: t*.6,ease:Power1.easeInOut })
+        this.TweenF07.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: -t*.6,ease:Power1.easeInOut })
+        this.TweenF07.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: 0,ease:Power1.easeInOut })
         let mate01 = new THREE.MeshMatcapMaterial({
           color: 0xffffff,
           side: 2,
@@ -677,9 +731,16 @@ export class FirstScene {
         this.RS.Ferris.scene.children[i].children[0].material = mate01
       } else if (this.RS.Ferris.scene.children[i].name == "F08") {
         this.TweenF08.pause();
-        this.TweenF08.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: .7 })
-        this.TweenF08.to(this.RS.Ferris.scene.children[i].rotation, 2, { z: -.7 });
-        this.TweenF08.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: 0 });
+        var t = .15;
+        this.TweenF08.to(this.RS.Ferris.scene.children[i].rotation, .75, { z: t,ease:Power1.easeOut })
+        this.TweenF08.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: -t*1.2,ease:Power1.easeInOut }) 
+        this.TweenF08.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: t*1.6,ease:Power1.easeInOut })
+        this.TweenF08.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: -t*1.6,ease:Power1.easeInOut })
+        this.TweenF08.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: t*1.2,ease:Power1.easeInOut })
+        this.TweenF08.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: -t*1.2,ease:Power1.easeInOut })
+        this.TweenF08.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: t*.6,ease:Power1.easeInOut })
+        this.TweenF08.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: -t*.6,ease:Power1.easeInOut })
+        this.TweenF08.to(this.RS.Ferris.scene.children[i].rotation, 1, { z: 0,ease:Power1.easeInOut })
         let mate01 = new THREE.MeshMatcapMaterial({
           color: 0xffffff,
           side: 2,
@@ -821,23 +882,24 @@ export class FirstScene {
     }
   }
 
-  private TweenF01 = new TimelineLite();
-  private TweenF02 = new TimelineLite();
-  private TweenF03 = new TimelineLite();
-  private TweenF04 = new TimelineLite();
-  private TweenF05 = new TimelineLite();
-  private TweenF06 = new TimelineLite();
-  private TweenF07 = new TimelineLite();
-  private TweenF08 = new TimelineLite();
-  private CarnivalTween = new TimelineLite();
-  private PlaneTween01 = new TimelineLite();
-  private PlaneTween02 = new TimelineLite();
-  private PlaneTween03 = new TimelineLite();
-  private PlaneTween04 = new TimelineLite();
+  private TweenF01 = new TimelineMax();
+  private TweenF02 = new TimelineMax();
+  private TweenF03 = new TimelineMax();
+  private TweenF04 = new TimelineMax();
+  private TweenF05 = new TimelineMax();
+  private TweenF06 = new TimelineMax();
+  private TweenF07 = new TimelineMax();
+  private TweenF08 = new TimelineMax();
+  private CarnivalTween = new TimelineMax();
+  private PlaneTween01 = new TimelineMax();
+  private PlaneTween02 = new TimelineMax();
+  private PlaneTween03 = new TimelineMax();
+  private PlaneTween04 = new TimelineMax();
   FirstSceneClickEvent() {
     this.ThreeService.raycaster.setFromCamera(this.ThreeService.mouse, this.ThreeService.camera);
     var intersect = this.ThreeService.raycaster.intersectObjects(this.ParkObjects, true)
     if (intersect.length > 0) {
+      console.log(intersect[0].object.name)
       switch (intersect[0].object.name) {
         case "FerrisWheel00":
         case "FerrisWheel01":
@@ -847,11 +909,14 @@ export class FirstScene {
             for (var i = 0; i < this.RS.Ferris.animations.length; i++) {
               this.FerrisAnimation = this.mixer01.clipAction(this.RS.Ferris.animations[i]);
               this.FerrisAnimation.setLoop(THREE.LoopOnce);
-              this.FerrisAnimation.play().reset();
+              this.FerrisAnimation.clampWhenFinished = true;
+              this.FerrisAnimation.reset();
+              this.FerrisAnimation.play();
             }
             this.FerrisWheelShadow();
             TweenMax.delayedCall(25, () => {
               this.FerrisAnimation = null;
+              console.log('asdf')
             });
           }
           break;

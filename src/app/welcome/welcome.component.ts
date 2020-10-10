@@ -65,29 +65,33 @@ export class WelcomeComponent implements OnInit {
   }
 
   Start(){
-    this.FS.InitFirstScene();
-    this.SS.InitSecondScene();
-    this.NS.nextStageFunction();
+    // this.FS.InitFirstScene();
+    // this.SS.InitSecondScene();
+    // this.NS.nextStageFunction();
     
     // gradient
     // var rule = CSSRulePlugin.getRule(".canvas:before");
 
-    this.NS.ScenePhaseChange.subscribe((value)=>{
-      switch(value){
-        case 1: 
-          document.getElementById('Main').classList.add('BG2');
-          this.FS.CancelFirstScene();
-          this.SS.StartSecondScene();
-          this.TS.InitThirdScene();
-        break;
-        case 2:
-          TweenLite.set('.Background',{css:{background:"linear-gradient( to bottom,#c9e9f2 0%,#c9e9f2 33%,#aee3f2 33%,#aee3f2 100%)"}});
-          document.getElementById('Main').classList.remove('BG2');
-          this.SS.CancelSecondScene();
-          this.TS.StartThirdScene();
-        break;
-      }
-    });
+    // this.NS.ScenePhaseChange.subscribe((value)=>{
+    //   switch(value){
+    //     case 1: 
+    //       document.getElementById('Main').classList.add('BG2');
+    //       this.FS.CancelFirstScene();
+    //       this.SS.StartSecondScene();
+    //       this.TS.InitThirdScene();
+    //     break;
+    //     case 2:
+    //       TweenLite.set('.Background',{css:{background:"linear-gradient( to bottom,#c9e9f2 0%,#c9e9f2 31%,#aee3f2 31%,#aee3f2 100%)"}});
+    //       document.getElementById('Main').classList.remove('BG2');
+    //       this.SS.CancelSecondScene();
+    //       this.TS.StartThirdScene();
+    //     break;
+    //   }
+    // });
+
+    // testing
+    this.TS.InitThirdScene();
+    this.TS.StartThirdScene();
   }
 
   // render() {

@@ -40,7 +40,7 @@ export class ThirdScene{
       color:0xeeeeee,
       linewidth:.0012,
     })
-    // this.CreateGiftBalloon(2,3,0);
+    this.CreateGiftBalloon(25,3,0);
 
     
     // this.RS.Lid.scene.position.set(15,2,0)
@@ -58,9 +58,10 @@ export class ThirdScene{
   AddEvent(){
     this.ThreeService.canvas.addEventListener("click", throttle(this.ClickEvent,600));
     
-    this.ThreeService.canvas.addEventListener("mousedown", this.MouseUp);
 
-    this.ThreeService.canvas.addEventListener("mouseup", this.MouseDown);
+    // For Cut the rope
+    // this.ThreeService.canvas.addEventListener("mousedown", this.MouseUp);
+    // this.ThreeService.canvas.addEventListener("mouseup", this.MouseDown);
   }
 
   ClickEvent = ()=>{  
@@ -73,7 +74,7 @@ export class ThirdScene{
   
   MouseUp = (e)=>{
     if (e.which == 1) {
-      this.CursorBegin();
+      // this.CursorBegin();
       this.ThreeService.canvas.addEventListener("mousemove", this.MoveEvent,false);
     }
   }
@@ -641,14 +642,13 @@ export class ThirdScene{
 
 
     for(var i=0;i<3;i++){
-      // let delay = (i+1)*.6;
-      // this.ThreeService.scene.add(this.BubbleArray[i]);
-      // TweenMax.fromTo(this.BubbleArray[i].scale,1.8,{x:.04,y:.04,z:.04},{ease:Power0.easeNone,x:.18,y:.18,z:.18,delay:delay,repeat:-1,repeatDelay:0});
+      let delay = (i+1)*.6;
+      this.ThreeService.scene.add(this.BubbleArray[i]);
+      TweenMax.fromTo(this.BubbleArray[i].scale,1.8,{x:.04,y:.04,z:.04},{ease:Power0.easeNone,x:.18,y:.18,z:.18,delay:delay,repeat:-1,repeatDelay:0});
 
-      // TweenMax.fromTo(this.BubbleArray[i].position,1.8,{y:1.5},{ease:Power0.easeNone,y:2.04,delay:delay,repeat:-1,repeatDelay:0});
-      // TweenMax.to(this.BubbleArray[i].position,.9,{ease:Power0.easeNone,x:"-=.075",delay:delay,repeat:-1,repeatDelay:.9});
-      // TweenMax.to(this.BubbleArray[i].position,.9,{ease:Power0.easeNone,x:"+=.075",delay:.8+delay,repeat:-1,repeatDelay:.9});
-      
+      TweenMax.fromTo(this.BubbleArray[i].position,1.8,{y:1.5},{ease:Power0.easeNone,y:2.04,delay:delay,repeat:-1,repeatDelay:0});
+
+      TweenMax.to(this.BubbleArray[i].position,.9,{ease:Power0.easeNone,x:"-=.05",delay:delay,repeat:-1,repeatDelay:.9});      
     }
   }
 
@@ -904,6 +904,7 @@ export class ThirdScene{
       var s = this.RS.Balloon.scene;
       s.scale.set(1.15,1.15,1.15)
       s.children["0"].position.set(0,0,0);
+      s.name="BalloonScene";
       let mate01 = new THREE.MeshMatcapMaterial({
         color:0xffffff,
         side:2,
@@ -912,6 +913,7 @@ export class ThirdScene{
         matcap:this.RS.TSred
       })
       s.children["0"].material=mate01;
+      this.ThirdSceneObject.push(s)
       E.Balloon3d.add(s);
 
   
@@ -932,7 +934,7 @@ export class ThirdScene{
       E.BalloonBody.linearDamping = linearDamping;
       this.world03.addBody(E.BalloonBody);
   
-      E.BalloonBody.position.set( Px, Py-.3, Pz);
+      E.BalloonBody.position.set( Px, Py-.375, Pz);
       
       // Balloon Constraint
       var c = new CANNON.PointToPointConstraint(E.BalloonBody,new CANNON.Vec3(0,.15,0),E.GBBody,new CANNON.Vec3(0,-.15,0));
@@ -1147,24 +1149,14 @@ export class ThirdScene{
   
       this.ThreeService.scene.add(E.Shadow);
   
-      TweenMax.delayedCall(Math.random()*1+1,()=>{
-        TweenMax.to(E.GBBody.position,1.8,{x:"+=.4",ease:Power1.easeIn});
-        TweenMax.to(E.GBBody.position,1.8,{x:"+=.4",ease:Power1.easeOut,delay:1.5});
-        TweenMax.to(E.GBBody.position,1.8,{z:"+=.2",ease:Power1.easeIn});
-        TweenMax.to(E.GBBody.position,1.8,{z:"-=.2",ease:Power1.easeOut,delay:1.5});
-  
-        TweenMax.to(E.GBBody.position,0,{repeat:15,repeatDelay:3,
-          onRepeat:()=>{
-            // TweenMax.to(E.GB.position,2,{x:"+=.4",ease:Power1.easeIn});
-            // TweenMax.to(E.GB.position,2,{x:"+=.4",ease:Power1.easeOut,delay:2,});
-            if(!E.State){
-              TweenMax.to(E.GBBody.position,1.8,{x:"+=.4",ease:Power1.easeIn});
-              TweenMax.to(E.GBBody.position,1.8,{x:"+=.4",ease:Power1.easeOut,delay:1.5});
-              TweenMax.to(E.GBBody.position,1.8,{z:"+=.2",ease:Power1.easeIn});
-              TweenMax.to(E.GBBody.position,1.8,{z:"-=.2",ease:Power1.easeOut,delay:1.5});
-            }
-          }});
-      })
+
+      TweenMax.to(E.GBBody.position,3,{repeat:15,repeatDelay:0,
+        onRepeat:()=>{
+          if(!E.State){
+            TweenMax.to(E.GBBody.position,2,{x:"+=.4",z:"+=.3",ease:Power1.easeIn});
+            TweenMax.to(E.GBBody.position,2,{x:"+=.4",z:"-=.3",ease:Power1.easeOut,delay:1.5});
+          }
+        }});
     }
   }
 
@@ -1545,6 +1537,11 @@ export class ThirdScene{
             this.ThreeService.scene.remove(intersect[0].object.parent.parent.parent);
           })
           break;
+        case "BalloonScene":
+          intersect[0].object.parent.parent.remove(intersect[0].object.parent)
+          // intersect[0].object.parent.remove();
+          
+        break;
       }
     }
   }
@@ -1693,6 +1690,10 @@ export class ThirdScene{
         this.CutGB(intersect[""+j+""].object.id,intersect[""+j+""].point);
       }
     }
+  }
+
+  POPBalloon(id,Ipoint:THREE.Vector3){
+    
   }
 
   CutGB(id,Ipoint:THREE.Vector3){

@@ -19,8 +19,8 @@
 //   // background: linear-gradient(
 //   //   to bottom,
 //   //   #f0d4c8 0%,
-//   //   #f0d4c8 33%,
-//   //   #eee2d9 33%,
+//   //   #f0d4c8 31%,
+//   //   #eee2d9 31%,
 //   //   #eee2d9 100%
 //   // );
 //   // background: linear-gradient(
@@ -47,8 +47,8 @@
 //   background: linear-gradient(
 //     to bottom,
 //     #f0d4c8 0%,
-//     #f0d4c8 33%,
-//     #eee2d9 33%,
+//     #f0d4c8 31%,
+//     #eee2d9 31%,
 //     #eee2d9 100%
 //   );
 //   opacity: 1;
@@ -70,9 +70,19 @@
   background: linear-gradient(
     to bottom,
     #f0d4c8 0%,
-    #f0d4c8 33%,
-    #eee2d9 33%,
+    #f0d4c8 31%,
+    #eee2d9 31%,
     #eee2d9 100%
+  );
+  background:linear-gradient(
+    to bottom,
+    #e5c2b6 0%,
+    #e5c2b6 31%,
+    #e8d8cd 31%,
+    #e8d8cd 100%
+  );
+  background: linear-gradient(
+    to bottom,#c9e9f2 0%,#c9e9f2 31%,#aee3f2 31%,#aee3f2 100%
   );
   // background: linear-gradient(
   //   to bottom,
@@ -97,16 +107,16 @@
   // background: linear-gradient(
   //   to bottom,
   // #f0d4c8 0%,
-  // #f0d4c8 33%,
-  // #eee2d9 33%,
+  // #f0d4c8 31%,
+  // #eee2d9 31%,
   // #eee2d9 100%
   // );
   background: linear-gradient(
     to bottom,
-  #bbdeb8 0%,
-  #bbdeb8 33%,
-  #cce6ca 33%,
-  #cce6ca 100%
+  #bad2ad 0%,
+  #bad2ad 31%,
+  #cdd9c6 31%,
+  #cdd9c6 100%
   );
   opacity: 0;
   transition: opacity .8s;
@@ -133,50 +143,31 @@
     @media (max-width: 599px) { @content; }
 }
 
-#cursor{
+#Golf{
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  pointer-events: none;
+  width: 200px;
+  height: 200px;
+  // .svg-cursor{
+  //     transform-origin: 25px 25px;
+  // }
+  .circle{
     position: absolute;
-    top: 0;
-    left: 0;
-    pointer-events: none;
-    width: 50px;
-    height: 50px;
-    transform: translate(-25px,-25px);
-    .svg-cursor{
-        transform-origin: 25px 25px;
-    }
-    .circle{
-        position: absolute;
-        top:0;
-        left:0;
-        transform: translate(-25px,-125px) rotate(90deg);
-        stroke-dasharray:270;
-        stroke-dashoffset: 270;
-    }
-    .outer{
-        width: 22px;
-        height: 22px;
-        border:none;
-        // border:3px solid #d0b17b;
-        background: #d0b17b;
-        border-radius: 50%;
-        top:0;
-        left:0;
-        right:0;
-        bottom: 0;
-        position: absolute;
-    }
-    .dot{
-        position: absolute;
-        transform: scale(0.75);
-        top:18px;
-        left:18px;
-        right:0;
-        bottom: 0;
-        width:10px;
-        height: 10px;
-        background: #d0b17b;
-        border-radius: 50%;
-    }
+    top:0;
+    left:0;
+    transform: translate(-100px,-200px) rotate(90deg);
+    stroke-dasharray:345;
+    stroke-dashoffset: 345;
+  }
+  h1{
+    color:#fff;
+    text-align: center;
+    transform: translate(-100px, -145px);
+    font-size: 2.2rem;
+  }
 }
 .svg-line{
     width: 100%;

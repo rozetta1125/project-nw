@@ -78,15 +78,15 @@ export class Resources{
   TSyellow;
   ColorResource(){
     // 1
-    this.textureLoader.load('assets/matcaps/01/F5F5F5.png',(texture)=>{ this.FSwhite=texture; this.FSwhite.encoding=THREE.sRGBEncoding; });
-    this.textureLoader.load('assets/matcaps/01/97ADD9.png',(texture)=>{ this.FSblue=texture; this.FSblue.encoding=THREE.sRGBEncoding; });
+    this.textureLoader.load('assets/matcaps/01/F0F0F003.png',(texture)=>{ this.FSwhite=texture; this.FSwhite.encoding=THREE.sRGBEncoding; });
+    this.textureLoader.load('assets/matcaps/01/97ADD902.png',(texture)=>{ this.FSblue=texture; this.FSblue.encoding=THREE.sRGBEncoding; });
     this.textureLoader.load('assets/matcaps/01/E7ABB1.png',(texture)=>{ this.FSpink=texture; this.FSpink.encoding=THREE.sRGBEncoding; });
 
     // 2
     this.textureLoader.load('assets/matcaps/02/F5F5F5.png',(texture)=>{ this.SSwhite=texture; this.SSwhite.encoding=THREE.sRGBEncoding; });
     this.textureLoader.load('assets/matcaps/02/wood.png',(texture)=>{ this.SSwood=texture; this.SSwood.encoding=THREE.sRGBEncoding; });
     this.textureLoader.load('assets/matcaps/02/tree.png',(texture)=>{ this.SStree=texture; this.SStree.encoding=THREE.sRGBEncoding; });
-    this.textureLoader.load('assets/matcaps/02/blue.png',(texture)=>{ this.SSblue=texture; this.SSblue.encoding=THREE.sRGBEncoding; });
+    this.textureLoader.load('assets/matcaps/02/aebfda.png',(texture)=>{ this.SSblue=texture; this.SSblue.encoding=THREE.sRGBEncoding; });
     this.textureLoader.load('assets/matcaps/02/red.png',(texture)=>{ this.SSred=texture; this.SSred.encoding=THREE.sRGBEncoding; });
     this.textureLoader.load('assets/matcaps/02/yellow.png',(texture)=>{ this.SSyellow=texture; this.SSyellow.encoding=THREE.sRGBEncoding; });
 
@@ -136,7 +136,7 @@ export class Resources{
     this.loader.load('assets/model/Swing.glb',(gltf)=>{ this.Swing = gltf;});
     this.loader.load('assets/model/CarnivalPlane.glb',(gltf)=>{ this.CarnivalPlane = gltf;});
     this.loader.load('assets/model/FerrisWheel.glb',(gltf)=>{ this.FerrisWheel = gltf;});
-    this.loader.load('assets/model/Ferris.glb',(gltf)=>{ this.Ferris = gltf;});
+    this.loader.load('assets/model/Ferris02.glb',(gltf)=>{ this.Ferris = gltf;});
     this.loader.load('assets/model/Train.glb',(gltf)=>{ this.Train = gltf;});
   }
 
@@ -147,16 +147,19 @@ export class Resources{
   WindmillShadow03;
   Windmill;
   Flag;
-
+  GolfBallMap;
+  GolfBall;
   
   SecondSceneResource(){
     this.textureLoader.load('assets/shadow/Golf.png',(texture)=>{ this.GolfShadow=texture; });
     this.textureLoader.load('assets/shadow/Windmill01.png',(texture)=>{ this.WindmillShadow01=texture; });
     this.textureLoader.load('assets/shadow/Windmill02.png',(texture)=>{ this.WindmillShadow02=texture; });
     this.textureLoader.load('assets/shadow/Windmill03.png',(texture)=>{ this.WindmillShadow03=texture; });
+    this.textureLoader.load('assets/textures/golfball.jpg',(texture)=>{ this.GolfBallMap=texture; });
 
-    this.loader.load('assets/model/Windmill05.glb',(gltf)=>{ this.Windmill = gltf; });
+    this.loader.load('assets/model/Windmill07.glb',(gltf)=>{ this.Windmill = gltf; });
     this.loader.load('assets/model/Flag001.glb',(gltf)=>{ this.Flag = gltf; });
+    this.loader.load('assets/model/Golf.glb',(gltf)=>{ this.GolfBall = gltf; });
   }
 
   Island;

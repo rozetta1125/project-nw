@@ -88,7 +88,6 @@ export class ThreeService {
       // antialias: true // smooth edges
     });
     this.renderer.gammaOutput=true;
-    this.renderer.gammaFactor=2.2;
     // this.renderer.toneMapping = THREE.LinearToneMapping;
     // this.renderer.toneMappingExposure = 1;
     
@@ -119,14 +118,14 @@ export class ThreeService {
 
 
     // this.GoalAngle.set(0,1.4,8);
-    this.GoalAngle.set(0,1.3,8.25);
+    this.GoalAngle.set(0,1.35,8.4);
     this.camera.position.copy(this.GoalAngle);
     this.camera.lookAt(new THREE.Vector3(-15,0,0));
 
-    this.Goal.set(-15,1,0)
+    this.Goal.set(30,1.1,0)
     this.EasedGoal.copy(this.Goal);
     
-    // TweenMax.to('#cursor',2,{css:{top:"+=500",left:"+=500"}})
+
 
     // TweenMax.delayedCall(1+1,()=>{
     //    document.getElementById('Main').classList.add('BG2');
@@ -203,6 +202,7 @@ export class ThreeService {
 
     this.canvas.addEventListener("mousemove", (e) => {
       this.renderThreePosition(e.x, e.y);
+      TweenMax.set('#Golf',{css:{top:e.y,left:e.x}})
     });
 
 
@@ -327,8 +327,8 @@ export class ThreeService {
 
     let Loader = new THREE.Object3D();
     this.scene.add(Loader);
-    Loader.position.set(-15.35,.2,0);
-    Loader.rotation.set(5*Math.PI/180,0*Math.PI/180,0);
+    Loader.position.set(-15,.2,0);
+    Loader.rotation.set(0*Math.PI/180,0*Math.PI/180,0);
 
 
     let Texture = this.textureLoader.load('assets/shadow/Cylinder.png');
@@ -345,24 +345,38 @@ export class ThreeService {
     shadow.rotation.set(-Math.PI/2,0,0)
 
     this.scene.add(shadow);
-    shadow.position.set(Loader.position.x,-.2,Loader.position.z);
+    shadow.position.set(Loader.position.x,-.2,0);
 
-
+    // Top Shadow Sphere
     let Texture02 = this.textureLoader.load('assets/shadow/Sphere.png');
     let uniforms02 = {
       tShadow:{value:Texture02},
       uShadowColor:{value:new THREE.Color("#d6b3b4")},
       uAlpha:{value:1}
     }
-    // c0a68e
     let material02 = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms:uniforms02,depthWrite:false,
       vertexShader:document.getElementById('vertexShader').textContent,
       fragmentShader:document.getElementById('fragmentShader').textContent})
       
     let shadow02 = new THREE.Mesh(new THREE.PlaneGeometry(.8,.2),material02);
     shadow02.rotation.set(-Math.PI/2,0,0)
-
     shadow02.position.set(0,-.099,.02);
+
+    // Bot Shadow Sphere
+    let Texture03 = this.textureLoader.load('assets/shadow/Sphere02.png');
+    let uniforms03 = {
+      tShadow:{value:Texture03},
+      uShadowColor:{value:new THREE.Color("#c0a68e")},
+      uAlpha:{value:0}
+    }
+    let material03 = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms:uniforms03,depthWrite:false,
+      vertexShader:document.getElementById('vertexShader').textContent,
+      fragmentShader:document.getElementById('fragmentShader').textContent})
+      
+    let shadow03 = new THREE.Mesh(new THREE.PlaneGeometry(5,5),material03);
+    shadow03.rotation.set(-Math.PI/2,0,0);
+    shadow03.position.set(-12,-.2,0);
+    this.scene.add(shadow03);
     
     let GLB;
     this.loader.load('assets/model/Loader03.glb',(gltf)=>{ 
@@ -373,6 +387,7 @@ export class ThreeService {
       for(var i=0;i<GLB.children.length;i++){
         if(GLB.children[i].name=="Sphere"){
           Sphere = GLB.children[i];
+          console.log(Sphere);
           GLB.children[i].material = mate;
         } else {
           Cylinder = GLB.children[i];
@@ -381,8 +396,7 @@ export class ThreeService {
       }
 
 
-      Sphere.position.x-=.3;
-      Sphere.position.z=.02;
+      Sphere.position.x+=.2;
       Sphere.add(shadow02);
       Loader.add(Cylinder);
       Loader.add(Sphere);
@@ -390,13 +404,54 @@ export class ThreeService {
 
 
       this.Loader.next(true);
-      TweenMax.to(shadow.position,1,{x:"+=.6",ease:Power1.easeInOut,repeat:-1,yoyo:true})
-      TweenMax.to(Loader.position,1,{x:"+=.6",ease:Power1.easeInOut,repeat:-1,yoyo:true})
 
-      TweenMax.to(Sphere.position,1,{x:"+=.6",ease:Power1.easeInOut,repeat:-1,delay:.88,yoyo:true})
-      TweenMax.to(shadow02.scale,1,{x:"-=.6",ease:Power1.easeInOut,repeat:-1,delay:.88,yoyo:true})
-      
-      TweenMax.fromTo(Loader.rotation,1,{z:30*Math.PI/180},{z:-30*Math.PI/180,ease:Power1.easeInOut,repeat:-1,yoyo:true});
+
+      var delayStart = .9;
+      // Start
+      TweenMax.to(shadow.position,delayStart,{x:"-=.3",ease:Power1.easeInOut})
+      TweenMax.to(Loader.position,delayStart,{x:"-=.3",ease:Power1.easeInOut})
+      TweenMax.to(Loader.rotation,delayStart,{z:31.5*Math.PI/180,ease:Power1.easeInOut})
+
+      TweenMax.to(Sphere.position,delayStart+.4,{x:"-=.5",ease:Power1.easeInOut,delay:.5})
+      TweenMax.fromTo(shadow02.scale,delayStart+.4,{x:".4"},{x:"+=.6",ease:Power1.easeInOut,delay:.5})
+
+
+      // Mid
+      TweenMax.to(shadow.position,1,{x:"+=.6",ease:Power1.easeInOut,repeat:4,yoyo:true,delay:delayStart})
+      TweenMax.to(Loader.position,1,{x:"+=.6",ease:Power1.easeInOut,repeat:4,yoyo:true,delay:delayStart})
+      TweenMax.to(Loader.rotation,1,{z:-31.5*Math.PI/180,ease:Power1.easeInOut,repeat:4,yoyo:true,delay:delayStart,onComplete:()=>{
+        TweenMax.to(shadow.position,1.25,{x:"-=.3",ease:Power1.easeInOut})
+        TweenMax.to(Loader.position,1.25,{x:"-=.3",ease:Power1.easeInOut})
+        TweenMax.to(Loader.rotation,1.25,{z:0*Math.PI/180,ease:Power1.easeInOut});
+      }});
+
+      TweenMax.to(Sphere.position,1,{x:"+=.6",ease:Power1.easeInOut,repeat:3,yoyo:true,delay:.88+delayStart})
+      TweenMax.to(shadow02.scale,1,{x:"-=.6",ease:Power1.easeInOut,repeat:3,yoyo:true,delay:.88+delayStart,onComplete:()=>{
+        // Loader.remove(Sphere);
+        // this.scene.add(Sphere);
+
+
+        // x
+        TweenMax.to(Sphere.position,1.25,{x:"+=.6",ease:Power1.easeInOut});
+        TweenMax.to(Sphere.position,3.6,{x:"+=2.4",ease:Power1.easeOut,delay:.65});
+        TweenMax.fromTo(shadow03.position,3.6,{x:-14.98},{x:"+=2.4",ease:Power1.easeOut,delay:.65});
+
+        // y 
+        TweenMax.to(Sphere.position,.2,{y:"-=.418",ease:Power1.easeOut,delay:1.05})
+        TweenMax.to(Sphere.position,.15,{y:"+=.11",ease:Power1.easeOut,delay:1.0+.2})
+        TweenMax.to(Sphere.position,.15,{y:"-=.11",ease:Power1.easeIn,delay:1.0+.2+.15})
+
+        TweenMax.to(Sphere.position,.075,{y:"+=.04",ease:Power1.easeOut,delay:1.0+.2+.15+.15})
+        TweenMax.to(Sphere.position,.075,{y:"-=.04",ease:Power1.easeIn,delay:1.0+.2+.15+.15+.075})
+
+        // Shadow
+        TweenMax.to(uniforms02.uAlpha,.1,{value:0,delay:.65});
+
+        TweenMax.to(uniforms03.uAlpha,.1,{value:.7,delay:1.1});
+        
+      }})
+
+      // End
 
 
       // Text and NextScene
