@@ -40,9 +40,11 @@ export class ThirdScene{
       color:0xeeeeee,
       linewidth:.0012,
     })
-    this.CreateGiftBalloon(25,3,0);
+    TweenMax.delayedCall(2,()=>{
+      this.CreateGiftBalloon(25,3,0);
+    })
 
-    
+
     // this.RS.Lid.scene.position.set(15,2,0)
     // var something = this.RS.Lid.scene;
     // this.ThreeService.scene.add(something)
@@ -868,296 +870,217 @@ export class ThirdScene{
   private ThirdSceneObject = [];
   private Lines=[];
   CreateGiftBalloon(Px,Py,Pz){
-    if(this.GiftBalloonArray.length>4){
-      
-    } else {
-      let E = new GiftBalloon;
-      this.GiftBalloonArray.push(E);
-  
-      // false: uncut, true: cut
-      E.State=false;
-      // false: The gift hasn't broken
-      E.Boop=false;
-          
-      E.Lines01=[];
-      E.Lines02=[];
-      E.DisConstrain01=[];
-      E.DisConstrain02=[];
-  
-      // Material
-      let mateOpacity = new THREE.MeshBasicMaterial({
-        color:0xffffff,
-        transparent:true,
-        opacity:0,
-      })
-  
-  
-      // GB (top force)
-      E.GBBody = new CANNON.Body({mass:0});
-      E.GBBody.addShape(new CANNON.Sphere(.02));
-      E.GBBody.position.set(Px,Py,Pz);
-      this.world03.addBody(E.GBBody);
-  
-      // Balloon 3d
-      E.Balloon3d = new THREE.Object3D();
+    let E = new GiftBalloon;
+    this.GiftBalloonArray.push(E);
 
-      var s = this.RS.Balloon.scene;
-      s.scale.set(1.15,1.15,1.15)
-      s.children["0"].position.set(0,0,0);
-      s.name="BalloonScene";
-      let mate01 = new THREE.MeshMatcapMaterial({
-        color:0xffffff,
-        side:2,
-        transparent:true,
-        opacity:1,
-        matcap:this.RS.TSred
-      })
-      s.children["0"].material=mate01;
-      this.ThirdSceneObject.push(s)
-      E.Balloon3d.add(s);
-
-  
-      // Balloon Attach
-      E.BalloonAttach = new THREE.Mesh(new THREE.BoxBufferGeometry(.02,.02,.02),mateOpacity)
-      E.BalloonAttach.position.set(0,-.16,0);
-      E.Balloon3d.add(E.BalloonAttach);
-      E.Balloon3d.position.set(0,0,0);
-      this.ThreeService.scene.add(E.Balloon3d);
-  
-      var linearDamping = .3;
-      var angularDamping = .3;
-  
-      // Balloon body
-      E.BalloonBody = new CANNON.Body({ mass: 10});
-      E.BalloonBody.addShape(new CANNON.Sphere(.15),new CANNON.Vec3(0,0.06,0));
-      E.BalloonBody.angularDamping = angularDamping;
-      E.BalloonBody.linearDamping = linearDamping;
-      this.world03.addBody(E.BalloonBody);
-  
-      E.BalloonBody.position.set( Px, Py-.375, Pz);
-      
-      // Balloon Constraint
-      var c = new CANNON.PointToPointConstraint(E.BalloonBody,new CANNON.Vec3(0,.15,0),E.GBBody,new CANNON.Vec3(0,-.15,0));
-      this.world03.addConstraint(c);
-  
-  
-      // Box 
-      E.Box3d = new THREE.Object3D();
-      E.BoxThree = this.RS.Box.scene;
-      E.BoxThree.scale.set(1.25,1.25,1.25)
-      E.BoxThree.position.set(0,0,0);
-      let mate02 = new THREE.MeshMatcapMaterial({
-        color:0xffffff,
-        side:2,
-        transparent:true,
-        opacity:1,
-        matcap:this.RS.TSred
-      })
-      let mate03 = new THREE.MeshMatcapMaterial({
-        color:0xfefefe,
-        side:2,
-        transparent:true,
-        opacity:1,
-        matcap:this.RS.TSwhite
-      })
-      E.BoxThree.children["0"].children[0].material=mate03;
-      E.BoxThree.children["0"].children[1].material=mate02;
-      E.Box3d.add(E.BoxThree);
+    // false: uncut, true: cut
+    E.State=false;
+    // false: The gift hasn't broken
+    E.Boop=false;
+ 
+    // Material
+    let mateOpacity = new THREE.MeshBasicMaterial({
+      color:0xffffff,
+      transparent:true,
+      opacity:0,
+    })
 
 
-      E.BoxLid = this.RS.Lid.scene;
-      E.BoxLid.scale.set(1.25,1.25,1.25)
-      E.BoxLid.position.set(0,0,0);
-      let mate04 = new THREE.MeshMatcapMaterial({
-        color:0xffffff,
-        side:2,
-        transparent:true,
-        opacity:1,
-        matcap:this.RS.TSred
-      })
-      let mate05 = new THREE.MeshMatcapMaterial({
-        color:0xfefefe,
-        side:2,
-        transparent:true,
-        opacity:1,
-        matcap:this.RS.TSwhite
-      })
-      E.BoxLid.children["0"].children[0].material=mate05;
-      E.BoxLid.children["0"].children[1].material=mate04;
-      E.Box3d.add(E.BoxLid);
+    // GB (top force)
+    E.GBBody = new CANNON.Body({mass:0});
+    E.GBBody.addShape(new CANNON.Sphere(.02));
+    E.GBBody.position.set(Px,Py,Pz);
+    this.world03.addBody(E.GBBody);
 
-      
-  
-      E.BoxAttach = new THREE.Mesh(new THREE.BoxBufferGeometry(.02,.02,.02),mateOpacity)
-      E.BoxAttach.position.set(0,.12,0);
-      E.Box3d.add(E.BoxAttach);
-      this.ThreeService.scene.add(E.Box3d);
+    // Balloon 3d
+    E.Balloon3d = new THREE.Object3D();
 
-  
-      E.BoxBody = new CANNON.Body({ mass: 6,material:this.GiftMaterial });
-      E.BoxBody.addShape(new CANNON.Box(new CANNON.Vec3(.125,.08,.125)),new CANNON.Vec3(0,-.025,0));
-      this.world03.addBody(E.BoxBody);
-  
-      E.BoxTopBody = new CANNON.Body({ mass: 2 });
-      E.BoxTopBody.addShape(new CANNON.Box(new CANNON.Vec3(.135,.033,.135)),new CANNON.Vec3(0,0.08,0));
-  
-      // Bowtie
-      // var something = new THREE.Mesh();
-      // something.rotation.set(0,0,40*Math.PI/180);
-      // var quat = new CANNON.Quaternion();
-      // quat.set(something.quaternion.x,something.quaternion.y,something.quaternion.z,something.quaternion.w);
-  
-      // E.BoxTopBody.addShape(new CANNON.Box(new CANNON.Vec3(.04,.035,.035)),new CANNON.Vec3(0.1,0.15,0),quat);
-  
-      // var something = new THREE.Mesh();
-      // something.rotation.set(0,0,-40*Math.PI/180);
-      // var quat = new CANNON.Quaternion();
-      // quat.set(something.quaternion.x,something.quaternion.y,something.quaternion.z,something.quaternion.w);
-      // E.BoxTopBody.addShape(new CANNON.Box(new CANNON.Vec3(.04,.035,.035)),new CANNON.Vec3(-0.1,0.15,0),quat);
-      this.world03.addBody(E.BoxTopBody);
-  
-      // Gift Box Position
-      E.BoxBody.position.set(Px, Py-.9, Pz);
-      E.BoxTopBody.position.set(Px, Py-.9, Pz);
-      
-      var b = new CANNON.LockConstraint(E.BoxBody,E.BoxTopBody);
-      b.collideConnected=false;
-      this.world03.addConstraint(b)
-  
-      E.BoxBody.addEventListener('collide',(e)=>{
-        if(e.body.material){
-          if(e.body.material.name=="PlaneMaterial"&&!E.Boop){
-            E.Boop=true;
-            TweenMax.to(E.Box3d.scale,.3,{x:.1,y:.1,z:.1})
-            TweenMax.to(E.Shadow.scale,.3,{x:.1,y:.1,z:.1})
-            this.ThreeService.scene.remove(E.StringLine02)
-            TweenMax.delayedCall(.2,()=>{
-              this.ThreeService.BOOP(E.BoxBody.position.x,E.BoxBody.position.y,E.BoxBody.position.z);
-              this.ThreeService.scene.remove(E.Box3d);
-              this.ThreeService.scene.remove(E.Shadow);
-              this.world03.remove(E.BoxBody);
-              this.world03.remove(E.BoxTopBody);
-              for(var i=0;i<E.Lines02.length;i++){
-                this.world03.remove(E.Lines02[i])
-              }
-            })
-          };
-        }
-      });
-  
-      E.BoxTopBody.addEventListener('collide',(e)=>{
-        if(e.body.material){
-          if(e.body.material.name=="LandMaterial"&&!E.Boop){
-            E.Boop=true;
-            TweenMax.to(E.Box3d.scale,.3,{x:.1,y:.1,z:.1})
-            TweenMax.to(E.Shadow.scale,.3,{x:.1,y:.1,z:.1})
-            this.ThreeService.scene.remove(E.StringLine02)
-            TweenMax.delayedCall(.2,()=>{
-              this.ThreeService.BOOP(E.BoxBody.position.x,E.BoxBody.position.y,E.BoxBody.position.z);
-              this.ThreeService.scene.remove(E.Box3d);
-              this.ThreeService.scene.remove(E.Shadow);
-              this.world03.remove(E.BoxBody);
-              this.world03.remove(E.BoxTopBody);
-              for(var i=0;i<E.Lines02.length;i++){
-                this.world03.remove(E.Lines02[i])
-              }
-            })
-          };
-        }
-      });
-  
-      E.BoxBody.angularDamping = angularDamping;
-      E.BoxBody.linearDamping = linearDamping;
-  
-  
-      // Box Constraint
-      E.BoxConstraint = new CANNON.LockConstraint(E.BoxBody, E.BalloonBody);
-      this.world03.addConstraint(E.BoxConstraint);
-  
-  
-      // Create Line2 (First Line)
-      E.LinePoints01 = [];
-  
-      E.LinePoints01.push(Px,Py-.2,Pz,Px,Py-1,Pz);
-  
-      
-      E.StringPoints01 = new LineGeometry();
-      E.StringPoints01.setPositions(E.LinePoints01);
-  
-      E.StringLine01 = new Line2(
-        E.StringPoints01,this.StringM
-      )
-      this.ThreeService.scene.add(E.StringLine01)
-  
-      // Normal Line (to cut)
-      E.NormalGeo = new THREE.Geometry();
-      E.NormalGeo.vertices.push(
-        E.BalloonAttach.position,
-        E.BoxAttach.position
-      )
-      E.NormalLine = new THREE.Line(E.NormalGeo,new THREE.LineBasicMaterial({color:0x0000ff}));
-  
-      this.Lines.push(E.NormalLine);
-      // this.ThreeService.scene.add(E.NormalLine);
-  
-  
-      var adp = .3;
-      var ldp = .3;
-      // Create Lines01
-      for (var i = 0; i < 4; i++) {
-        let body = new CANNON.Body({ mass: i == 0 ? 20 : .1});
-        body.addShape(new CANNON.Box(new CANNON.Vec3(.01, .01, .01)));
-  
-        body.angularDamping = adp;
-        body.linearDamping = ldp;
-  
-        E.Lines01.push(body);
+    var s = this.RS.Balloon.scene;
+    s.scale.set(1.15,1.15,1.15)
+    s.children["0"].position.set(0,0,0);
+    s.name="BalloonScene";
+    let mate01 = new THREE.MeshMatcapMaterial({
+      color:0xffffff,
+      side:2,
+      transparent:true,
+      opacity:1,
+      matcap:this.RS.TSred
+    })
+    s.children["0"].material=mate01;
+    this.ThirdSceneObject.push(s)
+    E.Balloon3d.add(s);
+
+
+    E.Balloon3d.position.set(0,0,0);
+    this.ThreeService.scene.add(E.Balloon3d);
+
+    var linearDamping = .3;
+    var angularDamping = .3;
+
+    // Balloon body
+    E.BalloonBody = new CANNON.Body({ mass: 10});
+    E.BalloonBody.addShape(new CANNON.Sphere(.15),new CANNON.Vec3(0,0.06,0));
+    E.BalloonBody.angularDamping = angularDamping;
+    E.BalloonBody.linearDamping = linearDamping;
+    this.world03.addBody(E.BalloonBody);
+
+    E.BalloonBody.position.set( Px, Py-.375, Pz);
+    
+    // Balloon Constraint
+    var c = new CANNON.PointToPointConstraint(E.BalloonBody,new CANNON.Vec3(0,.15,0),E.GBBody,new CANNON.Vec3(0,-.15,0));
+    this.world03.addConstraint(c);
+
+
+    // Box 
+    E.Box3d = new THREE.Object3D();
+    E.BoxThree = this.RS.Box.scene;
+    E.BoxThree.scale.set(1.25,1.25,1.25)
+    E.BoxThree.position.set(0,0,0);
+    let mate02 = new THREE.MeshMatcapMaterial({
+      color:0xffffff,
+      side:2,
+      transparent:true,
+      opacity:1,
+      matcap:this.RS.TSred
+    })
+    let mate03 = new THREE.MeshMatcapMaterial({
+      color:0xfefefe,
+      side:2,
+      transparent:true,
+      opacity:1,
+      matcap:this.RS.TSwhite
+    })
+    E.BoxThree.children["0"].children[0].material=mate03;
+    E.BoxThree.children["0"].children[1].material=mate02;
+    E.Box3d.add(E.BoxThree);
+
+
+    E.BoxLid = this.RS.Lid.scene;
+    E.BoxLid.scale.set(1.25,1.25,1.25)
+    E.BoxLid.position.set(0,0,0);
+    let mate04 = new THREE.MeshMatcapMaterial({
+      color:0xffffff,
+      side:2,
+      transparent:true,
+      opacity:1,
+      matcap:this.RS.TSred
+    })
+    let mate05 = new THREE.MeshMatcapMaterial({
+      color:0xfefefe,
+      side:2,
+      transparent:true,
+      opacity:1,
+      matcap:this.RS.TSwhite
+    })
+    E.BoxLid.children["0"].children[0].material=mate05;
+    E.BoxLid.children["0"].children[1].material=mate04;
+    E.Box3d.add(E.BoxLid);
+
+    
+    E.BoxAttach = new THREE.Mesh(new THREE.BoxBufferGeometry(.02,.02,.02),mateOpacity)
+    E.BoxAttach.position.set(0,.12,0);
+    E.Box3d.add(E.BoxAttach);
+    this.ThreeService.scene.add(E.Box3d);
+
+
+    E.BoxBody = new CANNON.Body({ mass: 6,material:this.GiftMaterial });
+    E.BoxBody.addShape(new CANNON.Box(new CANNON.Vec3(.125,.08,.125)),new CANNON.Vec3(0,-.025,0));
+    this.world03.addBody(E.BoxBody);
+
+    E.BoxTopBody = new CANNON.Body({ mass: 2 });
+    E.BoxTopBody.addShape(new CANNON.Box(new CANNON.Vec3(.135,.033,.135)),new CANNON.Vec3(0,0.08,0));
+
+    // Bowtie
+    // var something = new THREE.Mesh();
+    // something.rotation.set(0,0,40*Math.PI/180);
+    // var quat = new CANNON.Quaternion();
+    // quat.set(something.quaternion.x,something.quaternion.y,something.quaternion.z,something.quaternion.w);
+
+    // E.BoxTopBody.addShape(new CANNON.Box(new CANNON.Vec3(.04,.035,.035)),new CANNON.Vec3(0.1,0.15,0),quat);
+
+    // var something = new THREE.Mesh();
+    // something.rotation.set(0,0,-40*Math.PI/180);
+    // var quat = new CANNON.Quaternion();
+    // quat.set(something.quaternion.x,something.quaternion.y,something.quaternion.z,something.quaternion.w);
+    // E.BoxTopBody.addShape(new CANNON.Box(new CANNON.Vec3(.04,.035,.035)),new CANNON.Vec3(-0.1,0.15,0),quat);
+    this.world03.addBody(E.BoxTopBody);
+
+    // Gift Box Position
+    E.BoxBody.position.set(Px, Py-.9, Pz);
+    E.BoxTopBody.position.set(Px, Py-.9, Pz);
+    
+    var b = new CANNON.LockConstraint(E.BoxBody,E.BoxTopBody);
+    b.collideConnected=false;
+    this.world03.addConstraint(b)
+
+    E.BoxBody.addEventListener('collide',(e)=>{
+      if(e.body.material){
+        if(e.body.material.name=="PlaneMaterial"&&!E.Boop){
+          E.Boop=true;
+          TweenMax.to(E.Box3d.scale,.3,{x:.1,y:.1,z:.1})
+          TweenMax.to(E.Shadow.scale,.3,{x:.1,y:.1,z:.1})
+          TweenMax.delayedCall(.2,()=>{
+            this.ThreeService.BOOP(E.BoxBody.position.x,E.BoxBody.position.y,E.BoxBody.position.z);
+            this.ThreeService.scene.remove(E.Box3d);
+            this.ThreeService.scene.remove(E.Shadow);
+            this.world03.remove(E.BoxBody);
+            this.world03.remove(E.BoxTopBody);
+          })
+        };
       }
-      E.Catmull01 = new THREE.CatmullRomCurve3([
-        new THREE.Vector3(Px,Py,Pz),new THREE.Vector3(Px,Py-.5,Pz),new THREE.Vector3(Px,Py-1,Pz),new THREE.Vector3(Px,Py-1,Pz)
-      ])
-  
-      // Create Lines02
-      for (var i = 0; i < 4; i++) {
-        let body = new CANNON.Body({ mass: i == 0 ? .1 : .1});
-        body.addShape(new CANNON.Box(new CANNON.Vec3(.01, .01, .01)));
-  
-        body.angularDamping = adp;
-        body.linearDamping = ldp;
-  
-        E.Lines02.push(body);
-      }
-      E.Catmull02 = new THREE.CatmullRomCurve3([
-        new THREE.Vector3(Px,Py,Pz),new THREE.Vector3(Px,Py-.5,Pz),new THREE.Vector3(Px,Py-1,Pz),new THREE.Vector3(Px,Py-1,Pz)
-      ])
-  
-  
-      // SHADOW
-      let uniforms = {
-        tShadow:{value:this.RS.GiftShadow},
-        uShadowColor:{value:new THREE.Color("#78b75e")},
-        uAlpha:{value:.75}
-      }
-      let material = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms,depthWrite:false,
-        vertexShader:document.getElementById('vertexShader').textContent,
-        fragmentShader:document.getElementById('fragmentShader').textContent})
-        
-      E.Shadow = new THREE.Mesh(new THREE.PlaneGeometry(1.2,1.2),material);
-      E.Shadow.rotation.set(-Math.PI/2,0,0)
-      
-      E.Shadow.position.set(Px,Py,Pz);
-  
-      this.ThreeService.scene.add(E.Shadow);
-  
+    });
 
-      TweenMax.to(E.GBBody.position,3,{repeat:15,repeatDelay:0,
-        onRepeat:()=>{
-          if(!E.State){
-            TweenMax.to(E.GBBody.position,2,{x:"+=.4",z:"+=.3",ease:Power1.easeIn});
-            TweenMax.to(E.GBBody.position,2,{x:"+=.4",z:"-=.3",ease:Power1.easeOut,delay:1.5});
-          }
-        }});
+    E.BoxTopBody.addEventListener('collide',(e)=>{
+      if(e.body.material){
+        if(e.body.material.name=="LandMaterial"&&!E.Boop){
+          E.Boop=true;
+          TweenMax.to(E.Box3d.scale,.3,{x:.1,y:.1,z:.1})
+          TweenMax.to(E.Shadow.scale,.3,{x:.1,y:.1,z:.1})
+          TweenMax.delayedCall(.2,()=>{
+            this.ThreeService.BOOP(E.BoxBody.position.x,E.BoxBody.position.y,E.BoxBody.position.z);
+            this.ThreeService.scene.remove(E.Box3d);
+            this.ThreeService.scene.remove(E.Shadow);
+            this.world03.remove(E.BoxBody);
+            this.world03.remove(E.BoxTopBody);
+          })
+        };
+      }
+    });
+
+    E.BoxBody.angularDamping = angularDamping;
+    E.BoxBody.linearDamping = linearDamping;
+
+
+    // Box Constraint
+    E.BoxConstraint = new CANNON.LockConstraint(E.BoxBody, E.BalloonBody);
+    this.world03.addConstraint(E.BoxConstraint);
+
+
+    // SHADOW
+    let uniforms = {
+      tShadow:{value:this.RS.GiftShadow},
+      uShadowColor:{value:new THREE.Color("#78b75e")},
+      uAlpha:{value:.75}
     }
+    let material = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms,depthWrite:false,
+      vertexShader:document.getElementById('vertexShader').textContent,
+      fragmentShader:document.getElementById('fragmentShader').textContent})
+      
+    E.Shadow = new THREE.Mesh(new THREE.PlaneGeometry(1.2,1.2),material);
+    E.Shadow.rotation.set(-Math.PI/2,0,0)
+    
+    E.Shadow.position.set(Px,Py,Pz);
+
+    this.ThreeService.scene.add(E.Shadow);
+
+
+    TweenMax.to(E.GBBody.position,3,{repeat:15,repeatDelay:0,
+      onRepeat:()=>{
+        if(!E.State){
+          TweenMax.to(E.GBBody.position,2,{x:"+=.4",z:"+=.3",ease:Power1.easeIn});
+          TweenMax.to(E.GBBody.position,2,{x:"+=.4",z:"-=.3",ease:Power1.easeOut,delay:1.5});
+        }
+      }});
   }
 
   
@@ -1538,9 +1461,10 @@ export class ThirdScene{
           })
           break;
         case "BalloonScene":
-          intersect[0].object.parent.parent.remove(intersect[0].object.parent)
+          // intersect[0].object.parent.parent.remove(intersect[0].object.parent)
           // intersect[0].object.parent.remove();
-          
+          console.log(intersect[0].object.parent.parent.id);
+          this.POPBalloon(intersect[0].object.parent.parent.id,intersect[0].object.parent.parent.position);
         break;
       }
     }
@@ -1616,50 +1540,6 @@ export class ThirdScene{
         this.GiftBalloonArray[i].Box3d.position.y -.1,this.GiftBalloonArray[i].Box3d.position.z)
       this.GiftBalloonArray[i].Shadow.material.uniforms.uAlpha.value = 
         (.6 - this.GiftBalloonArray[i].Box3d.position.y)*1.5;
-
-      
-      // Attach Position
-      var Po = new THREE.Vector3();
-      Po.setFromMatrixPosition(this.GiftBalloonArray[i].BalloonAttach.matrixWorld);
-      var Po2 = new THREE.Vector3();
-      Po2.setFromMatrixPosition(this.GiftBalloonArray[i].BoxAttach.matrixWorld);
-      
-      if(!this.GiftBalloonArray[i].State){
-        // String Line
-        this.GiftBalloonArray[i].LinePoints01 = [];
-        this.GiftBalloonArray[i].LinePoints01.push(Po.x,Po.y,Po.z,Po2.x,Po2.y,Po2.z);
-        this.GiftBalloonArray[i].StringPoints01.setPositions(this.GiftBalloonArray[i].LinePoints01);
-  
-        // Normal Line
-        this.GiftBalloonArray[i].NormalGeo.vertices[0] = Po
-        this.GiftBalloonArray[i].NormalGeo.vertices[1] = Po2
-        this.GiftBalloonArray[i].NormalGeo.verticesNeedUpdate=true;
-        this.GiftBalloonArray[i].NormalLine.geometry.computeBoundingSphere();
-      } else {
-        // Top Line
-        for(var j=0;j<4;j++){
-          this.GiftBalloonArray[i].Catmull01.points[j].copy(this.GiftBalloonArray[i].Lines01[j].position);
-        }
-
-        this.GiftBalloonArray[i].CurvePoint = this.GiftBalloonArray[i].Catmull01.getPoints(9);
-        this.GiftBalloonArray[i].LinePoints01 = [];
-        for(var j=0;j<10;j++){
-          this.GiftBalloonArray[i].LinePoints01.push(this.GiftBalloonArray[i].CurvePoint[j].x,this.GiftBalloonArray[i].CurvePoint[j].y,this.GiftBalloonArray[i].CurvePoint[j].z);
-        }
-        this.GiftBalloonArray[i].StringPoints01.setPositions(this.GiftBalloonArray[i].LinePoints01);
-
-        // Bottom Line
-        for(var j=0;j<4;j++){
-          this.GiftBalloonArray[i].Catmull02.points[j].copy(this.GiftBalloonArray[i].Lines02[j].position);
-        }
-
-        this.GiftBalloonArray[i].CurvePoint = this.GiftBalloonArray[i].Catmull02.getPoints(9);
-        this.GiftBalloonArray[i].LinePoints02 = [];
-        for(var j=0;j<10;j++){
-          this.GiftBalloonArray[i].LinePoints02.push(this.GiftBalloonArray[i].CurvePoint[j].x,this.GiftBalloonArray[i].CurvePoint[j].y,this.GiftBalloonArray[i].CurvePoint[j].z);
-        }
-        this.GiftBalloonArray[i].StringPoints02.setPositions(this.GiftBalloonArray[i].LinePoints02);
-      }
     }
   }
 
@@ -1693,7 +1573,49 @@ export class ThirdScene{
   }
 
   POPBalloon(id,Ipoint:THREE.Vector3){
-    
+    for(var i=0;i<this.GiftBalloonArray.length;i++){
+      console.log(this.GiftBalloonArray[i].Balloon3d);
+      if(this.GiftBalloonArray[i].Balloon3d.id==id && !this.GiftBalloonArray[i].State){
+        console.log('yp')
+        this.world03.removeConstraint(this.GiftBalloonArray[i].BoxConstraint);
+        var k = i;
+        TweenMax.delayedCall(2,()=>{
+          if(!this.GiftBalloonArray[k].Boop){
+            // Success Animation
+            TweenMax.to(this.GiftBalloonArray[k].Box3d.scale,.25,{x:.9,y:.9,z:.9,ease:Power1.easeOut});
+            TweenMax.to(this.GiftBalloonArray[k].BoxLid.position,.25,{y:"-=.05",ease:Power1.easeOut});
+            TweenMax.to(this.GiftBalloonArray[k].BoxThree.position,.25,{y:"-=.05",ease:Power1.easeOut});
+
+            TweenMax.to(this.GiftBalloonArray[k].Box3d.scale,.25,{x:1,y:1,z:1,delay:.25,ease:Power1.easeIn});
+            TweenMax.to(this.GiftBalloonArray[k].BoxLid.position,.25,{y:"+=.05",delay:.25,ease:Power1.easeIn});
+            TweenMax.to(this.GiftBalloonArray[k].BoxThree.position,.25,{y:"+=.05",delay:.25,ease:Power1.easeIn});
+            
+            TweenMax.to(this.GiftBalloonArray[k].BoxLid.position,.2,{y:"+=.1",x:"+=.1",z:"-=.1",delay:.4,ease:Power1.easeIn})
+            TweenMax.to(this.GiftBalloonArray[k].BoxLid.rotation,.2,{x:"-=.35",z:"-=.35",delay:.4,ease:Power1.easeIn})
+            TweenMax.to(this.GiftBalloonArray[k].BoxLid.children[0].children[0].material,.1,{opacity:0,delay:.7,ease:Power1.easeIn})
+            TweenMax.to(this.GiftBalloonArray[k].BoxLid.children[0].children[1].material,.1,{opacity:0,delay:.7,ease:Power1.easeIn})
+            
+            TweenMax.delayedCall(.6,()=>{
+              this.ScoreFunction(this.GiftBalloonArray[k].BoxBody.position);
+              TweenMax.to(this.GiftBalloonArray[k].BoxThree.children[0].children[0].material,.3,{opacity:0,delay:.4,ease:Power1.easeIn})
+              TweenMax.to(this.GiftBalloonArray[k].BoxThree.children[0].children[1].material,.3,{opacity:0,delay:.4,ease:Power1.easeIn})
+            })
+            TweenMax.delayedCall(1,()=>{
+              this.ThreeService.scene.remove(this.GiftBalloonArray[k].Box3d);
+              this.ThreeService.scene.remove(this.GiftBalloonArray[k].Shadow);
+            })
+
+            // remove stuff
+            this.ThreeService.scene.remove(this.GiftBalloonArray[k].StringLine02)
+            this.world03.remove(this.GiftBalloonArray[k].BoxBody);
+            this.world03.remove(this.GiftBalloonArray[k].BoxTopBody);
+            for(var j=0;j<this.GiftBalloonArray[k].Lines02.length;j++){
+              this.world03.remove(this.GiftBalloonArray[k].Lines02[j])
+            }
+          }
+        })
+      }
+    }
   }
 
   CutGB(id,Ipoint:THREE.Vector3){
@@ -1807,42 +1729,7 @@ export class ThirdScene{
         
         // this.GiftBalloonArray[i].BoxBody.velocity.y=-1;
 
-        var k = i;
-        TweenMax.delayedCall(2,()=>{
-          if(!this.GiftBalloonArray[k].Boop){
-            // Success Animation
-            TweenMax.to(this.GiftBalloonArray[k].Box3d.scale,.25,{x:.9,y:.9,z:.9,ease:Power1.easeOut});
-            TweenMax.to(this.GiftBalloonArray[k].BoxLid.position,.25,{y:"-=.05",ease:Power1.easeOut});
-            TweenMax.to(this.GiftBalloonArray[k].BoxThree.position,.25,{y:"-=.05",ease:Power1.easeOut});
 
-            TweenMax.to(this.GiftBalloonArray[k].Box3d.scale,.25,{x:1,y:1,z:1,delay:.25,ease:Power1.easeIn});
-            TweenMax.to(this.GiftBalloonArray[k].BoxLid.position,.25,{y:"+=.05",delay:.25,ease:Power1.easeIn});
-            TweenMax.to(this.GiftBalloonArray[k].BoxThree.position,.25,{y:"+=.05",delay:.25,ease:Power1.easeIn});
-            
-            TweenMax.to(this.GiftBalloonArray[k].BoxLid.position,.2,{y:"+=.1",x:"+=.1",z:"-=.1",delay:.4,ease:Power1.easeIn})
-            TweenMax.to(this.GiftBalloonArray[k].BoxLid.rotation,.2,{x:"-=.35",z:"-=.35",delay:.4,ease:Power1.easeIn})
-            TweenMax.to(this.GiftBalloonArray[k].BoxLid.children[0].children[0].material,.1,{opacity:0,delay:.7,ease:Power1.easeIn})
-            TweenMax.to(this.GiftBalloonArray[k].BoxLid.children[0].children[1].material,.1,{opacity:0,delay:.7,ease:Power1.easeIn})
-            
-            TweenMax.delayedCall(.6,()=>{
-              this.ScoreFunction(this.GiftBalloonArray[k].BoxBody.position);
-              TweenMax.to(this.GiftBalloonArray[k].BoxThree.children[0].children[0].material,.3,{opacity:0,delay:.4,ease:Power1.easeIn})
-              TweenMax.to(this.GiftBalloonArray[k].BoxThree.children[0].children[1].material,.3,{opacity:0,delay:.4,ease:Power1.easeIn})
-            })
-            TweenMax.delayedCall(1,()=>{
-              this.ThreeService.scene.remove(this.GiftBalloonArray[k].Box3d);
-              this.ThreeService.scene.remove(this.GiftBalloonArray[k].Shadow);
-            })
-
-            // remove stuff
-            this.ThreeService.scene.remove(this.GiftBalloonArray[k].StringLine02)
-            this.world03.remove(this.GiftBalloonArray[k].BoxBody);
-            this.world03.remove(this.GiftBalloonArray[k].BoxTopBody);
-            for(var j=0;j<this.GiftBalloonArray[k].Lines02.length;j++){
-              this.world03.remove(this.GiftBalloonArray[k].Lines02[j])
-            }
-          }
-        })
       }
     }
   }
@@ -1892,7 +1779,6 @@ class GiftBalloon{
 
   Balloon3d: THREE.Object3D
   BalloonBody: CANNON.Body
-  BalloonAttach: THREE.Mesh
 
   Box3d: THREE.Object3D
   BoxBody: CANNON.Body
@@ -1903,28 +1789,7 @@ class GiftBalloon{
   BoxConstraint: CANNON.LockConstraint
 
   Shadow: THREE.Mesh
-  
-  Curve: THREE.LineCurve3
-  CurvePoint: any
 
-  NormalGeo: THREE.Geometry
-  NormalLine: THREE.Line
-
-  Lines01: CANNON.Body[]
-  Catmull01: THREE.CatmullRomCurve3
-  LinePoints01: any
-  StringPoints01: LineGeometry
-  StringLine01: Line2
-  LockConstrain01: CANNON.LockConstraint
-  DisConstrain01: CANNON.DistanceConstraint[]
-
-  Lines02: CANNON.Body[]
-  Catmull02: THREE.CatmullRomCurve3
-  LinePoints02: any
-  StringPoints02: LineGeometry
-  StringLine02: Line2
-  LockConstrain02: CANNON.LockConstraint
-  DisConstrain02: CANNON.DistanceConstraint[]
 
   Boop:Boolean
   State:Boolean
