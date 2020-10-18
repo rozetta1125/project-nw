@@ -188,7 +188,7 @@ export class ThreeService {
     this.Loading();
     this.AddEvent();
     this.BOOPMaterial();
-    
+
     
     // document.addEventListener('mousemove',e=>{
     //   // cursor.setAttribute("style","top:"+e.pageY+"px;left:"+e.pageX+"px;");
@@ -501,16 +501,16 @@ export class ThreeService {
         B1.add(layer2);
       }
     }
-    
   }
 
   BOOP(Ox: number, Oy: number, Oz: number) {
     if(this.BOOPCurrent == 5){
       this.BOOPCurrent=0;
     }
-
+    
     this.BOOPArray[this.BOOPCurrent].position.set(Ox, Oy, Oz);
     for(var i=0;i<this.BOOPArray[this.BOOPCurrent].children.length;i++){
+      // this.BOOPArray[this.BOOPCurrent].children[i].children[0].material.color.setHex(color);
       TweenMax.fromTo(this.BOOPArray[this.BOOPCurrent].children[i].children[0].position,.3,{x:0},{x:"+=.17"});
       TweenMax.fromTo(this.BOOPArray[this.BOOPCurrent].children[i].children[0].scale,.75,{x:1,y:1,z:1},{x:.1,y:.1,z:.1});
       TweenMax.fromTo(this.BOOPArray[this.BOOPCurrent].children[i].children[0].material,.1,{opacity:1},{opacity:0,delay:1});
