@@ -40,15 +40,15 @@ export class ThirdScene{
       linewidth:.0012,
     })
     TweenMax.delayedCall(1,()=>{
-      this.CreateGiftBalloon(25,3,0);
+      this.CreateGiftBalloon(23,3,0);
     })
-
+    // TweenMax.delayedCall(1,()=>{
+    //   this.CreateGiftBalloon(23,3,0);
+    // })
 
     // this.RS.Lid.scene.position.set(15,2,0)
     // var something = this.RS.Lid.scene;
     // this.ThreeService.scene.add(something)
-
-
   }
 
   StartThirdScene(){
@@ -57,7 +57,7 @@ export class ThirdScene{
   }
 
   AddEvent(){
-    this.ThreeService.canvas.addEventListener("click", throttle(this.ClickEvent,600));
+    this.ThreeService.canvas.addEventListener("click", throttle(this.ClickEvent,500));
   }
 
   ClickEvent = ()=>{  
@@ -417,50 +417,41 @@ export class ThirdScene{
     shadow.position.set(0,0.151,0);
 
     this.RS.Tent.scene.add(shadow);
-    // this.ThreeService.scene.add(this.RS.Tent.scene);
+    this.ThreeService.scene.add(this.RS.Tent.scene);
 
   }
   
   CreateHouse(Ix,Iy,Iz,ScaleMultiplier){
 
-    // console.log(this.RS.HouseAC)
-    // console.log(this.RS.House)
-    // this.RS.HouseAC.scene.scale.set(.4,.4,.4);
-    // this.RS.HouseAC.scene.position.set(Ix-.1,Iy+.01,Iz);
-
-    // let mate = new THREE.MeshBasicMaterial({})
-    // this.RS.HouseAC.scene.children[0].children[1].material=mate;
-
-    // this.ThreeService.scene.add(this.RS.HouseAC.scene);
 
     let mateOpacity = 1;
     // House
-    this.RS.House.scene.scale.set(1.7,1.7,1.7);
-    this.RS.House.scene.position.set(Ix-.1,Iy+.01,Iz);
+    this.RS.House.scene.scale.set(1.75,1.75,1.75);
+    this.RS.House.scene.position.set(Ix-.15,Iy+.01,Iz-.15);
     this.RS.House.scene.rotation.set(0,0*Math.PI/180,0);
-    this.ThreeService.scene.add(this.RS.House.scene);
+    // this.ThreeService.scene.add(this.RS.House.scene);
 
     for(var i=0;i<this.RS.House.scene.children.length;i++){
       if(this.RS.House.scene.children[""+i+""].name=="House"){
         let mate01 = new THREE.MeshMatcapMaterial({
-          color:0xFFFBF7,side:2,matcap:this.RS.TStent01,transparent:true,opacity:mateOpacity,
+          color:0xfffefc,side:2,matcap:this.RS.TSHouse01,transparent:true,opacity:mateOpacity,
         });
         this.RS.House.scene.children[""+i+""].children[0].material=mate01;
         let mate02 = new THREE.MeshMatcapMaterial({
-          color:0xffffff,side:2,matcap:this.RS.TStent02,transparent:true,opacity:mateOpacity,
+          color:0xeeeeee,side:2,matcap:this.RS.TSRoof,transparent:true,opacity:mateOpacity,
         });
         this.RS.House.scene.children[""+i+""].children[1].material=mate02;
         let mate03 = new THREE.MeshMatcapMaterial({
-          color:0xffffff,side:2,matcap:this.RS.TSRoof,transparent:true,opacity:mateOpacity,
+          color:0xf3ecd3,side:2,matcap:this.RS.TSHouse01,transparent:true,opacity:mateOpacity,
         });
         this.RS.House.scene.children[""+i+""].children[2].material=mate03;
       } else if(this.RS.House.scene.children[""+i+""].name=="Door"){
         let mate01 = new THREE.MeshMatcapMaterial({
-          color:0xffffff,side:2,matcap:this.RS.TSHouse01,transparent:true,opacity:mateOpacity,
+          color:0xffffff,side:2,matcap:this.RS.TSHouse02,transparent:true,opacity:mateOpacity,
         });
         this.RS.House.scene.children[""+i+""].children[0].material=mate01;
         let mate02 = new THREE.MeshMatcapMaterial({
-          color:0xffffff,side:2,matcap:this.RS.TSRoof,transparent:true,opacity:mateOpacity,
+          color:0xeeeeee,side:2,matcap:this.RS.TSHouse02,transparent:true,opacity:mateOpacity,
         });
         this.RS.House.scene.children[""+i+""].children[1].material=mate02;
       } else if(this.RS.House.scene.children[""+i+""].name=="Window"){
@@ -469,21 +460,26 @@ export class ThirdScene{
         });
         this.RS.House.scene.children[""+i+""].children[0].material=mate01;
         let mate02 = new THREE.MeshMatcapMaterial({
-          color:0xffffff,side:2,matcap:this.RS.TSwhite,transparent:true,opacity:mateOpacity,
+          color:0xffffff,side:2,matcap:this.RS.TSHouse01,transparent:true,opacity:mateOpacity,
         });
         this.RS.House.scene.children[""+i+""].children[1].material=mate02;
       } else if(this.RS.House.scene.children[""+i+""].name=="Lamp"){
         let mate01 = new THREE.MeshMatcapMaterial({
-          color:0xffffff,side:2,matcap:this.RS.TSwhite,transparent:true,opacity:mateOpacity,
+          color:0xffffff,side:2,matcap:this.RS.TSHouse01,transparent:true,opacity:mateOpacity,
         });
         this.RS.House.scene.children[""+i+""].children[0].material=mate01;
         let mate02 = new THREE.MeshMatcapMaterial({
-          color:0x5F5F5F,side:2,matcap:this.RS.TSwhite,transparent:true,opacity:mateOpacity,
+          color:0xffffff,side:2,matcap:this.RS.TSRoof,transparent:true,opacity:mateOpacity,
         });
         this.RS.House.scene.children[""+i+""].children[1].material=mate02;
       } else if(this.RS.House.scene.children[""+i+""].name=="SmokePipe"){
         let mate01 = new THREE.MeshMatcapMaterial({
           color:0xffffff,side:2,matcap:this.RS.TSRoof,transparent:true,opacity:mateOpacity,
+        });
+        this.RS.House.scene.children[""+i+""].material=mate01;
+      } else {
+        let mate01 = new THREE.MeshMatcapMaterial({
+          color:0xffffff,side:2,matcap:this.RS.TSHouse02,transparent:true,opacity:mateOpacity,
         });
         this.RS.House.scene.children[""+i+""].material=mate01;
       }
@@ -498,7 +494,7 @@ export class ThirdScene{
       vertexShader:document.getElementById('vertexShader').textContent,
       fragmentShader:document.getElementById('fragmentShader').textContent})
 
-    var shadow = new THREE.Mesh(new THREE.PlaneGeometry(6,6),material);
+    var shadow = new THREE.Mesh(new THREE.PlaneGeometry(5,5),material);
     shadow.rotation.set(-Math.PI/2,0,0)
     shadow.position.set(0,0.151,0);
 
@@ -632,9 +628,12 @@ export class ThirdScene{
     }
     TweenMax.delayedCall(2.7,()=>{
       this.ThreeService.scene.remove(this.RS.Tent.scene);
-      TweenMax.fromTo(this.RS.House.scene.scale,.4,{x:"-=.8",y:"-=1.6",z:"-=1.6"},{x:"+=.8",y:"+=1.6",z:"+=1.6",delay:.1,ease:Power1.easeIn});
-      TweenMax.to(this.RS.House.scene.scale,.15,{x:"-=.2",y:"-=.2",z:"-=.2",delay:.5,ease:Power1.easeOut});
-      TweenMax.to(this.RS.House.scene.scale,.15,{x:"+=.2",y:"+=.2",z:"+=.2",delay:.65,ease:Power1.easeIn,onComplete:()=>{this.SmokeTextureArray=[];}});
+      // TweenMax.fromTo(this.RS.House.scene.scale,.4,{x:"-=.8",y:"-=1.6",z:"-=1.6"},{x:"+=.8",y:"+=1.6",z:"+=1.6",delay:.1,ease:Power1.easeIn});
+      // TweenMax.to(this.RS.House.scene.scale,.15,{x:"-=.2",y:"-=.2",z:"-=.2",delay:.5,ease:Power1.easeOut});
+      // TweenMax.to(this.RS.House.scene.scale,.15,{x:"+=.2",y:"+=.2",z:"+=.2",delay:.65,ease:Power1.easeIn,onComplete:()=>{this.SmokeTextureArray=[];}});
+
+      TweenMax.to(this.RS.House.scene.scale,.15,{x:"-=.2",y:"-=.2",z:"-=.2",delay:0,ease:Power1.easeOut});
+      TweenMax.to(this.RS.House.scene.scale,.15,{x:"+=.2",y:"+=.2",z:"+=.2",delay:.15,ease:Power1.easeIn,onComplete:()=>{this.SmokeTextureArray=[];}});
       this.ThreeService.scene.add(this.RS.House.scene);
       this.world03.addBody(this.BodyHouse)
       
@@ -771,7 +770,7 @@ export class ThirdScene{
     this.GiftMaterial = new CANNON.Material("GiftMaterial");
 
     let c = new CANNON.ContactMaterial(this.GiftMaterial,this.LandMaterial,{
-      restitution:0.1,
+      restitution:0,
       friction:0.1,
     });
     this.world03.addContactMaterial(c);
@@ -1003,13 +1002,18 @@ export class ThirdScene{
     });
 
 
-
-
-    TweenMax.to(E.GBBody.position,3,{repeat:15,repeatDelay:0,
+    TweenMax.to(E.GBBody.position,4,{repeat:16,repeatDelay:0,
       onRepeat:()=>{
         if(!E.State){
-          TweenMax.to(E.GBBody.position,2,{x:"+=.4",z:"+=.3",ease:Power1.easeIn});
-          TweenMax.to(E.GBBody.position,2,{x:"+=.4",z:"-=.3",ease:Power1.easeOut,delay:1.5});
+          TweenMax.to(E.GBBody.position,2,{x:"+=.5",ease:Power0.easeNone});
+          TweenMax.to(E.GBBody.position,2,{x:"+=.3",ease:Power0.easeNone,delay:2});
+
+          TweenMax.to(E.GBBody.position,2,{z:"-=.1",ease:Power1.easeIn,});
+          TweenMax.to(E.GBBody.position,2,{z:"+=.1",ease:Power1.easeOut,delay:1.5});
+        }
+      },onComplete:()=>{
+        if(!E.State){
+          this.POPBalloon(E.Balloon3d.id,E.Balloon3d.position);
         }
       }});
   }
@@ -1140,7 +1144,6 @@ export class ThirdScene{
 
     var j=0;
     for(var i=this.ScoreLast;i<this.ScoreCurrent;i++){
-
       var ranX = Po.x + Math.random()*1.2-.6;
       var ranZ = Po.z + Math.random()*1.2-.6;
 
@@ -1168,7 +1171,7 @@ export class ThirdScene{
 
         // Scale
         // TweenMax.set(this.GolfScore[i].scale,{x:Math.random()*.3+.7,y:Math.random()*.3+.7,z:Math.random()*.3+.7});
-        TweenMax.to(this.GolfScore[i].scale,PoDuration,{delay:PoDuration+.1,x:.1,y:.1,z:.1})
+        TweenMax.fromTo(this.GolfScore[i].scale,PoDuration,{x:1,y:1,z:1},{delay:PoDuration+.1,x:.1,y:.1,z:.1})
       } else {
         i--;
       }
@@ -1394,6 +1397,10 @@ export class ThirdScene{
         case "BalloonScene":
           this.POPBalloon(intersect[0].object.parent.parent.id,intersect[0].object.parent.parent.position);
         break;
+        case "Box":
+        case "Lid":
+          this.POPGift(intersect[0].object.parent.parent.parent.id);
+        break;
       }
     }
   }
@@ -1535,9 +1542,12 @@ export class ThirdScene{
     
   }
 
-  POPBalloon(id,Ipoint:THREE.Vector3){
+  POPBalloon(id:number,Ipoint:THREE.Vector3){
     for(var i=0;i<this.GiftBalloonArray.length;i++){
       if(this.GiftBalloonArray[i].Balloon3d.id==id && !this.GiftBalloonArray[i].State){
+        // Change state to popped
+        this.GiftBalloonArray[i].State = true;
+
         // Remove balloon part
         this.ThreeService.scene.remove(this.GiftBalloonArray[i].Balloon3d);
         this.world03.removeConstraint(this.GiftBalloonArray[i].BoxConstraint);
@@ -1547,39 +1557,47 @@ export class ThirdScene{
         // Pop Animation
         this.BalloonPOP(Ipoint.x,Ipoint.y,Ipoint.z)
 
-        // If Land Correctly
-        var k = i;
-        TweenMax.delayedCall(2,()=>{
-          if(!this.GiftBalloonArray[k].Boop){
-            // Success Animation
-            TweenMax.to(this.GiftBalloonArray[k].Box3d.scale,.25,{x:.9,y:.9,z:.9,ease:Power1.easeOut});
-            TweenMax.to(this.GiftBalloonArray[k].BoxLid.position,.25,{y:"-=.05",ease:Power1.easeOut});
-            TweenMax.to(this.GiftBalloonArray[k].BoxThree.position,.25,{y:"-=.05",ease:Power1.easeOut});
-
-            TweenMax.to(this.GiftBalloonArray[k].Box3d.scale,.25,{x:1,y:1,z:1,delay:.25,ease:Power1.easeIn});
-            TweenMax.to(this.GiftBalloonArray[k].BoxLid.position,.25,{y:"+=.05",delay:.25,ease:Power1.easeIn});
-            TweenMax.to(this.GiftBalloonArray[k].BoxThree.position,.25,{y:"+=.05",delay:.25,ease:Power1.easeIn});
-            
-            TweenMax.to(this.GiftBalloonArray[k].BoxLid.position,.2,{y:"+=.1",x:"+=.1",z:"-=.1",delay:.4,ease:Power1.easeIn})
-            TweenMax.to(this.GiftBalloonArray[k].BoxLid.rotation,.2,{x:"-=.35",z:"-=.35",delay:.4,ease:Power1.easeIn})
-            TweenMax.to(this.GiftBalloonArray[k].BoxLid.children[0].children[0].material,.1,{opacity:0,delay:.7,ease:Power1.easeIn})
-            TweenMax.to(this.GiftBalloonArray[k].BoxLid.children[0].children[1].material,.1,{opacity:0,delay:.7,ease:Power1.easeIn})
-            
-            TweenMax.delayedCall(.6,()=>{
-              this.ScoreFunction(this.GiftBalloonArray[k].BoxBody.position);
-              TweenMax.to(this.GiftBalloonArray[k].BoxThree.children[0].children[0].material,.3,{opacity:0,delay:.4,ease:Power1.easeIn})
-              TweenMax.to(this.GiftBalloonArray[k].BoxThree.children[0].children[1].material,.3,{opacity:0,delay:.4,ease:Power1.easeIn})
-            })
-            TweenMax.delayedCall(1,()=>{
-              this.ThreeService.scene.remove(this.GiftBalloonArray[k].Box3d);
-              this.ThreeService.scene.remove(this.GiftBalloonArray[k].Shadow);
-            })
-
-            // remove stuff
-            this.world03.remove(this.GiftBalloonArray[k].BoxBody);
-            this.world03.remove(this.GiftBalloonArray[k].BoxTopBody);
-          }
+        // add to clickable
+        let k=i;
+        TweenMax.delayedCall(1.5,()=>{
+          this.ThirdSceneObject.push(this.GiftBalloonArray[k].Box3d);
         })
+      }
+    }
+  }
+
+  POPGift(id:number){
+    for(var i=0;i<this.GiftBalloonArray.length;i++){
+      if(this.GiftBalloonArray[i].Box3d.id==id){
+        this.ThirdSceneObject.pop();
+        // Success Animation
+        TweenMax.to(this.GiftBalloonArray[i].Box3d.scale,.25,{x:.9,y:.9,z:.9,ease:Power1.easeOut});
+        TweenMax.to(this.GiftBalloonArray[i].BoxLid.position,.25,{y:"-=.05",ease:Power1.easeOut});
+        TweenMax.to(this.GiftBalloonArray[i].BoxThree.position,.25,{y:"-=.05",ease:Power1.easeOut});
+
+        TweenMax.to(this.GiftBalloonArray[i].Box3d.scale,.25,{x:1,y:1,z:1,delay:.25,ease:Power1.easeIn});
+        TweenMax.to(this.GiftBalloonArray[i].BoxLid.position,.25,{y:"+=.05",delay:.25,ease:Power1.easeIn});
+        TweenMax.to(this.GiftBalloonArray[i].BoxThree.position,.25,{y:"+=.05",delay:.25,ease:Power1.easeIn});
+        
+        TweenMax.to(this.GiftBalloonArray[i].BoxLid.position,.2,{y:"+=.1",x:"+=.1",z:"-=.1",delay:.4,ease:Power1.easeIn})
+        TweenMax.to(this.GiftBalloonArray[i].BoxLid.rotation,.2,{x:"-=.35",z:"-=.35",delay:.4,ease:Power1.easeIn})
+        TweenMax.to(this.GiftBalloonArray[i].BoxLid.children[0].children[0].material,.1,{opacity:0,delay:.7,ease:Power1.easeIn})
+        TweenMax.to(this.GiftBalloonArray[i].BoxLid.children[0].children[1].material,.1,{opacity:0,delay:.7,ease:Power1.easeIn})
+        
+        let k=i;
+        TweenMax.delayedCall(.6,()=>{
+          this.ScoreFunction(this.GiftBalloonArray[k].BoxBody.position);
+          TweenMax.to(this.GiftBalloonArray[k].BoxThree.children[0].children[0].material,.3,{opacity:0,delay:.4,ease:Power1.easeIn})
+          TweenMax.to(this.GiftBalloonArray[k].BoxThree.children[0].children[1].material,.3,{opacity:0,delay:.4,ease:Power1.easeIn})
+        })
+        TweenMax.delayedCall(1,()=>{
+          this.ThreeService.scene.remove(this.GiftBalloonArray[k].Box3d);
+          this.ThreeService.scene.remove(this.GiftBalloonArray[k].Shadow);
+        })
+
+        // remove stuff
+        this.world03.remove(this.GiftBalloonArray[i].BoxBody);
+        this.world03.remove(this.GiftBalloonArray[i].BoxTopBody);
       }
     }
   }

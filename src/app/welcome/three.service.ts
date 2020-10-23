@@ -10,6 +10,12 @@ import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader';
 import { Resources } from './Resources.service';
 import { Subject } from 'rxjs';
 
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
+import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass';
+import { CopyShader } from 'three/examples/jsm/shaders/CopyShader';
+import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -63,6 +69,8 @@ export class ThreeService {
   // GUI
   gui = new dat.GUI();
   
+  // Shader
+  composer1; composer2; fxaaPass;
 
 
 
@@ -88,27 +96,41 @@ export class ThreeService {
       // antialias: true // smooth edges
     });
     this.renderer.gammaOutput=true;
-    // this.renderer.toneMapping = THREE.LinearToneMapping;
-    // this.renderer.toneMappingExposure = 1;
-    
-    this.renderer.setPixelRatio(2);
+    var pixelRatio=2;
+
+    this.renderer.setPixelRatio(pixelRatio);
+
     this.textureLoader = new THREE.TextureLoader();
     this.clock = new THREE.Clock();
 
     var width = window.innerWidth;
     var height = window.innerHeight;
     this.renderer.setSize(width,height);
-    // this.renderer.setSize(window.innerWidth, window.innerHeight);
-    // this.renderer.setClearColor("#a8b3d3", 0);
-    // this.renderer.autoClearColor=false;
+        
+    
     // create the scene
     this.scene = new THREE.Scene();
     this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, .1, 1000);
-
     this.scene.add(this.camera);
 
-    this.raycaster.linePrecision=.012;
-    //  this.raycaster.params.Line.threshold = 1000;
+    // SHADER
+    var renderPass = new RenderPass(this.scene,this.camera);
+    this.fxaaPass = new ShaderPass(FXAAShader);
+    this.fxaaPass.material.uniforms[ 'resolution' ].value.x = 1 / ( width * pixelRatio );
+    this.fxaaPass.material.uniforms[ 'resolution' ].value.y = 1 / ( height * pixelRatio );
+
+    this.composer1 = new EffectComposer( this.renderer );
+    this.composer1.addPass( renderPass );
+    this.composer1.addPass( this.fxaaPass );
+
+    var copyPass = new ShaderPass(CopyShader);
+
+    this.composer2 = new EffectComposer( this.renderer );
+    this.composer2.addPass( renderPass );
+    this.composer2.addPass( copyPass );
+
+
+
 
     // loader 
     this.loader = new GLTFLoader();
@@ -181,6 +203,7 @@ export class ThreeService {
     //   .onChange(() => {
     //     canvas.setAttribute("style","background:"+ bgparams.background+";");
     //   });
+
   }
 
   
@@ -303,6 +326,8 @@ export class ThreeService {
 
 
     this.renderer.render(this.scene, this.camera);
+    // this.composer1.render();
+    // this.composer2.render();
   }
 
 

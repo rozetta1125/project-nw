@@ -79,6 +79,7 @@ export class Resources{
   TSRoof;
   TSHouse01;
   TSHouse02;
+  TSHouse03;
   ColorResource(){
     // 1
     this.textureLoader.load('assets/matcaps/01/F0F0F003.png',(texture)=>{ this.FSwhite=texture; this.FSwhite.encoding=THREE.sRGBEncoding; });
@@ -106,9 +107,11 @@ export class Resources{
     this.textureLoader.load('assets/matcaps/03/wood.png',(texture)=>{ this.TSwood=texture; this.TSwood.encoding=THREE.sRGBEncoding; });
     this.textureLoader.load('assets/matcaps/03/red.png',(texture)=>{ this.TSred=texture; this.TSred.encoding=THREE.sRGBEncoding; });
     this.textureLoader.load('assets/matcaps/03/yellow.png',(texture)=>{ this.TSyellow=texture; this.TSyellow.encoding=THREE.sRGBEncoding; });
-    this.textureLoader.load('assets/matcaps/03/9BBFE7.png',(texture)=>{ this.TSRoof=texture; this.TSRoof.encoding=THREE.sRGBEncoding; });
-    this.textureLoader.load('assets/matcaps/03/FFF8E2.png',(texture)=>{ this.TSHouse01=texture; this.TSHouse01.encoding=THREE.sRGBEncoding; });
-    this.textureLoader.load('assets/matcaps/03/FFFBF7.png',(texture)=>{ this.TSHouse02=texture; this.TSHouse02.encoding=THREE.sRGBEncoding; });
+
+    this.textureLoader.load('assets/matcaps/03/E5CBA1.png',(texture)=>{ this.TSRoof=texture; this.TSRoof.encoding=THREE.sRGBEncoding; });
+    this.textureLoader.load('assets/matcaps/03/F3E9E0.png',(texture)=>{ this.TSHouse01=texture; this.TSHouse01.encoding=THREE.sRGBEncoding; });
+    this.textureLoader.load('assets/matcaps/03/E5CBA1.png',(texture)=>{ this.TSHouse02=texture; this.TSHouse02.encoding=THREE.sRGBEncoding; });
+    this.textureLoader.load('assets/matcaps/03/FFF3C9.png',(texture)=>{ this.TSHouse03=texture; this.TSHouse01.encoding=THREE.sRGBEncoding; });
     
   }
 
@@ -193,7 +196,7 @@ export class Resources{
   HouseAC;
   HouseACmap;
   ThirdSceneResource(){
-    this.textureLoader.load('assets/shadow/House.png',(texture)=>{ this.HouseShadow=texture; });
+    this.textureLoader.load('assets/shadow/House02.png',(texture)=>{ this.HouseShadow=texture; });
     this.textureLoader.load('assets/shadow/Tent.png',(texture)=>{ this.TentShadow=texture; });
     this.textureLoader.load('assets/shadow/Rock.png',(texture)=>{ this.RockShadow=texture; });
     this.textureLoader.load('assets/shadow/Coin.png',(texture)=>{ this.CoinShadow=texture; });
@@ -208,14 +211,10 @@ export class Resources{
     this.loader.load('assets/model/Coin.glb',(gltf)=>{ this.Coin = gltf; });
     this.loader.load('assets/model/Rock.glb',(gltf)=>{ this.Rock = gltf; });
     this.loader.load('assets/model/Tent.glb',(gltf)=>{ this.Tent = gltf; });
-    this.loader.load('assets/model/House03.glb',(gltf)=>{ this.House = gltf; });
+    this.loader.load('assets/model/House07.glb',(gltf)=>{ this.House = gltf; });
     this.loader.load('assets/model/Hammer03.glb',(gltf)=>{ this.Hammer = gltf; });
     this.loader.load('assets/model/Box.glb',(gltf)=>{ this.Box = gltf; });
     this.loader.load('assets/model/Lid.glb',(gltf)=>{ this.Lid = gltf; });
     this.loader.load('assets/model/balloon01.glb',(gltf)=>{ this.Balloon = gltf; });
-    this.loader.load('assets/TEST/tree.glb',(gltf)=>{ this.HouseAC = gltf; });
-
-    this.textureLoader.load('assets/TEST/AC001.png',(texture)=>{ this.HouseACmap=texture; });
-
   }
 }
