@@ -107,6 +107,9 @@ export class ThreeService {
     var height = window.innerHeight;
     this.renderer.setSize(width,height);
         
+
+    // disable right click on canvas
+    // this.canvas.addEventListener('contextmenu',(e)=>{e.preventDefault()})
     
     // create the scene
     this.scene = new THREE.Scene();

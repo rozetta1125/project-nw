@@ -1005,8 +1005,8 @@ export class ThirdScene{
     TweenMax.to(E.GBBody.position,4,{repeat:16,repeatDelay:0,
       onRepeat:()=>{
         if(!E.State){
-          TweenMax.to(E.GBBody.position,2,{x:"+=.5",ease:Power0.easeNone});
-          TweenMax.to(E.GBBody.position,2,{x:"+=.3",ease:Power0.easeNone,delay:2});
+          TweenMax.to(E.GBBody.position,2,{x:"+=.7",ease:Power0.easeNone});
+          TweenMax.to(E.GBBody.position,2,{x:"+=.5",ease:Power0.easeNone,delay:2});
 
           TweenMax.to(E.GBBody.position,2,{z:"-=.1",ease:Power1.easeIn,});
           TweenMax.to(E.GBBody.position,2,{z:"+=.1",ease:Power1.easeOut,delay:1.5});
@@ -1532,13 +1532,6 @@ export class ThirdScene{
       TweenMax.fromTo(this.POPArray[this.POPCurrent].children[i].children[0].material,.3,{opacity:1},{opacity:0,delay:.1,ease:Power1.easeIn});
     }
     this.POPCurrent++;
-
-
-    // smoke 
-    var smoke = document.createElement('div');
-    smoke.innerHTML = "+1";
-    smoke.className = "smoke";
-    document.getElementById('Main').appendChild(smoke);
     
   }
 

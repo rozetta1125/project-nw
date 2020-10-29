@@ -27,6 +27,19 @@ export class WelcomeComponent implements OnInit {
 
   private LoadingTime = {value:0};
   ngOnInit() {
+
+    // ABOUT PAGE
+    let AboutButton = document.getElementById("about-button");
+    AboutButton.addEventListener('click',()=>{
+      document.getElementById("content-about").classList.add('open');
+    })
+
+    let HomeButton = document.getElementById("home-button");
+    HomeButton.addEventListener('click',()=>{
+      document.getElementById("content-about").classList.remove('open');
+    })
+
+    // THREE STUFF
     this.ThreeService.InitThree(this.welcomeCanvas);
     this.ThreeService.FirstInit();
     this.ThreeService.Loader.subscribe((value)=>{
@@ -58,10 +71,6 @@ export class WelcomeComponent implements OnInit {
         });
       }
     });
-
-
-    
-
   }
 
   Start(){

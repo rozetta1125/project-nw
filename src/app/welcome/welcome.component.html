@@ -24,7 +24,7 @@
 
 
   <div class="Text">
-    <h1>Something</h1>
+    <h1>SOMETHING</h1>
   </div>
 
   <!-- Slider -->
@@ -73,5 +73,55 @@
     </div>
   </div>
   <!-- End Slider -->
-  <canvas id="ThreeJSCanvas"></canvas>
+
+  <!-- CANVAS -->
+  <canvas id="ThreeJSCanvas" oncontextmenu="return false;"></canvas>
+
+
+    <!-- About -->
+  <!-- Button -->
+  <button id="about-button">About</button>
+
+  <div id="content-about">
+    <!-- Wave -->
+    <svg class="wave" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto">
+      <defs>
+        <path id="gentle-wave" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z" />
+      </defs>
+      <g class="parallax">
+        <use xlink:href="#gentle-wave" x="48" y="3" fill="#fafafa" />
+      </g>
+    </svg>
+
+    <!-- HOME BUTTON -->
+    <button id="home-button">
+      <div class="Xshape"></div>
+    </button>
+
+    <!-- Bar -->
+    <div class="bar">
+      <h4>About</h4>
+      <svg>
+        <line class="l0" x1="0" y1="50%" x2="100%" y2="50%"></line>
+        <line class="l1" x1="0" y1="50%" x2="33%" y2="50%"></line>
+      </svg>
+    </div>
+
+
+    <!-- Content -->
+    <div class="slide-container">
+      <div class="slide">
+        <h3>Hi, I'm a Frontend Developer in Ho Chi Minh, Vietnam</h3>
+        <p>I've always enjoyed experimenting with new technologies, working with people and helping designers to turn their ideas to life</p>
+        <p>My primary focus is to bring the best experience for the user</p>
+      </div>
+      <div class="slide">
+        <h3>This Project</h3>
+        <p>I've always enjoyed experimenting with new technologies, working with people and helping designers to turn their ideas to life</p>
+        <p>My primary focus is to bring the best experience for the user</p>
+      </div>
+    </div>
+  </div>
+  <!-- End About -->
+
 </div>

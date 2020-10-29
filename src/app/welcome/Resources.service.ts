@@ -108,7 +108,7 @@ export class Resources{
     this.textureLoader.load('assets/matcaps/03/red.png',(texture)=>{ this.TSred=texture; this.TSred.encoding=THREE.sRGBEncoding; });
     this.textureLoader.load('assets/matcaps/03/yellow.png',(texture)=>{ this.TSyellow=texture; this.TSyellow.encoding=THREE.sRGBEncoding; });
 
-    this.textureLoader.load('assets/matcaps/03/E5CBA1.png',(texture)=>{ this.TSRoof=texture; this.TSRoof.encoding=THREE.sRGBEncoding; });
+    this.textureLoader.load('assets/matcaps/03/E5CBA102.png',(texture)=>{ this.TSRoof=texture; this.TSRoof.encoding=THREE.sRGBEncoding; });
     this.textureLoader.load('assets/matcaps/03/F3E9E0.png',(texture)=>{ this.TSHouse01=texture; this.TSHouse01.encoding=THREE.sRGBEncoding; });
     this.textureLoader.load('assets/matcaps/03/E5CBA1.png',(texture)=>{ this.TSHouse02=texture; this.TSHouse02.encoding=THREE.sRGBEncoding; });
     this.textureLoader.load('assets/matcaps/03/FFF3C9.png',(texture)=>{ this.TSHouse03=texture; this.TSHouse01.encoding=THREE.sRGBEncoding; });
