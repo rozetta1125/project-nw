@@ -118,15 +118,15 @@ export class ThirdScene{
         this.RS.Island.scene.children[""+i+""].children[1].material=mate02;
       } else if(this.RS.Island.scene.children[""+i+""].name=="Sea"){
         var seaMate = new THREE.MeshBasicMaterial({color:0x8bd3e7});
-        let bgparams = {
-          sea: "#8bd3e7",
-        }
+        // let bgparams = {
+        //   sea: "#8bd3e7",
+        // }
       
-        var bg = this.ThreeService.gui.addFolder("Sea Inner");
-        bg.addColor(bgparams, "sea")
-          .onChange(() => {
-            seaMate.color.set(new THREE.Color(bgparams.sea));
-          });
+        // var bg = this.ThreeService.gui.addFolder("Sea Inner");
+        // bg.addColor(bgparams, "sea")
+        //   .onChange(() => {
+        //     seaMate.color.set(new THREE.Color(bgparams.sea));
+        //   });
         this.RS.Island.scene.children[""+i+""].material=seaMate;
         this.RS.Island.scene.children[""+i+""].scale.set(1.1,1.1,1.1);
         // this.RS.Island.scene.children[""+i+""].position.y=.2
@@ -136,16 +136,16 @@ export class ThirdScene{
       } else if(this.RS.Island.scene.children[""+i+""].name=="OuterSea"){
         
         var seaMate = new THREE.MeshBasicMaterial({color:0x8bd3e7});
-        let bgparams = {
-          sea: "#8bd3e7",
-        }
+        // let bgparams = {
+        //   sea: "#8bd3e7",
+        // }
       
-        var bg = this.ThreeService.gui.addFolder("Sea Outer");
+        // var bg = this.ThreeService.gui.addFolder("Sea Outer");
 
-        bg.addColor(bgparams, "sea")
-          .onChange(() => {
-            seaMate.color.set(new THREE.Color(bgparams.sea));
-          });
+        // bg.addColor(bgparams, "sea")
+        //   .onChange(() => {
+        //     seaMate.color.set(new THREE.Color(bgparams.sea));
+        //   });
         this.RS.Island.scene.children[""+i+""].material=seaMate;
         // this.RS.Island.scene.children[""+i+""].scale.set(1.1,1.1,1.1);
         TweenMax.fromTo(this.RS.Island.scene.children[""+i+""].scale,1.5,{x:1.12,z:1.12},{x:1.2,z:1.2,repeat:-1,yoyo:true,ease:Power1.easeInOut});

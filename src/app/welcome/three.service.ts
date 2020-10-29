@@ -5,16 +5,10 @@ import * as OrbitControls from 'three-orbitcontrols';
 import GLTFLoader from 'three-gltf-loader';
 // import thisWork from 'three-dragcontrols';
 import { Injectable } from '@angular/core';
-import * as dat from 'dat.gui';
+// import * as dat from 'dat.gui';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader';
 import { Resources } from './Resources.service';
 import { Subject } from 'rxjs';
-
-import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
-import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass';
-import { ShaderPass } from 'three/examples/jsm/postprocessing/ShaderPass';
-import { CopyShader } from 'three/examples/jsm/shaders/CopyShader';
-import { FXAAShader } from 'three/examples/jsm/shaders/FXAAShader';
 
 @Injectable({
   providedIn: 'root'
@@ -67,7 +61,7 @@ export class ThreeService {
   tweenTime = 0.6; // seconds
 
   // GUI
-  gui = new dat.GUI();
+  // gui = new dat.GUI();
   
   // Shader
   composer1; composer2; fxaaPass;
@@ -77,8 +71,6 @@ export class ThreeService {
   raycaster = new THREE.Raycaster();
 
   mouse = new THREE.Vector2();
-  private offset = new THREE.Vector3();
-  private intersection = new THREE.Vector3();
 
 
   Goal = new THREE.Vector3();
@@ -96,7 +88,7 @@ export class ThreeService {
       // antialias: true // smooth edges
     });
     this.renderer.gammaOutput=true;
-    var pixelRatio=2;
+    var pixelRatio=1;
 
     this.renderer.setPixelRatio(pixelRatio);
 
@@ -115,24 +107,6 @@ export class ThreeService {
     this.scene = new THREE.Scene();
     this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, .1, 1000);
     this.scene.add(this.camera);
-
-    // SHADER
-    var renderPass = new RenderPass(this.scene,this.camera);
-    this.fxaaPass = new ShaderPass(FXAAShader);
-    this.fxaaPass.material.uniforms[ 'resolution' ].value.x = 1 / ( width * pixelRatio );
-    this.fxaaPass.material.uniforms[ 'resolution' ].value.y = 1 / ( height * pixelRatio );
-
-    this.composer1 = new EffectComposer( this.renderer );
-    this.composer1.addPass( renderPass );
-    this.composer1.addPass( this.fxaaPass );
-
-    var copyPass = new ShaderPass(CopyShader);
-
-    this.composer2 = new EffectComposer( this.renderer );
-    this.composer2.addPass( renderPass );
-    this.composer2.addPass( copyPass );
-
-
 
 
     // loader 
@@ -192,15 +166,15 @@ export class ThreeService {
     const canvas = document.querySelector('canvas');
     
   
-    var bg = this.gui.addFolder("Background");
-    bg.addColor(bgparams, "background")
-      .onChange(() => {
-        canvas.setAttribute("style","background:linear-gradient(to bottom, "+ bgparams.background+" 0%," + bgparams.background+" 35%," + bgparams.background02+" 35%," +bgparams.background02+" 100%);");
-      });
-    bg.addColor(bgparams, "background02")
-      .onChange(() => {
-        canvas.setAttribute("style","background:linear-gradient(to bottom, "+ bgparams.background+" 0%," + bgparams.background+" 35%," + bgparams.background02+" 35%," +bgparams.background02+" 100%);");
-      });
+    // var bg = this.gui.addFolder("Background");
+    // bg.addColor(bgparams, "background")
+    //   .onChange(() => {
+    //     canvas.setAttribute("style","background:linear-gradient(to bottom, "+ bgparams.background+" 0%," + bgparams.background+" 35%," + bgparams.background02+" 35%," +bgparams.background02+" 100%);");
+    //   });
+    // bg.addColor(bgparams, "background02")
+    //   .onChange(() => {
+    //     canvas.setAttribute("style","background:linear-gradient(to bottom, "+ bgparams.background+" 0%," + bgparams.background+" 35%," + bgparams.background02+" 35%," +bgparams.background02+" 100%);");
+    //   });
 
     // bg.addColor(bgparams, "background")
     //   .onChange(() => {
