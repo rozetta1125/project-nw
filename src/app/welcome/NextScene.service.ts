@@ -78,7 +78,7 @@ export class NextScene{
         TweenMax.to(this.ThreeService.GoalAngle,1.5,{ease:Power1.easeInOut,y:2,z:8});
       break;
       case 2:
-        TweenMax.to(this.ThreeService.GoalAngle,1.5,{ease:Power1.easeInOut,y:1.6});
+        TweenMax.to(this.ThreeService.GoalAngle,1.5,{ease:Power1.easeInOut,y:1.35,z:8.4});
       break;
     }
     this.CurrentGoal+=15;

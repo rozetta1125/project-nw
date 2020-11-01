@@ -1,13 +1,9 @@
 import * as THREE from 'three';
 import * as CANNON from 'cannon';
-import { TweenMax,Power1,Power0 } from 'gsap';
+import { TweenMax,Power1,Power0, Power4 } from 'gsap';
 import { Injectable } from '@angular/core';
 import { ThreeService } from './three.service';
 import { Resources } from './Resources.service';
-import { Line2 } from 'three/examples/jsm/lines/Line2';
-import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial';
-import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry';
-
 
 @Injectable({
   providedIn: 'root'
@@ -35,16 +31,6 @@ export class ThirdScene{
     this.CreateIsland(30,-0.075,-.5);
     this.POPMaterial();
     
-    this.StringM = new LineMaterial({
-      color:0xeeeeee,
-      linewidth:.0012,
-    })
-    TweenMax.delayedCall(1,()=>{
-      this.CreateGiftBalloon(23,3,0);
-    })
-    // TweenMax.delayedCall(1,()=>{
-    //   this.CreateGiftBalloon(23,3,0);
-    // })
 
     // this.RS.Lid.scene.position.set(15,2,0)
     // var something = this.RS.Lid.scene;
@@ -54,6 +40,9 @@ export class ThirdScene{
   StartThirdScene(){
     this.AddEvent();
     this.ThirdSceneRender();
+    TweenMax.delayedCall(2,()=>{
+      this.CreateGiftBalloon(23,3,0);
+    })
   }
 
   AddEvent(){
@@ -339,18 +328,16 @@ export class ThirdScene{
 
     // House
     this.BodyHouse = new CANNON.Body({mass:0});
-    this.BodyHouse.addShape(new CANNON.Box(new CANNON.Vec3(.16,.4,.16)),new CANNON.Vec3(.55,1.4,-.18));
 
-    this.BodyHouse.addShape(new CANNON.Box(new CANNON.Vec3(1.04,.5,.66)),new CANNON.Vec3(-.1,.5,-.33));
-    this.BodyHouse.addShape(new CANNON.Box(new CANNON.Vec3(.68,.5,.9)),new CANNON.Vec3(-.1,.5,-.33));
-    
-    something.rotation.set(0,0,-Math.PI/4);
-    quat.set(something.quaternion.x,something.quaternion.y,something.quaternion.z,something.quaternion.w);
-    this.BodyHouse.addShape(new CANNON.Box(new CANNON.Vec3(.5,.5,.9)),new CANNON.Vec3(-.1,.95,-.33),quat);
+    // House part
+    this.BodyHouse.addShape(new CANNON.Box(new CANNON.Vec3(.66,.6,.5)),new CANNON.Vec3(.1,.5,0));
+    this.BodyHouse.addShape(new CANNON.Box(new CANNON.Vec3(.3,.6,.3)),new CANNON.Vec3(-.75,.5,0));
 
-    something.rotation.set(-Math.PI/4,0,0);
+    // Roof part
+    something.rotation.set(-Math.PI/2,0,0);
     quat.set(something.quaternion.x,something.quaternion.y,something.quaternion.z,something.quaternion.w);
-    this.BodyHouse.addShape(new CANNON.Box(new CANNON.Vec3(1.15,.5,.5)),new CANNON.Vec3(-.1,.95,-.33),quat);
+    this.BodyHouse.addShape(new CANNON.Cylinder(.07,1,.72,12),new CANNON.Vec3(-.1,1.6,0),quat);
+    this.BodyHouse.addShape(new CANNON.Cylinder(.07,1,.72,12),new CANNON.Vec3(-.25,1.6,0),quat);
 
     this.BodyHouse.position.set(Ix,Iy,Iz);
     // this.world03.addBody(this.BodyHouse)
@@ -637,6 +624,8 @@ export class ThirdScene{
       this.ThreeService.scene.add(this.RS.House.scene);
       this.world03.addBody(this.BodyHouse)
       
+      // House Smoke
+      this.HouseSmoke();
     })
 
 
@@ -651,6 +640,7 @@ export class ThirdScene{
     TweenMax.to(Something,.01,{value:1,yoyo:true,delay:0.4,repeat:2,repeatDelay:.8,onRepeat:()=>{
       this.CraftingSmokes(Ix,Iy,Iz,1);
     }})
+
 
   }
 
@@ -784,7 +774,6 @@ export class ThirdScene{
   }
 
   private ThirdSceneObject = [];
-  private Lines=[];
   CreateGiftBalloon(Px,Py,Pz){
     let E = new GiftBalloon;
     this.GiftBalloonArray.push(E);
@@ -835,9 +824,9 @@ export class ThirdScene{
       matcap:this.RS.TSred
     })
     s.children["0"].material=mate01;
-    this.ThirdSceneObject.push(s)
-    E.Balloon3d.add(s);
 
+    E.Balloon3d.add(s);
+    this.ThirdSceneObject.push(E.Balloon3d)
 
     E.Balloon3d.position.set(0,0,0);
     this.ThreeService.scene.add(E.Balloon3d);
@@ -971,7 +960,7 @@ export class ThirdScene{
         if(e.body.material.name=="PlaneMaterial"&&!E.Boop){
           E.Boop=true;
           TweenMax.to(E.Box3d.scale,.3,{x:.1,y:.1,z:.1})
-          E.Shadow.material.uniforms.uShadowColor.value = new THREE.Color(0x000000);
+          E.Shadow.material.uniforms.uShadowColor.value = new THREE.Color(0x8eccde);
           TweenMax.to(E.Shadow.scale,.3,{x:.1,y:.1,z:.1})
           TweenMax.delayedCall(.2,()=>{
             this.ThreeService.BOOP(E.BoxBody.position.x,E.BoxBody.position.y,E.BoxBody.position.z);
@@ -979,6 +968,11 @@ export class ThirdScene{
             this.ThreeService.scene.remove(E.Shadow);
             this.world03.remove(E.BoxBody);
             this.world03.remove(E.BoxTopBody);
+          })
+          TweenMax.delayedCall(1,()=>{
+            if(this.BalloonPopped<2){
+              this.CreateGiftBalloon(23,3,0);
+            }
           })
         };
       }
@@ -997,12 +991,17 @@ export class ThirdScene{
             this.world03.remove(E.BoxBody);
             this.world03.remove(E.BoxTopBody);
           })
+          TweenMax.delayedCall(1,()=>{
+            if(this.BalloonPopped<2){
+              this.CreateGiftBalloon(23,3,0);
+            }
+          })
         };
       }
     });
 
 
-    TweenMax.to(E.GBBody.position,4,{repeat:16,repeatDelay:0,
+    TweenMax.to(E.GBBody.position,4,{repeat:10,repeatDelay:0,
       onRepeat:()=>{
         if(!E.State){
           TweenMax.to(E.GBBody.position,2,{x:"+=.7",ease:Power0.easeNone});
@@ -1292,6 +1291,7 @@ export class ThirdScene{
             TweenMax.to(this.BubbleArray[i].scale,.3,{x:.01,y:.01,z:.01,onComplete:()=>{this.ThreeService.scene.remove(this.BubbleArray[i]);}});
           }
           this.UpgradeFunction(30,-0.075,0);
+          this.BubbleObject.position.set(0,10,0);
         break;
       }
       switch (intersect[0].object.parent.name){
@@ -1385,7 +1385,7 @@ export class ThirdScene{
 
           // Check If Enough to Upgrade
           this.CoinPickedUp++;
-          if(this.CoinPickedUp==1){
+          if(this.CoinPickedUp==4){
             this.BubbleUpgrade();
           }
           
@@ -1541,7 +1541,10 @@ export class ThirdScene{
         // Change state to popped
         this.GiftBalloonArray[i].State = true;
 
+        TweenMax.to(this.GiftBalloonArray[i].GBBody.position,2,{y:"+=2",ease:Power0.easeNone});
+
         // Remove balloon part
+        this.ThirdSceneObject.pop();
         this.ThreeService.scene.remove(this.GiftBalloonArray[i].Balloon3d);
         this.world03.removeConstraint(this.GiftBalloonArray[i].BoxConstraint);
         this.world03.remove(this.GiftBalloonArray[i].GBBody);
@@ -1559,10 +1562,13 @@ export class ThirdScene{
     }
   }
 
+  private BalloonPopped=0;
   POPGift(id:number){
     for(var i=0;i<this.GiftBalloonArray.length;i++){
       if(this.GiftBalloonArray[i].Box3d.id==id){
+
         this.ThirdSceneObject.pop();
+
         // Success Animation
         TweenMax.to(this.GiftBalloonArray[i].Box3d.scale,.25,{x:.9,y:.9,z:.9,ease:Power1.easeOut});
         TweenMax.to(this.GiftBalloonArray[i].BoxLid.position,.25,{y:"-=.05",ease:Power1.easeOut});
@@ -1586,6 +1592,17 @@ export class ThirdScene{
         TweenMax.delayedCall(1,()=>{
           this.ThreeService.scene.remove(this.GiftBalloonArray[k].Box3d);
           this.ThreeService.scene.remove(this.GiftBalloonArray[k].Shadow);
+
+          // set to original position
+          TweenMax.set(this.GiftBalloonArray[k].BoxLid.position,{y:"-=.1",x:"-=.1",z:"+=.1"})
+          TweenMax.set(this.GiftBalloonArray[k].BoxLid.rotation,{x:"+=.35",z:"+=.35",})
+
+          // Add another Balloon
+          if(this.BalloonPopped<2){
+            this.CreateGiftBalloon(23,3,0);
+            this.BalloonPopped++;
+          }
+
         })
 
         // remove stuff
@@ -1595,120 +1612,23 @@ export class ThirdScene{
     }
   }
 
-  CutGB(id,Ipoint:THREE.Vector3){
-    for(var i=0;i<this.GiftBalloonArray.length;i++){
-      if(this.GiftBalloonArray[i].NormalLine.id==id && !this.GiftBalloonArray[i].State){
-        this.GiftBalloonArray[i].State=true;
-
-        var Po = new THREE.Vector3();
-        Po.setFromMatrixPosition(this.GiftBalloonArray[i].BalloonAttach.matrixWorld);
-        var Po2 = new THREE.Vector3();
-        Po2.setFromMatrixPosition(this.GiftBalloonArray[i].BoxAttach.matrixWorld);
-
-        // Setup top line
-        this.GiftBalloonArray[i].Curve = new THREE.LineCurve3(Po,Ipoint);
-
-        this.GiftBalloonArray[i].CurvePoint = this.GiftBalloonArray[i].Curve.getPoints(3);
-
-        var distance = this.ThreeService.distance(Ipoint.x, Ipoint.y, Ipoint.z,
-          Po.x, Po.y, Po.z);
-
-        for(var j=0;j<4;j++){
-          this.GiftBalloonArray[i].Lines01[j].position.copy(this.GiftBalloonArray[i].CurvePoint[j]);
-          this.world03.addBody(this.GiftBalloonArray[i].Lines01[j]);
-        }
-
-        // Lock Constraint
-        this.GiftBalloonArray[i].LockConstrain01
-         = new CANNON.LockConstraint(this.GiftBalloonArray[i].Lines01[0],this.GiftBalloonArray[i].BalloonBody);
-        this.world03.addConstraint(this.GiftBalloonArray[i].LockConstrain01);
-
-        // Distance Constraint
-        for(var j=0;j<3;j++){
-          var c = new CANNON.DistanceConstraint(this.GiftBalloonArray[i].Lines01[j],this.GiftBalloonArray[i].Lines01[j+1],distance/4);
-          // var c = new CANNON.LockConstraint(this.GiftBalloonArray[i].Lines01[j],this.GiftBalloonArray[i].Lines01[j+1]);
-          this.GiftBalloonArray[i].DisConstrain01.push(c);
-          this.world03.addConstraint(c);
-        }
-
-        // Remove old Line2
-        this.ThreeService.scene.remove(this.GiftBalloonArray[i].StringLine01)
-
-        // Replace Catmull points
-        for(var j=0;j<4;j++){
-          this.GiftBalloonArray[i].Catmull01.points[j].copy(this.GiftBalloonArray[i].Lines01[j].position);
-        }
-
-        // get Points to create LineGeometry
-        this.GiftBalloonArray[i].CurvePoint = this.GiftBalloonArray[i].Catmull01.getPoints(9);
-        this.GiftBalloonArray[i].LinePoints01 = [];
-
-        for(var j=0;j<10;j++){
-          this.GiftBalloonArray[i].LinePoints01.push(this.GiftBalloonArray[i].CurvePoint[j].x,this.GiftBalloonArray[i].CurvePoint[j].y,this.GiftBalloonArray[i].CurvePoint[j].z);
-        }
-
-        // Create new Line2 
-        this.GiftBalloonArray[i].StringPoints01 = new LineGeometry();
-        this.GiftBalloonArray[i].StringPoints01.setPositions(this.GiftBalloonArray[i].LinePoints01);
-        this.GiftBalloonArray[i].StringLine01 = new Line2(this.GiftBalloonArray[i].StringPoints01,this.StringM)
-        this.ThreeService.scene.add(this.GiftBalloonArray[i].StringLine01)
-        
-        this.world03.removeConstraint(this.GiftBalloonArray[i].BoxConstraint);
-
-
-        // Setup bottom line
-        this.GiftBalloonArray[i].Curve = new THREE.LineCurve3(Po2,Ipoint);
-
-        this.GiftBalloonArray[i].CurvePoint = this.GiftBalloonArray[i].Curve.getPoints(3);
-
-        var distance = this.ThreeService.distance(Ipoint.x, Ipoint.y, Ipoint.z,
-          Po2.x, Po2.y, Po2.z);
-
-        for(var j=0;j<4;j++){
-          this.GiftBalloonArray[i].Lines02[j].position.copy(this.GiftBalloonArray[i].CurvePoint[j]);
-          this.world03.addBody(this.GiftBalloonArray[i].Lines02[j]);
-        }
-
-        // Lock Constraint
-        this.GiftBalloonArray[i].LockConstrain02
-         = new CANNON.LockConstraint(this.GiftBalloonArray[i].Lines02[0],this.GiftBalloonArray[i].BoxBody);
-        this.world03.addConstraint(this.GiftBalloonArray[i].LockConstrain02);
-
-        // Distance Constraint
-        for(var j=0;j<3;j++){
-          var c = new CANNON.DistanceConstraint(this.GiftBalloonArray[i].Lines02[j],this.GiftBalloonArray[i].Lines02[j+1],distance/4);
-          this.GiftBalloonArray[i].DisConstrain02.push(c);
-          this.world03.addConstraint(c);
-        }
-
-        // Replace Catmull points
-        for(var j=0;j<4;j++){
-          this.GiftBalloonArray[i].Catmull02.points[j].copy(this.GiftBalloonArray[i].Lines02[j].position);
-        }
-
-        // get Points to create LineGeometry
-        this.GiftBalloonArray[i].CurvePoint = this.GiftBalloonArray[i].Catmull02.getPoints(9);
-        this.GiftBalloonArray[i].LinePoints02 = [];
-
-        for(var j=0;j<10;j++){
-          this.GiftBalloonArray[i].LinePoints02.push(this.GiftBalloonArray[i].CurvePoint[j].x,this.GiftBalloonArray[i].CurvePoint[j].y,this.GiftBalloonArray[i].CurvePoint[j].z);
-        }
-
-        // Create new Line2
-        this.GiftBalloonArray[i].StringPoints02 = new LineGeometry();
-        this.GiftBalloonArray[i].StringPoints02.setPositions(this.GiftBalloonArray[i].LinePoints02);
-        this.GiftBalloonArray[i].StringLine02 = new Line2(this.GiftBalloonArray[i].StringPoints02,this.StringM)
-        this.ThreeService.scene.add(this.GiftBalloonArray[i].StringLine02)
-        
-        this.world03.removeConstraint(this.GiftBalloonArray[i].BoxConstraint);
-
-        TweenMax.to(this.GiftBalloonArray[i].GBBody.position,2,{y:"+=2",ease:Power1.easeIn});
-        
-        // this.GiftBalloonArray[i].BoxBody.velocity.y=-1;
-
-
+  HouseSmoke(){
+    TweenMax.delayedCall(3,()=>{
+      for(var i=0;i<3;i++){
+        let smoke = new THREE.Mesh(
+          new THREE.SphereBufferGeometry(.1,10,10),
+          new THREE.MeshMatcapMaterial({color:0xffffff,matcap:this.RS.Smoke,transparent:true,opacity:1})
+        )
+        smoke.position.set(30.4,0,-.65)
+        this.ThreeService.scene.add(smoke);
+        let delay = i*1.2;
+  
+        TweenMax.fromTo(smoke.scale,3.6,{x:.6,y:.4,z:.3},{ease:Power0.easeNone,x:1.4,y:1.1,z:1,delay:delay,repeat:-1,repeatDelay:0});
+        TweenMax.fromTo(smoke.position,3.6,{y:1.75},{ease:Power0.easeNone,y:2.4,delay:delay,repeat:-1,repeatDelay:0});
+        TweenMax.to(smoke.position,3.6,{ease:Power1.easeInOut,x:"+=.45",delay:delay,repeat:-1,repeatDelay:0});
+        TweenMax.fromTo(smoke.material,3.6,{opacity:1},{ease:Power4.easeIn,opacity:0,delay:delay,repeat:-1,repeatDelay:0});
       }
-    }
+    })
   }
 }
 

@@ -24,7 +24,7 @@
 
 
   <div class="Text">
-    <h1>SOMETHING</h1>
+    <h1>Hello</h1>
   </div>
 
   <!-- Slider -->
@@ -35,7 +35,7 @@
         <circle cx="20" cy="20" r="18" fill="#fff" />
       </svg>
       <svg class="nl-arrow" width="14" height="14" viewBox="0 0 444.819 444.819">
-        <path fill="#EEE2D9" xmlns="http://www.w3.org/2000/svg"
+        <path id="arrow-fill" fill="#e8d8cd" xmlns="http://www.w3.org/2000/svg"
           d="M352.025,196.712L165.884,10.848C159.029,3.615,150.469,0,140.187,0c-10.282,0-18.842,3.619-25.697,10.848L92.792,32.264   c-7.044,7.043-10.566,15.604-10.566,25.692c0,9.897,3.521,18.56,10.566,25.981l138.753,138.473L92.786,361.168   c-7.042,7.043-10.564,15.604-10.564,25.693c0,9.896,3.521,18.562,10.564,25.98l21.7,21.413   c7.043,7.043,15.612,10.564,25.697,10.564c10.089,0,18.656-3.521,25.697-10.564l186.145-185.864   c7.046-7.423,10.571-16.084,10.571-25.981C362.597,212.321,359.071,203.755,352.025,196.712z" />
       </svg>
     </div>
@@ -89,36 +89,49 @@
         <path id="gentle-wave" d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z" />
       </defs>
       <g class="parallax">
-        <use xlink:href="#gentle-wave" x="48" y="3" fill="#fafafa" />
+        <use xlink:href="#gentle-wave" x="48" y="3" fill="#fff" />
       </g>
     </svg>
 
     <!-- HOME BUTTON -->
     <button id="home-button">
-      <div class="Xshape"></div>
+      <div class="Xshape">&nbsp;</div>
     </button>
 
-    <!-- Bar -->
+
+    <!-- Progress Bar -->
     <div class="bar">
-      <h4>About</h4>
+      <h4>ABOUT</h4>
       <svg>
-        <line class="l0" x1="0" y1="50%" x2="100%" y2="50%"></line>
+        <line class="l0" x1="0" y1="50%" x2="99%" y2="50%"></line>
         <line class="l1" x1="0" y1="50%" x2="33%" y2="50%"></line>
       </svg>
     </div>
 
 
+    <div class="scroll">
+      <div class="mouse"><span>&nbsp;</span></div>
+      <p>SCROLL DOWN</p>
+    </div>
+
     <!-- Content -->
     <div class="slide-container">
-      <div class="slide">
-        <h3>Hi, I'm a Frontend Developer in Ho Chi Minh, Vietnam</h3>
-        <p>I've always enjoyed experimenting with new technologies, working with people and helping designers to turn their ideas to life</p>
-        <p>My primary focus is to bring the best experience for the user</p>
-      </div>
-      <div class="slide">
-        <h3>This Project</h3>
-        <p>I've always enjoyed experimenting with new technologies, working with people and helping designers to turn their ideas to life</p>
-        <p>My primary focus is to bring the best experience for the user</p>
+      <div class="slide-wrapper">
+        <div class="slide">
+          <h3>Hi, I'm a Frontend Developer in Ho Chi Minh, Vietnam</h3>
+          <p>I've always enjoyed experimenting with new technologies, working with people and helping designers to turn their ideas to life</p>
+          <p>My primary focus is to bring the best experience for the user</p>
+        </div>
+        <div class="slide">
+          <h3>This Project</h3>
+          <p>This website is made using Threejs, Cannonjs, Blender, and Angular</p>
+          <p>I had a lot of struggle with performance optimizations, without the help of the Threejs Community, this project won't see the light,
+            and I am grateful for it.</p>
+        </div>
+        <div class="slide">
+          <h3>Contact</h3>
+          <p></p>
+        </div>
       </div>
     </div>
   </div>

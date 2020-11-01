@@ -794,7 +794,7 @@ export class FirstScene {
     this.Smoke = new THREE.Mesh(new THREE.SphereBufferGeometry(.04, 10, 10));
     for (var i = 0; i < 80; i++) {
       let smokeClone = this.Smoke.clone();
-      let mate = new THREE.MeshMatcapMaterial({ transparent: true,color:0xffffff, matcap: this.RS.FSwhite, opacity: 0, depthWrite: false });
+      let mate = new THREE.MeshMatcapMaterial({ transparent: true,color:0xffffff, matcap: this.RS.Smoke, opacity: 0, depthWrite: false });
       smokeClone.material = mate;
       this.Smokes.push(smokeClone);
       this.ThreeService.scene.add(smokeClone);

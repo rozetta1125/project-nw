@@ -88,7 +88,7 @@ export class ThreeService {
       // antialias: true // smooth edges
     });
     this.renderer.gammaOutput=true;
-    var pixelRatio=1;
+    var pixelRatio=2;
 
     this.renderer.setPixelRatio(pixelRatio);
 
@@ -117,11 +117,11 @@ export class ThreeService {
 
 
     // this.GoalAngle.set(0,1.4,8);
-    this.GoalAngle.set(0,1.35,8.4);
+    this.GoalAngle.set(0,1.25,8.4);
     this.camera.position.copy(this.GoalAngle);
     this.camera.lookAt(new THREE.Vector3(-15,0,0));
 
-    this.Goal.set(30,1.1,0)
+    this.Goal.set(-15,1.1,0)
     this.EasedGoal.copy(this.Goal);
     
 
@@ -408,61 +408,60 @@ export class ThreeService {
       this.Loader.next(true);
 
 
-      var delayStart = .9;
-      // Start
-      TweenMax.to(shadow.position,delayStart,{x:"-=.3",ease:Power1.easeInOut})
-      TweenMax.to(Loader.position,delayStart,{x:"-=.3",ease:Power1.easeInOut})
-      TweenMax.to(Loader.rotation,delayStart,{z:31.5*Math.PI/180,ease:Power1.easeInOut})
+      var delayStart = 1.1;
 
-      TweenMax.to(Sphere.position,delayStart+.4,{x:"-=.5",ease:Power1.easeInOut,delay:.5})
-      TweenMax.fromTo(shadow02.scale,delayStart+.4,{x:".4"},{x:"+=.6",ease:Power1.easeInOut,delay:.5})
+      TweenMax.delayedCall(.5,()=>{
+        // Start
+        TweenMax.to(shadow.position,delayStart,{x:"-=.3",ease:Power1.easeInOut})
+        TweenMax.to(Loader.position,delayStart,{x:"-=.3",ease:Power1.easeInOut})
+        TweenMax.to(Loader.rotation,delayStart,{z:31.5*Math.PI/180,ease:Power1.easeInOut})
 
-
-      // Mid
-      TweenMax.to(shadow.position,1,{x:"+=.6",ease:Power1.easeInOut,repeat:4,yoyo:true,delay:delayStart})
-      TweenMax.to(Loader.position,1,{x:"+=.6",ease:Power1.easeInOut,repeat:4,yoyo:true,delay:delayStart})
-      TweenMax.to(Loader.rotation,1,{z:-31.5*Math.PI/180,ease:Power1.easeInOut,repeat:4,yoyo:true,delay:delayStart,onComplete:()=>{
-        TweenMax.to(shadow.position,1.25,{x:"-=.3",ease:Power1.easeInOut})
-        TweenMax.to(Loader.position,1.25,{x:"-=.3",ease:Power1.easeInOut})
-        TweenMax.to(Loader.rotation,1.25,{z:0*Math.PI/180,ease:Power1.easeInOut});
-      }});
-
-      TweenMax.to(Sphere.position,1,{x:"+=.6",ease:Power1.easeInOut,repeat:3,yoyo:true,delay:.88+delayStart})
-      TweenMax.to(shadow02.scale,1,{x:"-=.6",ease:Power1.easeInOut,repeat:3,yoyo:true,delay:.88+delayStart,onComplete:()=>{
-        // Loader.remove(Sphere);
-        // this.scene.add(Sphere);
+        TweenMax.to(Sphere.position,delayStart+.4,{x:"-=.5",ease:Power1.easeInOut,delay:.5})
+        TweenMax.fromTo(shadow02.scale,delayStart+.4,{x:".4"},{x:"+=.6",ease:Power1.easeInOut,delay:.5})
 
 
-        // x
-        TweenMax.to(Sphere.position,1.25,{x:"+=.6",ease:Power1.easeInOut});
-        TweenMax.to(Sphere.position,3.6,{x:"+=2.4",ease:Power1.easeOut,delay:.65});
-        TweenMax.fromTo(shadow03.position,3.6,{x:-14.98},{x:"+=2.4",ease:Power1.easeOut,delay:.65});
+        // Mid
+        TweenMax.to(shadow.position,1,{x:"+=.6",ease:Power1.easeInOut,repeat:4,yoyo:true,delay:delayStart})
+        TweenMax.to(Loader.position,1,{x:"+=.6",ease:Power1.easeInOut,repeat:4,yoyo:true,delay:delayStart})
+        TweenMax.to(Loader.rotation,1,{z:-31.5*Math.PI/180,ease:Power1.easeInOut,repeat:4,yoyo:true,delay:delayStart,onComplete:()=>{
+          TweenMax.to(shadow.position,1.25,{x:"-=.3",ease:Power1.easeInOut})
+          TweenMax.to(Loader.position,1.25,{x:"-=.3",ease:Power1.easeInOut})
+          TweenMax.to(Loader.rotation,1.25,{z:0*Math.PI/180,ease:Power1.easeInOut});
+        }});
 
-        // y 
-        TweenMax.to(Sphere.position,.2,{y:"-=.418",ease:Power1.easeOut,delay:1.05})
-        TweenMax.to(Sphere.position,.15,{y:"+=.11",ease:Power1.easeOut,delay:1.0+.2})
-        TweenMax.to(Sphere.position,.15,{y:"-=.11",ease:Power1.easeIn,delay:1.0+.2+.15})
+        TweenMax.to(Sphere.position,1,{x:"+=.6",ease:Power1.easeInOut,repeat:3,yoyo:true,delay:.88+delayStart})
+        TweenMax.to(shadow02.scale,1,{x:"-=.6",ease:Power1.easeInOut,repeat:3,yoyo:true,delay:.88+delayStart,onComplete:()=>{
 
-        TweenMax.to(Sphere.position,.075,{y:"+=.04",ease:Power1.easeOut,delay:1.0+.2+.15+.15})
-        TweenMax.to(Sphere.position,.075,{y:"-=.04",ease:Power1.easeIn,delay:1.0+.2+.15+.15+.075})
+          // x
+          TweenMax.to(Sphere.position,1.25,{x:"+=.6",ease:Power1.easeInOut});
+          TweenMax.to(Sphere.position,3.6,{x:"+=2.4",ease:Power1.easeOut,delay:.65});
+          TweenMax.fromTo(shadow03.position,3.6,{x:-14.98},{x:"+=2.4",ease:Power1.easeOut,delay:.65});
 
-        // Shadow
-        TweenMax.to(uniforms02.uAlpha,.1,{value:0,delay:.65});
+          // y 
+          TweenMax.to(Sphere.position,.2,{y:"-=.418",ease:Power1.easeOut,delay:1.05})
+          TweenMax.to(Sphere.position,.15,{y:"+=.11",ease:Power1.easeOut,delay:1.0+.2})
+          TweenMax.to(Sphere.position,.15,{y:"-=.11",ease:Power1.easeIn,delay:1.0+.2+.15})
 
-        TweenMax.to(uniforms03.uAlpha,.1,{value:.7,delay:1.1});
-        
-      }})
+          TweenMax.to(Sphere.position,.075,{y:"+=.04",ease:Power1.easeOut,delay:1.0+.2+.15+.15})
+          TweenMax.to(Sphere.position,.075,{y:"-=.04",ease:Power1.easeIn,delay:1.0+.2+.15+.15+.075})
 
-      // End
+          // Shadow
+          TweenMax.to(uniforms02.uAlpha,.1,{value:0,delay:.65});
+          TweenMax.to(uniforms03.uAlpha,.1,{value:.7,delay:1.1});
+        }})
+
+        // End
 
 
-      // Text and NextScene
-      TweenMax.to('.Text',2,{css:{opacity:1},delay:2,ease:Power1.easeOut});
-      TweenMax.to('.Text',2,{css:{opacity:0},delay:4,ease:Power1.easeIn});
-      TweenMax.set('.Text',{css:{visibility:"hidden"},delay:6});
+        // Text and NextScene
+        TweenMax.to('.Text',2,{css:{opacity:1},delay:2,ease:Power1.easeOut});
+        TweenMax.to('.Text',2,{css:{opacity:0},delay:4,ease:Power1.easeIn});
+        TweenMax.set('.Text',{css:{visibility:"hidden"},delay:6});
 
-      TweenMax.to('#nextStage',2,{ease:Power1.easeOut,delay:2,css:{opacity:1}});
-      TweenMax.set('#nextStage',{css:{visibility:"visible"},delay:2});
+        TweenMax.to('#nextStage',2,{ease:Power1.easeOut,delay:4,css:{opacity:1}});
+        TweenMax.set('#nextStage',{css:{visibility:"visible"},delay:4});
+      })
+  
     });
 
 

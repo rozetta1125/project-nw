@@ -80,9 +80,13 @@ export class Resources{
   TSHouse01;
   TSHouse02;
   TSHouse03;
+  Smoke;
   ColorResource(){
+
+    this.textureLoader.load('assets/matcaps/Smoke.png',(texture)=>{ this.Smoke=texture; this.Smoke.encoding=THREE.sRGBEncoding; });
+
     // 1
-    this.textureLoader.load('assets/matcaps/01/F0F0F003.png',(texture)=>{ this.FSwhite=texture; this.FSwhite.encoding=THREE.sRGBEncoding; });
+    this.textureLoader.load('assets/matcaps/01/F0F0F0.png',(texture)=>{ this.FSwhite=texture; this.FSwhite.encoding=THREE.sRGBEncoding; });
     this.textureLoader.load('assets/matcaps/01/97ADD902.png',(texture)=>{ this.FSblue=texture; this.FSblue.encoding=THREE.sRGBEncoding; });
     this.textureLoader.load('assets/matcaps/01/E7ABB1.png',(texture)=>{ this.FSpink=texture; this.FSpink.encoding=THREE.sRGBEncoding; });
 
@@ -111,7 +115,7 @@ export class Resources{
     this.textureLoader.load('assets/matcaps/03/E5CBA102.png',(texture)=>{ this.TSRoof=texture; this.TSRoof.encoding=THREE.sRGBEncoding; });
     this.textureLoader.load('assets/matcaps/03/F3E9E0.png',(texture)=>{ this.TSHouse01=texture; this.TSHouse01.encoding=THREE.sRGBEncoding; });
     this.textureLoader.load('assets/matcaps/03/E5CBA1.png',(texture)=>{ this.TSHouse02=texture; this.TSHouse02.encoding=THREE.sRGBEncoding; });
-    this.textureLoader.load('assets/matcaps/03/FFF3C9.png',(texture)=>{ this.TSHouse03=texture; this.TSHouse01.encoding=THREE.sRGBEncoding; });
+
     
   }
 
@@ -195,6 +199,7 @@ export class Resources{
 
   HouseAC;
   HouseACmap;
+
   ThirdSceneResource(){
     this.textureLoader.load('assets/shadow/House02.png',(texture)=>{ this.HouseShadow=texture; });
     this.textureLoader.load('assets/shadow/Tent.png',(texture)=>{ this.TentShadow=texture; });
@@ -211,7 +216,7 @@ export class Resources{
     this.loader.load('assets/model/Coin.glb',(gltf)=>{ this.Coin = gltf; });
     this.loader.load('assets/model/Rock.glb',(gltf)=>{ this.Rock = gltf; });
     this.loader.load('assets/model/Tent.glb',(gltf)=>{ this.Tent = gltf; });
-    this.loader.load('assets/model/House07.glb',(gltf)=>{ this.House = gltf; });
+    this.loader.load('assets/model/House09.glb',(gltf)=>{ this.House = gltf; });
     this.loader.load('assets/model/Hammer03.glb',(gltf)=>{ this.Hammer = gltf; });
     this.loader.load('assets/model/Box.glb',(gltf)=>{ this.Box = gltf; });
     this.loader.load('assets/model/Lid.glb',(gltf)=>{ this.Lid = gltf; });

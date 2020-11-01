@@ -720,14 +720,14 @@ export class SecondScene{
         this.RS.Windmill.scene.children[""+i+""].material=mate01;
       } else if (this.RS.Windmill.scene.children[""+i+""].name == "Bush"){
         let mate01 = new THREE.MeshMatcapMaterial({
-          color:0xffffff,
+          color:0xfafafa,
           side:2,
           matcap:this.RS.SStree
         })
         this.RS.Windmill.scene.children[""+i+""].material=mate01;
       } else if (this.RS.Windmill.scene.children[""+i+""].name == "Tree"){
         let mate01 = new THREE.MeshMatcapMaterial({
-          color:0xffffff,
+          color:0xfafafa,
           side:2,
           matcap:this.RS.SStree
         })
