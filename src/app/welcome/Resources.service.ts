@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { Injectable } from '@angular/core';
-import { TimelineLite,TweenLite } from 'gsap';
+import { Power0, TweenMax } from 'gsap';
 import GLTFLoader from 'three-gltf-loader';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader';
 import { variable } from '@angular/compiler/src/output/output_ast';
@@ -23,15 +23,17 @@ export class Resources{
 
   InitResources(){
     this.manager = new THREE.LoadingManager();
-    // this.manager.onStart = (url,itemsLoaded,itemsTotal)=>{
-    //   console.log( 'Started loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.' );
-    // }
+
     this.manager.onProgress =  (url, itemsLoaded, itemsTotal)=>{
       console.log( 'Loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.' );
     };
     this.manager.onError = (url)=>{
       console.log( 'There was an error loading ' + url );
     };
+
+
+
+
     this.manager.onLoad = ()=>{
       console.log('completed')
       this.ResourcesCompleted.next(true);
@@ -81,14 +83,17 @@ export class Resources{
   TSHouse02;
   TSHouse03;
   Smoke;
+
+  // Last
+  LSblue;
   ColorResource(){
 
     this.textureLoader.load('assets/matcaps/Smoke.png',(texture)=>{ this.Smoke=texture; this.Smoke.encoding=THREE.sRGBEncoding; });
-
     // 1
     this.textureLoader.load('assets/matcaps/01/F0F0F0.png',(texture)=>{ this.FSwhite=texture; this.FSwhite.encoding=THREE.sRGBEncoding; });
     this.textureLoader.load('assets/matcaps/01/97ADD902.png',(texture)=>{ this.FSblue=texture; this.FSblue.encoding=THREE.sRGBEncoding; });
     this.textureLoader.load('assets/matcaps/01/E7ABB1.png',(texture)=>{ this.FSpink=texture; this.FSpink.encoding=THREE.sRGBEncoding; });
+
 
     // 2
     this.textureLoader.load('assets/matcaps/02/F5F5F5.png',(texture)=>{ this.SSwhite=texture; this.SSwhite.encoding=THREE.sRGBEncoding; });
@@ -115,7 +120,6 @@ export class Resources{
     this.textureLoader.load('assets/matcaps/03/E5CBA102.png',(texture)=>{ this.TSRoof=texture; this.TSRoof.encoding=THREE.sRGBEncoding; });
     this.textureLoader.load('assets/matcaps/03/F3E9E0.png',(texture)=>{ this.TSHouse01=texture; this.TSHouse01.encoding=THREE.sRGBEncoding; });
     this.textureLoader.load('assets/matcaps/03/E5CBA1.png',(texture)=>{ this.TSHouse02=texture; this.TSHouse02.encoding=THREE.sRGBEncoding; });
-
     
   }
 
@@ -200,6 +204,11 @@ export class Resources{
   HouseAC;
   HouseACmap;
 
+  Text;
+  TextDecoration;
+
+  TextShadow;
+  TextDecorationShadow;
   ThirdSceneResource(){
     this.textureLoader.load('assets/shadow/House02.png',(texture)=>{ this.HouseShadow=texture; });
     this.textureLoader.load('assets/shadow/Tent.png',(texture)=>{ this.TentShadow=texture; });
@@ -207,6 +216,8 @@ export class Resources{
     this.textureLoader.load('assets/shadow/Coin.png',(texture)=>{ this.CoinShadow=texture; });
     this.textureLoader.load('assets/shadow/Island.png',(texture)=>{ this.TreeMailShadow=texture; });
     this.textureLoader.load('assets/shadow/Gift.png',(texture)=>{ this.GiftShadow=texture; });
+    this.textureLoader.load('assets/shadow/TextShadow.png',(texture)=>{ this.TextShadow=texture; });
+    this.textureLoader.load('assets/shadow/TextDecorationShadow.png',(texture)=>{ this.TextDecorationShadow=texture; });
 
     this.textureLoader.load('assets/shadow/Smoke02.png',(texture)=>{ this.SmokeTexture=texture; });
     this.textureLoader.load('assets/shadow/Bubble.png',(texture)=>{ this.BubbleTexture=texture; });
@@ -221,5 +232,7 @@ export class Resources{
     this.loader.load('assets/model/Box.glb',(gltf)=>{ this.Box = gltf; });
     this.loader.load('assets/model/Lid.glb',(gltf)=>{ this.Lid = gltf; });
     this.loader.load('assets/model/balloon01.glb',(gltf)=>{ this.Balloon = gltf; });
+    this.loader.load('assets/model/Text.glb',(gltf)=>{ this.Text = gltf; });
+    this.loader.load('assets/model/TextDecoration.glb',(gltf)=>{ this.TextDecoration = gltf; });
   }
 }

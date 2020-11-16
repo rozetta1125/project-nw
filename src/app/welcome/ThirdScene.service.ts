@@ -18,8 +18,7 @@ export class ThirdScene{
 
   //
   private render;
-  private StringM;
-  private BalloonM = new THREE.MeshMatcapMaterial();
+  private BalloonHeight=3;
   private FirstCursor = new THREE.Vector3();
   private LastCursor = new THREE.Vector3();
   private GiftBalloonArray = [];
@@ -30,18 +29,22 @@ export class ThirdScene{
     this.CreateScoreMaterial();
     this.CreateIsland(30,-0.075,-.5);
     this.POPMaterial();
-    
+    if(window.innerWidth<769){
+      this.BalloonHeight=2.5;
+    }
 
     // this.RS.Lid.scene.position.set(15,2,0)
     // var something = this.RS.Lid.scene;
     // this.ThreeService.scene.add(something)
+
+    // this.lastScreen();
   }
 
   StartThirdScene(){
     this.AddEvent();
     this.ThirdSceneRender();
     TweenMax.delayedCall(2,()=>{
-      this.CreateGiftBalloon(23,3,0);
+      this.CreateGiftBalloon(23,this.BalloonHeight,0);
     })
   }
 
@@ -56,7 +59,6 @@ export class ThirdScene{
   MoveEvent = ()=>{
     this.BalloonCursor();
   }
-  
 
   private SmokeTexture:THREE.Mesh;
   private SmokeTexture02:THREE.Mesh;
@@ -971,7 +973,7 @@ export class ThirdScene{
           })
           TweenMax.delayedCall(1,()=>{
             if(this.BalloonPopped<2){
-              this.CreateGiftBalloon(23,3,0);
+              this.CreateGiftBalloon(23,this.BalloonHeight,0);
             }
           })
         };
@@ -993,7 +995,7 @@ export class ThirdScene{
           })
           TweenMax.delayedCall(1,()=>{
             if(this.BalloonPopped<2){
-              this.CreateGiftBalloon(23,3,0);
+              this.CreateGiftBalloon(23,this.BalloonHeight,0);
             }
           })
         };
@@ -1599,7 +1601,7 @@ export class ThirdScene{
 
           // Add another Balloon
           if(this.BalloonPopped<2){
-            this.CreateGiftBalloon(23,3,0);
+            this.CreateGiftBalloon(23,this.BalloonHeight,0);
             this.BalloonPopped++;
           }
 

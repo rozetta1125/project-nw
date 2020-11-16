@@ -55,12 +55,14 @@ export class SecondScene{
   addEvent(){
     this.ThreeService.canvas.addEventListener("mousedown",this.MouseDown);
     this.ThreeService.canvas.addEventListener("mouseup", this.MouseUp);
+    this.ThreeService.canvas.addEventListener("touchstart",this.TouchStart);
+    this.ThreeService.canvas.addEventListener("touchend", this.ToucnEnd);
   }
 
   MouseDown = (e)=>{
     if (e.which == 1) {
       if(this.GolfState.value==1){
-        // Nextscene
+        // overlay Nextscene
         document.getElementById('nextStage').classList.add("Golf");
         // 
         this.ThreeService.canvas.addEventListener("mousemove", this.isGolfing, false);
@@ -71,7 +73,7 @@ export class SecondScene{
 
   MouseUp = (e)=>{
     if (e.which == 1) {
-      // Nextscene
+      // overlay Nextscene
       document.getElementById('nextStage').classList.remove("Golf");
 
       //
@@ -94,6 +96,45 @@ export class SecondScene{
     }
   }
 
+  TouchStart = (e)=>{
+    if (e) {
+      if(this.GolfState.value==1){
+        // overlay Nextscene
+        document.getElementById('nextStage').classList.add("Golf");
+        // 
+        this.ThreeService.renderThreePosition(e.touches[0].clientX, e.touches[0].clientY);
+        this.ThreeService.canvas.addEventListener("touchmove", this.isGolfing, false);
+        this.GolfBegin();
+      }
+    }
+  }
+
+  ToucnEnd = (e)=>{
+    if (e) {
+      // overlay Nextscene
+      document.getElementById('nextStage').classList.remove("Golf");
+
+      //
+      this.ThreeService.canvas.removeEventListener("touchmove", this.isGolfing, false);
+      this.Golfing=false;
+      TweenMax.set('.circle',{css:{strokeDashoffset: 345}});
+      TweenMax.set('.circle .innerCircle',{css:{strokeDashoffset: 345}});
+      TweenMax.set('.svg-line',{css:{opacity:0}});
+      TweenMax.set('#Golf',{css:{opacity:0}});
+
+      this.ThreeService.scene.remove(this.GolfString);
+
+      if(this.GolfState.value==2){
+        if(this.ThreeService.BasePosition.x==this.FBasePosition.x&&this.ThreeService.BasePosition.y==this.FBasePosition.y){
+        } else {
+          this.GolfMove();
+          this.GolfState.value=0;
+        }
+      }
+    }
+  }
+
+
   isGolfing = () => {
     this.Golfing=true;
     this.GolfState.value=2;
@@ -107,6 +148,8 @@ export class SecondScene{
     cancelAnimationFrame(this.render);
     this.ThreeService.canvas.removeEventListener("mousedown",this.MouseDown);
     this.ThreeService.canvas.removeEventListener("mouseup", this.MouseUp);
+    this.ThreeService.canvas.removeEventListener("touchstart",this.TouchStart);
+    this.ThreeService.canvas.removeEventListener("touchend", this.ToucnEnd);
   }
 
 
@@ -333,7 +376,7 @@ export class SecondScene{
       this.MiniGolf();
     });
   }
-  private GolfState={value:0}; // 0 preparing 1 standby 2 damping
+  private GolfState={value:0}; // 0 preparing 1 standby 2 runing rendercursor function
 
   private GolfThrees = [];
   private GolfCannons = [];

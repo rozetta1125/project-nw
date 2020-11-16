@@ -6,6 +6,7 @@ import { NextScene } from "./NextScene.service";
 import { SecondScene } from './SecondScene.service';
 import { ThirdScene } from './ThirdScene.service';
 import { Power1,Power3, TweenMax } from 'gsap';
+import { FourthScene } from './FourthScene.service';
 
 @Component({
   selector: 'app-welcome',
@@ -23,9 +24,9 @@ export class WelcomeComponent implements OnInit {
     private NS: NextScene,
     private SS: SecondScene,
     private TS: ThirdScene,
+    private FourthS: FourthScene,
   ) { }
 
-  private LoadingTime = {value:0};
   ngOnInit() {
 
     // ABOUT PAGE
@@ -45,28 +46,11 @@ export class WelcomeComponent implements OnInit {
     this.ThreeService.Loader.subscribe((value)=>{
       if(value){
         console.log("Loading");
-        // Start Timer
-        TweenMax.to(this.LoadingTime,3,{value:1});
         this.RS.InitResources();
-
         this.RS.ResourcesCompleted.subscribe((value)=>{
           if(value){
             console.log('Loaded');
             this.Start();
-
-            // if Timer
-            if(this.LoadingTime.value==1){
-              // TweenLite.to(this.ThreeService.Goal,1.5,{ease:Power1.easeInOut,x:0});
-              // TweenLite.delayedCall(3,()=>{
-              //   this.NS.restart();
-              // })
-
-            } else {
-              // TweenLite.to(this.ThreeService.Goal,1.5,{ease:Power1.easeInOut,x:0,delay:3});
-              // TweenLite.delayedCall(3,()=>{
-              //   this.NS.restart();
-              // })
-            }
           }
         });
       }
@@ -120,7 +104,6 @@ export class WelcomeComponent implements OnInit {
     this.FS.InitFirstScene();
     this.SS.InitSecondScene();
     this.NS.nextStageFunction();
-    
     this.NS.ScenePhaseChange.subscribe((value)=>{
       switch(value){
         case 0:
@@ -140,8 +123,18 @@ export class WelcomeComponent implements OnInit {
           TweenMax.set('.Background',{css:{background:"linear-gradient( to bottom,#c9e9f2 0%,#c9e9f2 31%,#aee3f2 31%,#aee3f2 100%)"}});
           document.getElementById('Main').classList.remove('BG2');
           document.getElementById('arrow-fill').style.fill="#AEE3F2";
+          TweenMax.delayedCall(3,()=>{
+            document.getElementById('Main').classList.add('BG3');
+          })
           this.SS.CancelSecondScene();
           this.TS.StartThirdScene();
+          this.FourthS.lastScreen();
+        break;
+        case 3:
+          // TweenMax.set('.Background',{css:{background:"linear-gradient( to bottom,#e5c2b6 0%,#e5c2b6 31%,#e8d8cd 31%,#e8d8cd 100%)"}});
+          document.getElementById('Main').classList.add('BG2');
+          document.getElementById('arrow-fill').style.fill="#e8d8cd";
+          this.FourthS.StartFourthScene();
         break;
       }
     });
@@ -149,6 +142,11 @@ export class WelcomeComponent implements OnInit {
     // testing
     // this.TS.InitThirdScene();
     // this.TS.StartThirdScene();
+  }
+
+  changeBackground(color:string){
+    
+
   }
 
   // render() {

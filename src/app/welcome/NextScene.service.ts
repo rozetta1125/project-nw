@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { Injectable } from '@angular/core';
-import { TweenMax,Power1 } from 'gsap';
+import { TweenMax,Power1,Power2 } from 'gsap';
 import { ThreeService } from './three.service';
 import { Subject } from 'rxjs';
 
@@ -31,6 +31,7 @@ export class NextScene{
     // Mesh02.position.set(30,0,0);
     // this.ThreeService.scene.add(Mesh02);
 
+    // PC
     document.querySelector('#nextStage .nextLeft').addEventListener("mousedown", throttle(this.Start,200), false);
     document.addEventListener("mouseup", ()=>{
       if(this.onNextLeft){
@@ -40,12 +41,24 @@ export class NextScene{
         this.nextCancel();
       }
     })
+
+    // Mobile
+    document.querySelector('#nextStage .nextLeft').addEventListener("touchstart", throttle(this.TouchStart,200), false);
+    document.addEventListener("touchend", ()=>{
+      if(this.onNextLeft){
+        document.removeEventListener("touchmove", this.TouchMoving, false);
+        this.firstClientX=0;
+        this.onNextLeft=false;
+        this.nextCancel();
+      }
+    })
   }
 
+  // Click, PC event;
   Start = (e) => {
     console.log("clicked")
     if(!this.onNextLeft){
-      document.addEventListener("mousemove", this.Moving);
+      document.addEventListener("mousemove", this.Moving,false);
       this.firstClientX=e.clientX;
       this.onNextLeft = true;
       console.log('start')
@@ -54,7 +67,30 @@ export class NextScene{
 
   Moving = (e) => {
     var num = e.clientX-this.firstClientX > 0 ? e.clientX-this.firstClientX : 0;
+    if(num>0){
+      if(num>=250){
+        this.Succeed();
+      } else {
+        TweenMax.set(this.ThreeService.Goal,{x:(this.CurrentGoal+num*.01)});
+        TweenMax.set('#nextStage .nextLeft',{css:{left:num+"px"}});
+        TweenMax.set('#nextStage .mid .svg',{css:{width:(200-num)+"px"}});
+      }
+    }
+  }
 
+  // Touch, mobile event;
+  TouchStart = (e) => {
+    console.log("touched")
+    if(!this.onNextLeft){
+      document.addEventListener("touchmove", this.TouchMoving,false);
+      this.firstClientX=e.touches[0].clientX;
+      this.onNextLeft = true;
+      console.log('start')
+    }
+  }
+  
+  TouchMoving = (e) => {
+    var num = e.touches[0].clientX-this.firstClientX > 0 ? e.touches[0].clientX-this.firstClientX : 0;
     if(num>0){
       if(num>=250){
         this.Succeed();
@@ -71,14 +107,27 @@ export class NextScene{
     this.ScenePhase += 1;
     this.ScenePhaseChange.next(this.ScenePhase);
     console.log('Go to Scene'+this.ScenePhase);
-    TweenMax.to(this.ThreeService.Goal,2,{ease:Power1.easeInOut,x:this.NextGoal});
-    
+    TweenMax.to(this.ThreeService.Goal,2,{ease:Power2.easeInOut,x:this.NextGoal});
+
+
+    let width = window.innerWidth;
     switch(this.ScenePhase){
       case 1:
-        TweenMax.to(this.ThreeService.GoalAngle,1.5,{ease:Power1.easeInOut,y:2,z:8});
+        if(width<769){
+          TweenMax.to(this.ThreeService.GoalAngle,1.5,{ease:Power2.easeInOut,y:"+=.65",z:"-=1"});
+          TweenMax.to(this.ThreeService.Goal,1.5,{ease:Power2.easeInOut,y:"-=.2"});
+        } else {
+          TweenMax.to(this.ThreeService.GoalAngle,1.5,{ease:Power2.easeInOut,y:"+=.7",z:"-=.5"});
+          TweenMax.to(this.ThreeService.Goal,1.5,{ease:Power2.easeInOut,y:"-=.1"});
+        }
       break;
       case 2:
-        TweenMax.to(this.ThreeService.GoalAngle,1.5,{ease:Power1.easeInOut,y:1.35,z:8.4});
+        if(width<769){
+          TweenMax.to(this.ThreeService.GoalAngle,1.5,{ease:Power2.easeInOut,y:"-=.25",z:"+=.6"});
+          TweenMax.to(this.ThreeService.Goal,1.5,{ease:Power2.easeInOut,y:"+=.1"});
+        } else {
+          TweenMax.to(this.ThreeService.GoalAngle,1.5,{ease:Power2.easeInOut,y:"-=.5",z:"+=.3"});
+        }
       break;
     }
     this.CurrentGoal+=15;
@@ -86,10 +135,10 @@ export class NextScene{
 
 
     // NextScene Animation 
-    TweenMax.to('#nextStage .nextLeft',.15,{css:{opacity:0},ease:Power1.easeInOut});
+    TweenMax.to('#nextStage .nextLeft',.15,{css:{opacity:0},ease:Power2.easeInOut});
     TweenMax.set('#nextStage .mid',{css:{opacity:0}});
-    TweenMax.to('.active',.3,{xPercent:100,delay:.15,ease:Power1.easeInOut});
-    TweenMax.to('#nextStage',.3,{ease:Power1.easeInOut,css:{opacity:0},delay:.7});
+    TweenMax.to('.active',.3,{xPercent:100,delay:.15,ease:Power2.easeInOut});
+    TweenMax.to('#nextStage',.3,{ease:Power2.easeInOut,css:{opacity:0},delay:.7});
     TweenMax.set('#nextStage',{css:{visibility:"hidden"},delay:1});
     
     // var offsetl = document.querySelector('#nextStage .nextRight') as HTMLElement;
@@ -101,6 +150,9 @@ export class NextScene{
     document.removeEventListener("mousemove", this.Moving, false);
     this.firstClientX=0;
     this.onNextLeft=false;
+
+    document.removeEventListener("touchmove", this.TouchMoving, false);
+
 
     // Restart After ?s
     TweenMax.delayedCall(1,()=>{
@@ -121,9 +173,9 @@ export class NextScene{
     TweenMax.set('#nextStage .mid',{css:{opacity:1}});
     TweenMax.set('.active',{xPercent:0});
 
-    TweenMax.set('#nextStage .nextLeft',{ease:Power1.easeInOut,css:{left:0+"px"}});
-    TweenMax.set('#nextStage .mid .svg',{ease:Power1.easeInOut,css:{width:200+"px"}});
-    TweenMax.to('#nextStage',1,{ease:Power1.easeInOut,css:{opacity:1}});
+    TweenMax.set('#nextStage .nextLeft',{css:{left:0+"px"}});
+    TweenMax.set('#nextStage .mid .svg',{css:{width:200+"px"}});
+    TweenMax.to('#nextStage',1,{ease:Power2.easeInOut,css:{opacity:1}});
     TweenMax.set('#nextStage',{css:{visibility:"visible"},delay:.5});
   }
 }

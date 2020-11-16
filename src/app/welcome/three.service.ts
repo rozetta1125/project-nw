@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import * as CANNON from 'cannon';
-import { TweenMax, Power1, TimelineLite, TimelineMax, Power0 } from 'gsap';
+import { TweenMax, Power1, TimelineLite, TimelineMax, Power0, Power3 } from 'gsap';
 import * as OrbitControls from 'three-orbitcontrols';
 import GLTFLoader from 'three-gltf-loader';
 // import thisWork from 'three-dragcontrols';
@@ -116,12 +116,23 @@ export class ThreeService {
     this.loader.setDRACOLoader(this.dracoLoader);
 
 
-    // this.GoalAngle.set(0,1.4,8);
-    this.GoalAngle.set(0,1.25,8.4);
+    // Angle depend on screen width
+
+    if(width<769){
+      this.GoalAngle.set(0,1,7);
+      this.Goal.set(-15,.8,0)
+    } else if (width>769 && width<1025){
+      this.GoalAngle.set(0,1.1,7);
+      this.Goal.set(-15,.9,0)
+    } else{
+      this.GoalAngle.set(0,1.35,8.4);
+      this.Goal.set(-15,1,0)
+    }
+
+
+    // camera stuffs
     this.camera.position.copy(this.GoalAngle);
     this.camera.lookAt(new THREE.Vector3(-15,0,0));
-
-    this.Goal.set(-15,1.1,0)
     this.EasedGoal.copy(this.Goal);
     
 
@@ -206,23 +217,11 @@ export class ThreeService {
     });
 
 
-    // this.canvas.addEventListener("touchmove", (e) => {
-    //   this.renderThreePosition(e.touches[0].clientX, e.touches[0].clientY);
-    // });
+    this.canvas.addEventListener("touchmove", (e) => {
+      this.renderThreePosition(e.touches[0].clientX, e.touches[0].clientY);
+      TweenMax.set('#Golf',{css:{top:e.touches[0].clientY,left:e.touches[0].clientX}})
+    });
 
-    // this.canvas.addEventListener("touchend", (e) => {
-    //   // this.renderThreePosition(e.touches[0].clientX, e.touches[0].clientY);
-    //     this.canvas.ontouchmove = null;
-    //     if (this.collided) {
-    //       this.FirstCursor.copy(this.LastCursor);
-    //     } else {
-    //       TweenMax.to(this.FirstCursor, .5, {
-    //         x: this.LastCursor.x,
-    //         y: this.LastCursor.y, z: this.LastCursor.z
-    //       })
-    //       this.CheckLetterIntersect()
-    //     }
-    // });
   }
 
   CursorDown = ()=>{
@@ -261,6 +260,7 @@ export class ThreeService {
     var distance = - this.camera.position.z / this.vec.z;
 
     this.pos.copy(this.camera.position).add(this.vec.multiplyScalar(distance));
+
     // this.raycaster.setFromCamera(this.mouse, this.camera);
 
     // this.plane.setFromNormalAndCoplanarPoint(this.camera.getWorldDirection(this.plane.normal), this.pos);
@@ -277,7 +277,7 @@ export class ThreeService {
     // }
   }
 
-  private GoalEasing = .1;
+  private GoalEasing = .2;
   render() {
     requestAnimationFrame(() => {
       this.render();
@@ -336,8 +336,8 @@ export class ThreeService {
     let Texture = this.textureLoader.load('assets/shadow/Cylinder.png');
     let uniforms = {
       tShadow:{value:Texture},
-      uShadowColor:{value:new THREE.Color("#c0a68e")},
-      uAlpha:{value:.75}
+      uShadowColor:{value:new THREE.Color("#d1b8a7")},
+      uAlpha:{value:1}
     }
     let material = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms,depthWrite:false,
       vertexShader:document.getElementById('vertexShader').textContent,
@@ -368,7 +368,7 @@ export class ThreeService {
     let Texture03 = this.textureLoader.load('assets/shadow/Sphere02.png');
     let uniforms03 = {
       tShadow:{value:Texture03},
-      uShadowColor:{value:new THREE.Color("#c0a68e")},
+      uShadowColor:{value:new THREE.Color("#d1b8a7")},
       uAlpha:{value:0}
     }
     let material03 = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms:uniforms03,depthWrite:false,
@@ -397,20 +397,46 @@ export class ThreeService {
         }
       }
 
-
       Sphere.position.x+=.2;
       Sphere.add(shadow02);
       Loader.add(Cylinder);
       Loader.add(Sphere);
 
-
-
       this.Loader.next(true);
 
+    // Next Scene
+    TweenMax.to('#nextStage',2,{ease:Power1.easeOut,delay:4,css:{opacity:1}});
+    TweenMax.set('#nextStage',{css:{visibility:"visible"},delay:4});
 
-      var delayStart = 1.1;
+      // Minimum Timer
+      let MinimumLoadingTime = {value:0};
+      TweenMax.to(MinimumLoadingTime,3.2,{value:1,ease:Power0.easeNone});
 
-      TweenMax.delayedCall(.5,()=>{
+      // Check if Content Ready
+      let ready = false;
+      this.RS.ResourcesCompleted.subscribe((value)=>{
+        if(value){
+          
+          if(MinimumLoadingTime.value!==1){
+            // if faster than minimum loading time, wait 
+            TweenMax.delayedCall(3.2-MinimumLoadingTime.value,()=>{
+              ready=true;
+              // Start Introduction
+              TweenMax.delayedCall(0,()=>{
+                this.Introduction('A short','Experience');
+              })
+            })
+          } else {
+            // if lower than minimum loading time
+            ready=true;
+
+          }
+        }
+      })
+
+      // Loading Animation
+      let delayStart = 1.1;
+      TweenMax.delayedCall(1,()=>{
         // Start
         TweenMax.to(shadow.position,delayStart,{x:"-=.3",ease:Power1.easeInOut})
         TweenMax.to(Loader.position,delayStart,{x:"-=.3",ease:Power1.easeInOut})
@@ -419,63 +445,78 @@ export class ThreeService {
         TweenMax.to(Sphere.position,delayStart+.4,{x:"-=.5",ease:Power1.easeInOut,delay:.5})
         TweenMax.fromTo(shadow02.scale,delayStart+.4,{x:".4"},{x:"+=.6",ease:Power1.easeInOut,delay:.5})
 
+        // Loop until End Loading
+        let tm1,tm2,tm3,tm4,tm5;
+        tm1 = TweenMax.to(shadow.position,1,{x:"+=.6",ease:Power1.easeInOut,repeat:4,yoyo:true,delay:delayStart})
+        tm2 = TweenMax.to(Loader.position,1,{x:"+=.6",ease:Power1.easeInOut,repeat:4,yoyo:true,delay:delayStart})
+        tm3 = TweenMax.to(Loader.rotation,1,{z:-31.5*Math.PI/180,ease:Power1.easeInOut,repeat:4,yoyo:true,delay:delayStart,onComplete:()=>{
+          if(ready){
+            tm1.kill();
+            tm2.kill();
+            tm3.kill();
+            TweenMax.to(shadow.position,1.25,{x:"-=.3",ease:Power1.easeInOut})
+            TweenMax.to(Loader.position,1.25,{x:"-=.3",ease:Power1.easeInOut})
+            TweenMax.to(Loader.rotation,1.25,{z:0*Math.PI/180,ease:Power1.easeInOut});
 
-        // Mid
-        TweenMax.to(shadow.position,1,{x:"+=.6",ease:Power1.easeInOut,repeat:4,yoyo:true,delay:delayStart})
-        TweenMax.to(Loader.position,1,{x:"+=.6",ease:Power1.easeInOut,repeat:4,yoyo:true,delay:delayStart})
-        TweenMax.to(Loader.rotation,1,{z:-31.5*Math.PI/180,ease:Power1.easeInOut,repeat:4,yoyo:true,delay:delayStart,onComplete:()=>{
-          TweenMax.to(shadow.position,1.25,{x:"-=.3",ease:Power1.easeInOut})
-          TweenMax.to(Loader.position,1.25,{x:"-=.3",ease:Power1.easeInOut})
-          TweenMax.to(Loader.rotation,1.25,{z:0*Math.PI/180,ease:Power1.easeInOut});
+ 
+          } else {
+            tm1.restart();
+            tm2.restart();
+            tm3.restart();
+          }
         }});
 
-        TweenMax.to(Sphere.position,1,{x:"+=.6",ease:Power1.easeInOut,repeat:3,yoyo:true,delay:.88+delayStart})
-        TweenMax.to(shadow02.scale,1,{x:"-=.6",ease:Power1.easeInOut,repeat:3,yoyo:true,delay:.88+delayStart,onComplete:()=>{
+        tm4 = TweenMax.to(Sphere.position,1,{x:"+=.6",ease:Power1.easeInOut,repeat:3,yoyo:true,delay:.88+delayStart})
+        tm5 = TweenMax.to(shadow02.scale,1,{x:"-=.6",ease:Power1.easeInOut,repeat:3,yoyo:true,delay:.88+delayStart,onComplete:()=>{
+          if(ready){
+            tm4.kill();
+            tm5.kill();
+            // x
+            TweenMax.to(Sphere.position,1.25,{x:"+=.6",ease:Power1.easeInOut});
+            TweenMax.to(Sphere.position,3.6,{x:"+=2.4",ease:Power1.easeOut,delay:.65});
+            TweenMax.fromTo(shadow03.position,3.6,{x:-14.98},{x:"+=2.4",ease:Power1.easeOut,delay:.65});
 
-          // x
-          TweenMax.to(Sphere.position,1.25,{x:"+=.6",ease:Power1.easeInOut});
-          TweenMax.to(Sphere.position,3.6,{x:"+=2.4",ease:Power1.easeOut,delay:.65});
-          TweenMax.fromTo(shadow03.position,3.6,{x:-14.98},{x:"+=2.4",ease:Power1.easeOut,delay:.65});
+            // y 
+            TweenMax.to(Sphere.position,.2,{y:"-=.418",ease:Power1.easeOut,delay:1.05})
+            TweenMax.to(Sphere.position,.15,{y:"+=.11",ease:Power1.easeOut,delay:1.0+.2})
+            TweenMax.to(Sphere.position,.15,{y:"-=.11",ease:Power1.easeIn,delay:1.0+.2+.15})
 
-          // y 
-          TweenMax.to(Sphere.position,.2,{y:"-=.418",ease:Power1.easeOut,delay:1.05})
-          TweenMax.to(Sphere.position,.15,{y:"+=.11",ease:Power1.easeOut,delay:1.0+.2})
-          TweenMax.to(Sphere.position,.15,{y:"-=.11",ease:Power1.easeIn,delay:1.0+.2+.15})
+            TweenMax.to(Sphere.position,.075,{y:"+=.04",ease:Power1.easeOut,delay:1.0+.2+.15+.15})
+            TweenMax.to(Sphere.position,.075,{y:"-=.04",ease:Power1.easeIn,delay:1.0+.2+.15+.15+.075})
 
-          TweenMax.to(Sphere.position,.075,{y:"+=.04",ease:Power1.easeOut,delay:1.0+.2+.15+.15})
-          TweenMax.to(Sphere.position,.075,{y:"-=.04",ease:Power1.easeIn,delay:1.0+.2+.15+.15+.075})
-
-          // Shadow
-          TweenMax.to(uniforms02.uAlpha,.1,{value:0,delay:.65});
-          TweenMax.to(uniforms03.uAlpha,.1,{value:.7,delay:1.1});
+            // Shadow
+            TweenMax.to(uniforms02.uAlpha,.1,{value:0,delay:.65});
+            TweenMax.to(uniforms03.uAlpha,.1,{value:1,delay:1.1});
+            
+          } else {
+            tm4.restart();
+            tm5.restart();
+          }
         }})
-
-        // End
-
-
-        // Text and NextScene
-        TweenMax.to('.Text',2,{css:{opacity:1},delay:2,ease:Power1.easeOut});
-        TweenMax.to('.Text',2,{css:{opacity:0},delay:4,ease:Power1.easeIn});
-        TweenMax.set('.Text',{css:{visibility:"hidden"},delay:6});
-
-        TweenMax.to('#nextStage',2,{ease:Power1.easeOut,delay:4,css:{opacity:1}});
-        TweenMax.set('#nextStage',{css:{visibility:"visible"},delay:4});
       })
-  
     });
-
-
-    // let Next;
-    // this.loader.load('assets/model/NextButton.glb',(gltf)=>{ 
-    //   Next = gltf.scene;
-    //   Next.position.set(-9,0,0);
-    //   // Next.scale.set(1.6,1.6,1.6);
-    //   Next.rotation.set(90*Math.PI/180,0,0);
-    //   Next.children[0].material=mate;
-    //   this.scene.add(Next);
-    // });
   }
 
+  Introduction(span:string,h3:string){
+    // Text Content
+    document.getElementById('Introduction-span').innerHTML=span;
+    document.getElementById('Introduction-h3').innerHTML=h3;
+
+    // Text Animation
+    TweenMax.to('#Introduction-span',1.2,{css:{opacity:1},ease:Power1.easeInOut});
+
+    TweenMax.to('#Introduction-h3',1.2,{css:{opacity:1,y:0},delay:1.2,ease:Power1.easeInOut});
+
+    TweenMax.to('#Introduction-span',2,{css:{opacity:0},delay:4});
+    TweenMax.to('#Introduction-h3',2,{css:{opacity:0},delay:4,onComplete:()=>{
+      TweenMax.set('.Text',{css:{visibility:"hidden"},});
+    }});
+
+
+    // // Next Scene
+    // TweenMax.to('#nextStage',2,{ease:Power1.easeOut,delay:4,css:{opacity:1}});
+    // TweenMax.set('#nextStage',{css:{visibility:"visible"},delay:4});
+  }
 
   BOOPArray=[];
   BOOPCurrent=0;

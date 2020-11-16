@@ -408,7 +408,7 @@ export class FirstScene {
 
     let uniforms = {
       tShadow: { value: this.RS.TrainShadow },
-      uShadowColor: { value: new THREE.Color("#c0a68e") },
+      uShadowColor: { value: new THREE.Color("#cbaa94") },
       uAlpha: { value: 1 }
     }
     let material = new THREE.ShaderMaterial({
@@ -776,7 +776,7 @@ export class FirstScene {
   ParkStaticShadow(){
     let uniforms = {
       tShadow:{value:this.RS.ParkShadow},
-      uShadowColor:{value:new THREE.Color("#c0a68e")},
+      uShadowColor:{value:new THREE.Color("#cbaa94")},
       uAlpha:{value:1}
     }
     let material = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms,depthWrite:false,
