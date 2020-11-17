@@ -1263,21 +1263,24 @@ export class ThirdScene{
             TweenMax.to(star,.5,{rotationZ:"-=180",ease:Power1.easeOut})
             if(i==0){
               TweenMax.set(star,{css:{scale:.8}});
-              var rL = 20 + Math.random()*10-5;
-              var rT = 70 + Math.random()*10-5;
+              var rL = window.innerWidth*2/100 > 20 ? 20 : window.innerWidth*2/100;
+              var rT = window.innerWidth*6/100 > 70 ? 70 : window.innerWidth*6/100;
+              var rR = window.innerWidth*1.5/100 > 15 ? 15 : window.innerWidth*1.5/100;
               TweenMax.to(star,.25,{ease:Power1.easeOut,css:{left:"-="+rL,top:"-="+rT}});
-              TweenMax.to(star,.2,{ease:Power0.easeNone,delay:.25,css:{left:"-=15",top:"+=15"}});
+              TweenMax.to(star,.2,{ease:Power0.easeNone,delay:.25,css:{left:"-="+rR,top:"+="+rR}});
             } else if (i==1){
               TweenMax.set(star,{css:{scale:1.1}});
-              var rL = 65 + Math.random()*14-7;
-              var rT = 65 + Math.random()*14-7;
+              var rL = window.innerWidth*5/100 > 65 ? 65 : window.innerWidth*5/100;
+              var rT = window.innerWidth*5/100 > 65 ? 65 : window.innerWidth*5/100;
+              var rR = window.innerWidth*1.5/100 > 15 ? 15 : window.innerWidth*1.5/100;
               TweenMax.to(star,.25,{ease:Power1.easeOut,css:{left:"-="+rL,top:"-="+rT}});
-              TweenMax.to(star,.2,{ease:Power0.easeNone,delay:.25,css:{left:"-=15",top:"+=15"}});
+              TweenMax.to(star,.2,{ease:Power0.easeNone,delay:.25,css:{left:"-="+rR,top:"+="+rR}});
             } else {
-              var rL = 70 + Math.random()*10-5;
-              var rT = 20 + Math.random()*10-5;
+              var rL = window.innerWidth*6/100 > 70 ? 70 : window.innerWidth*6/100;
+              var rT = window.innerWidth*2/100 > 20 ? 20 : window.innerWidth*2/100;
+              var rR = window.innerWidth*1.5/100 > 15 ? 15 : window.innerWidth*1.5/100;
               TweenMax.to(star,.25,{ease:Power1.easeOut,css:{left:"-="+rL,top:"-="+rT}});
-              TweenMax.to(star,.2,{ease:Power0.easeNone,delay:.25,css:{left:"-=15",top:"+=15"}});
+              TweenMax.to(star,.2,{ease:Power0.easeNone,delay:.25,css:{left:"-="+rR,top:"+="+rR}});
             }
 
             // Delete
@@ -1340,14 +1343,17 @@ export class ThirdScene{
               Vector.y += Math.random()*.8-.4 + .75;
               Vector.project(this.ThreeService.camera);
               var Px = (Vector.x+1)*window.innerWidth/2;
-              var Py = - (Vector.y-1)*window.innerHeight/2;
+              var Py = - (Vector.y-.95)*window.innerHeight/2;
               
               
               TweenMax.set(leaf,{css:{rotate:Math.random()*360-180}});
               TweenMax.to(leaf,.3,{css:{opacity:1},delay:i*.2});
 
-              var rX = Math.random()*40-20;
-              var rY = Math.random()*40+40;
+              var random = window.innerWidth*4/100 > 40 ? 40 : window.innerWidth*4/100;
+
+              var rX = Math.random()*random-(random/2);
+              var rY = Math.random()*random+random;
+
               TweenMax.fromTo(leaf,1.5,{css:{left:Px,top:Py}},{css:{top:"+="+rY,left:"+="+rX},ease:Power0.easeNone});
               
               TweenMax.fromTo(leaf,1.5,{css:{scale:Math.random()*.5+.5}},{css:{scale:.01},delay:i*.2,ease:Power0.easeNone});

@@ -13,6 +13,12 @@ body{
     // cursor: none !important;
 }
 
+@mixin Phone{
+  @media screen and (max-width: 769px){
+    @content;
+  }
+}
+
 $color: #000;
 .plus1{
     font-family: Quicksand;
@@ -27,6 +33,9 @@ $color: #000;
     letter-spacing: 2px;
     // text-shadow: 0 0 4px #000;
     text-shadow: 2px 0 0 $color, -2px 0 0 $color, 0 2px 0 $color, 0 -2px 0 $color, 1px 1px $color, -1px -1px 0 $color, 1px -1px 0 $color, -1px 1px 0 $color;
+    @include Phone{
+      font-size: 14px;
+    }
 }
 
 .star{
@@ -35,8 +44,10 @@ $color: #000;
     pointer-events: none;
     top:500px;
     left:400px;
-    width: 40px;
-    height: 40px;
+    max-width: 40px;
+    max-height: 40px;
+    width: 5%;
+    height: 5%;
     transform: scale(.7);
     path{
         fill:url(#StarGradient);
@@ -55,6 +66,10 @@ $color: #000;
     border-bottom-left-radius: 30px;
     background: #99BB87;
     background: linear-gradient(to right,#AAC99A 0%, #99BB87 100%);
+    @include Phone{
+      width: 16px;
+      height: 10px;
+    }
 }
 
 
