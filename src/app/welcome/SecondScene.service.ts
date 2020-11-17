@@ -248,7 +248,7 @@ export class SecondScene{
       this.ThreeService.scene.add( light );
 
       var geometry = new THREE.SphereBufferGeometry( .09, 32, 16 );
-      var map = this.ThreeService.textureLoader.load('assets/textures/golfball.jpg');
+
       // white
       // var mate = new THREE.MeshPhysicalMaterial( {
       //   metalness: 0.5,
@@ -258,9 +258,6 @@ export class SecondScene{
       // });
       let mate = new THREE.MeshMatcapMaterial({
         color:0xffffff,
-        normalMap:map,
-        side:2,
-        normalScale:new THREE.Vector2(4,4),
         matcap:this.RS.SSwhite,
       })
 

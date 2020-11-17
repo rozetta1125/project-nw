@@ -422,7 +422,7 @@ export class ThreeService {
             TweenMax.delayedCall(3.2-MinimumLoadingTime.value,()=>{
               ready=true;
               // Start Introduction
-              TweenMax.delayedCall(0,()=>{
+              TweenMax.delayedCall(1,()=>{
                 this.Introduction('A short','Experience');
               })
             })
