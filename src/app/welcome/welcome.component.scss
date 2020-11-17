@@ -1,6 +1,7 @@
 #Main{
   position: relative;
   z-index: 1;
+  overflow: hidden;
 }
 
 @mixin Phone{
