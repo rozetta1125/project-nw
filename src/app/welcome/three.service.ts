@@ -200,19 +200,7 @@ export class ThreeService {
     this.AddEvent();
     this.BOOPMaterial();
 
-    
-    this.canvas.addEventListener("mousemove", (e) => {
-      this.renderThreePosition(e.x, e.y);
-      TweenMax.set('#Golf',{css:{top:e.y,left:e.x}})
-    },{passive:false});
-
-// or document
-    document.addEventListener("touchmove", (e) => {
-      e.preventDefault();
-      this.renderThreePosition(e.touches[0].clientX, e.touches[0].clientY);
-      TweenMax.set('#Golf',{css:{top:e.touches[0].clientY,left:e.touches[0].clientX}})
-    },{passive:false});
-
+  
   }
 
   CursorDown = ()=>{
@@ -231,6 +219,17 @@ export class ThreeService {
     window.addEventListener('resize', () => {
       this.resize();
     });
+    this.canvas.addEventListener("mousemove", (e) => {
+      this.renderThreePosition(e.x, e.y);
+      TweenMax.set('#Golf',{css:{top:e.y,left:e.x}})
+    },{passive:false});
+
+    this.canvas.addEventListener("touchmove", (e) => {
+      e.preventDefault();
+      this.renderThreePosition(e.touches[0].clientX, e.touches[0].clientY);
+      TweenMax.set('#Golf',{css:{top:e.touches[0].clientY,left:e.touches[0].clientX}})
+    },{passive:false});
+
   }
 
    BasePosition = new THREE.Vector2();
