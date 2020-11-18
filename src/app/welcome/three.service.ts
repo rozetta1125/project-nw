@@ -207,7 +207,7 @@ export class ThreeService {
     },{passive:false});
 
 // or document
-    this.canvas.addEventListener("touchmove", (e) => {
+    document.addEventListener("touchmove", (e) => {
       e.preventDefault();
       this.renderThreePosition(e.touches[0].clientX, e.touches[0].clientY);
       TweenMax.set('#Golf',{css:{top:e.touches[0].clientY,left:e.touches[0].clientX}})
@@ -491,6 +491,9 @@ export class ThreeService {
   }
 
   Introduction(span:string,h3:string){
+    
+    TweenMax.set('.Text',{css:{visibility:"visible"}});
+    
     // Text Content
     document.getElementById('Introduction-span').innerHTML=span;
     document.getElementById('Introduction-h3').innerHTML=h3;
