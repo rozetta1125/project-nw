@@ -53,10 +53,10 @@ export class SecondScene{
   }
 
   addEvent(){
-    this.ThreeService.canvas.addEventListener("mousedown",this.MouseDown);
-    this.ThreeService.canvas.addEventListener("mouseup", this.MouseUp);
-    this.ThreeService.canvas.addEventListener("touchstart",this.TouchStart);
-    this.ThreeService.canvas.addEventListener("touchend", this.ToucnEnd);
+    this.ThreeService.canvas.addEventListener("mousedown",this.MouseDown,false);
+    this.ThreeService.canvas.addEventListener("mouseup", this.MouseUp,false);
+    this.ThreeService.canvas.addEventListener("touchstart",this.TouchStart,false);
+    this.ThreeService.canvas.addEventListener("touchend", this.ToucnEnd,false);
   }
 
   MouseDown = (e)=>{
@@ -146,10 +146,10 @@ export class SecondScene{
 
   CancelSecondScene(){
     cancelAnimationFrame(this.render);
-    this.ThreeService.canvas.removeEventListener("mousedown",this.MouseDown);
-    this.ThreeService.canvas.removeEventListener("mouseup", this.MouseUp);
-    this.ThreeService.canvas.removeEventListener("touchstart",this.TouchStart);
-    this.ThreeService.canvas.removeEventListener("touchend", this.ToucnEnd);
+    this.ThreeService.canvas.removeEventListener("mousedown",this.MouseDown,false);
+    this.ThreeService.canvas.removeEventListener("mouseup", this.MouseUp,false);
+    this.ThreeService.canvas.removeEventListener("touchstart",this.TouchStart,false);
+    this.ThreeService.canvas.removeEventListener("touchend", this.ToucnEnd,false);
   }
 
 
