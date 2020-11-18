@@ -12,10 +12,7 @@ body{
     margin: 0;
     // cursor: none !important;
     font-family: 'Quicksand', sans-serif;
-}
-
-*{
-  overflow: hidden;
+    -webkit-overflow-scrolling: touch;
 }
 
 @mixin Phone{

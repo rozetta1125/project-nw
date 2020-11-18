@@ -429,9 +429,7 @@ export class ThreeService {
           } else {
             // if lower than minimum loading time
             ready=true;
-            TweenMax.delayedCall(1,()=>{
-              this.Introduction('A short','Experience');
-            })
+            this.Introduction('A short','Experience');
           }
         }
       })
