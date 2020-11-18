@@ -53,10 +53,10 @@ export class SecondScene{
   }
 
   addEvent(){
-    this.ThreeService.canvas.addEventListener("mousedown",this.MouseDown,false);
-    this.ThreeService.canvas.addEventListener("mouseup", this.MouseUp,false);
-    this.ThreeService.canvas.addEventListener("touchstart",this.TouchStart,false);
-    this.ThreeService.canvas.addEventListener("touchend", this.ToucnEnd,false);
+    this.ThreeService.canvas.addEventListener("mousedown",this.MouseDown,{passive:false});
+    this.ThreeService.canvas.addEventListener("mouseup", this.MouseUp,{passive:false});
+    this.ThreeService.canvas.addEventListener("touchstart",this.TouchStart,{passive:false});
+    this.ThreeService.canvas.addEventListener("touchend", this.ToucnEnd,{passive:false});
   }
 
   MouseDown = (e)=>{
@@ -97,6 +97,7 @@ export class SecondScene{
   }
 
   TouchStart = (e)=>{
+    e.preventDefault();
     if (e) {
       if(this.GolfState.value==1){
         // overlay Nextscene
@@ -135,7 +136,8 @@ export class SecondScene{
   }
 
 
-  isGolfing = () => {
+  isGolfing = (e) => {
+    e.preventDefault();
     this.Golfing=true;
     this.GolfState.value=2;
     this.ThreeService.scene.add(this.GolfString);
@@ -146,10 +148,10 @@ export class SecondScene{
 
   CancelSecondScene(){
     cancelAnimationFrame(this.render);
-    this.ThreeService.canvas.removeEventListener("mousedown",this.MouseDown,false);
-    this.ThreeService.canvas.removeEventListener("mouseup", this.MouseUp,false);
-    this.ThreeService.canvas.removeEventListener("touchstart",this.TouchStart,false);
-    this.ThreeService.canvas.removeEventListener("touchend", this.ToucnEnd,false);
+    this.ThreeService.canvas.removeEventListener("mousedown",this.MouseDown);
+    this.ThreeService.canvas.removeEventListener("mouseup", this.MouseUp);
+    this.ThreeService.canvas.removeEventListener("touchstart",this.TouchStart);
+    this.ThreeService.canvas.removeEventListener("touchend", this.ToucnEnd);
   }
 
 

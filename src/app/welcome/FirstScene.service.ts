@@ -26,14 +26,6 @@ export class FirstScene {
   AddEvent(){
     this.ThreeService.canvas.addEventListener("click", this.ClickEvent,false);
     document.addEventListener('visibilitychange', this.VisilibityChange,false);
-    // this.canvas.addEventListener("touchstart", (e) => {
-    //   this.renderThreePosition(e.touches[0].clientX, e.touches[0].clientY);
-    //     this.CursorBegin();
-    //     this.canvas.ontouchmove = () => {
-    //       this.BalloonCursor();
-    //       this.FirstSceneClickEvent();
-    //     };
-    // });
   }
 
   ClickEvent = ()=>{

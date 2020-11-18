@@ -201,26 +201,17 @@ export class ThreeService {
     this.BOOPMaterial();
 
     
-    // document.addEventListener('mousemove',e=>{
-    //   // cursor.setAttribute("style","top:"+e.pageY+"px;left:"+e.pageX+"px;");
-    //   // TweenMax.to(cursor,.3,{css:{left:e.pageX,top:e.pageY}})
-    //   console.log("asdf")
-    // },false);
-
-    // document.addEventListener('mousedown',this.CursorDown,false);
-    // document.addEventListener('mouseup',this.CursorUp,false);
-    
-
     this.canvas.addEventListener("mousemove", (e) => {
       this.renderThreePosition(e.x, e.y);
       TweenMax.set('#Golf',{css:{top:e.y,left:e.x}})
-    },false);
+    },{passive:false});
 
-
+// or document
     this.canvas.addEventListener("touchmove", (e) => {
+      e.preventDefault();
       this.renderThreePosition(e.touches[0].clientX, e.touches[0].clientY);
       TweenMax.set('#Golf',{css:{top:e.touches[0].clientY,left:e.touches[0].clientX}})
-    },false);
+    },{passive:false});
 
   }
 
@@ -429,7 +420,7 @@ export class ThreeService {
           } else {
             // if lower than minimum loading time
             ready=true;
-
+            this.Introduction('A short','Experience');
           }
         }
       })
