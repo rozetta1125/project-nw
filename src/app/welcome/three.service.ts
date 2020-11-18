@@ -429,7 +429,9 @@ export class ThreeService {
           } else {
             // if lower than minimum loading time
             ready=true;
-
+            TweenMax.delayedCall(1,()=>{
+              this.Introduction('A short','Experience');
+            })
           }
         }
       })
@@ -457,8 +459,6 @@ export class ThreeService {
             TweenMax.to(shadow.position,1.25,{x:"-=.3",ease:Power1.easeInOut})
             TweenMax.to(Loader.position,1.25,{x:"-=.3",ease:Power1.easeInOut})
             TweenMax.to(Loader.rotation,1.25,{z:0*Math.PI/180,ease:Power1.easeInOut});
-
- 
           } else {
             tm1.restart();
             tm2.restart();
