@@ -95,8 +95,8 @@ export class ThreeService {
     this.textureLoader = new THREE.TextureLoader();
     this.clock = new THREE.Clock();
 
-    var width = window.innerWidth;
-    var height = window.innerHeight;
+    var width = document.documentElement.clientWidth;
+    var height = document.documentElement.clientHeight;
     this.renderer.setSize(width,height);
         
 
@@ -105,7 +105,7 @@ export class ThreeService {
     
     // create the scene
     this.scene = new THREE.Scene();
-    this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, .1, 1000);
+    this.camera = new THREE.PerspectiveCamera(45, document.documentElement.clientWidth / document.documentElement.clientHeight, .1, 1000);
     this.scene.add(this.camera);
 
 
@@ -246,8 +246,8 @@ export class ThreeService {
    LBvec = new THREE.Vector3();
   renderThreePosition(x, y) {
     this.vec.set(
-      (x / window.innerWidth) * 2 - 1,
-      -(y / window.innerHeight) * 2 + 1,
+      (x / document.documentElement.clientWidth) * 2 - 1,
+      -(y / document.documentElement.clientHeight) * 2 + 1,
       0.5);
 
     this.BasePosition.set(x,y);
@@ -429,7 +429,7 @@ export class ThreeService {
           } else {
             // if lower than minimum loading time
             ready=true;
-            this.Introduction('A short','Experience');
+
           }
         }
       })
@@ -447,16 +447,20 @@ export class ThreeService {
 
         // Loop until End Loading
         let tm1,tm2,tm3,tm4,tm5;
-        tm1 = TweenMax.to(shadow.position,1,{x:"+=.6",ease:Power1.easeInOut,repeat:4,yoyo:true,delay:delayStart})
-        tm2 = TweenMax.to(Loader.position,1,{x:"+=.6",ease:Power1.easeInOut,repeat:4,yoyo:true,delay:delayStart})
-        tm3 = TweenMax.to(Loader.rotation,1,{z:-31.5*Math.PI/180,ease:Power1.easeInOut,repeat:4,yoyo:true,delay:delayStart,onComplete:()=>{
+        tm1 = TweenMax.to(shadow.position,1,{x:"+=.6",ease:Power1.easeInOut,repeat:3,yoyo:true,delay:delayStart})
+        tm2 = TweenMax.to(Loader.position,1,{x:"+=.6",ease:Power1.easeInOut,repeat:3,yoyo:true,delay:delayStart})
+        tm3 = TweenMax.to(Loader.rotation,1,{z:-31.5*Math.PI/180,ease:Power1.easeInOut,repeat:3,yoyo:true,delay:delayStart,onComplete:()=>{
           if(ready){
             tm1.kill();
             tm2.kill();
             tm3.kill();
-            TweenMax.to(shadow.position,1.25,{x:"-=.3",ease:Power1.easeInOut})
-            TweenMax.to(Loader.position,1.25,{x:"-=.3",ease:Power1.easeInOut})
-            TweenMax.to(Loader.rotation,1.25,{z:0*Math.PI/180,ease:Power1.easeInOut});
+
+            TweenMax.to(shadow.position,1,{x:"+=.6",ease:Power1.easeInOut})
+            TweenMax.to(Loader.position,1,{x:"+=.6",ease:Power1.easeInOut})
+            TweenMax.to(Loader.rotation,1,{z:-31.5*Math.PI/180,ease:Power1.easeInOut});
+            TweenMax.to(shadow.position,1.25,{x:"-=.3",delay:1,ease:Power1.easeInOut})
+            TweenMax.to(Loader.position,1.25,{x:"-=.3",delay:1,ease:Power1.easeInOut})
+            TweenMax.to(Loader.rotation,1.25,{z:0*Math.PI/180,delay:1,ease:Power1.easeInOut});
           } else {
             tm1.restart();
             tm2.restart();
@@ -589,8 +593,8 @@ export class ThreeService {
   resize() {
     var PixelRatio = 1;
 
-    let width = window.innerWidth;
-    let height = window.innerHeight;
+    let width = document.documentElement.clientWidth;
+    let height = document.documentElement.clientHeight;
 
     this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();
