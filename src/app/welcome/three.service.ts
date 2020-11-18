@@ -229,7 +229,8 @@ export class ThreeService {
       this.renderThreePosition(e.touches[0].clientX, e.touches[0].clientY);
       TweenMax.set('#Golf',{css:{top:e.touches[0].clientY,left:e.touches[0].clientX}})
     },{passive:false});
-
+    
+    window.scrollTo(0,document.body.scrollHeight);
   }
 
    BasePosition = new THREE.Vector2();
