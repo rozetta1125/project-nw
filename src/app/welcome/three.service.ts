@@ -220,20 +220,16 @@ export class ThreeService {
       this.resize();
     });
 
-    TweenMax.delayedCall(2,()=>{
-      window.scrollTo(0,1);
+    this.canvas.addEventListener("mousemove", (e) => {
+      this.renderThreePosition(e.x, e.y);
+      TweenMax.set('#Golf',{css:{top:e.y,left:e.x}})
+    },{passive:false});
 
-      this.canvas.addEventListener("mousemove", (e) => {
-        this.renderThreePosition(e.x, e.y);
-        TweenMax.set('#Golf',{css:{top:e.y,left:e.x}})
-      },{passive:false});
-  
-      this.canvas.addEventListener("touchmove", (e) => {
-        e.preventDefault();
-        this.renderThreePosition(e.touches[0].clientX, e.touches[0].clientY);
-        TweenMax.set('#Golf',{css:{top:e.touches[0].clientY,left:e.touches[0].clientX}})
-      },{passive:false});
-    })
+    this.canvas.addEventListener("touchmove", (e) => {
+      // e.preventDefault();
+      this.renderThreePosition(e.touches[0].clientX, e.touches[0].clientY);
+      TweenMax.set('#Golf',{css:{top:e.touches[0].clientY,left:e.touches[0].clientX}})
+    },{passive:false});
   }
 
    BasePosition = new THREE.Vector2();
