@@ -173,7 +173,7 @@ export class NextScene{
   restart(){
     TweenMax.set('#nextStage .nextLeft',{css:{opacity:1}});
     TweenMax.set('#nextStage .mid',{css:{opacity:1}});
-    TweenMax.set('.active',{xPercent:0});
+    TweenMax.set('#nextStage .active',{xPercent:-100});
 
     TweenMax.set('#nextStage .nextLeft',{css:{left:0+"px"}});
     TweenMax.set('#nextStage .mid .svg',{css:{width:200+"px"}});

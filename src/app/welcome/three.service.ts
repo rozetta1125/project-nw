@@ -120,7 +120,7 @@ export class ThreeService {
 
     if(width<769){
       this.GoalAngle.set(0,1,7);
-      this.Goal.set(-15,.8,0)
+      this.Goal.set(-15,.75,0)
     } else if (width>769 && width<1025){
       this.GoalAngle.set(0,1.1,7);
       this.Goal.set(-15,.9,0)
@@ -226,7 +226,7 @@ export class ThreeService {
     },{passive:false});
 
     this.canvas.addEventListener("touchmove", (e) => {
-      // e.preventDefault();
+      e.preventDefault();
       this.renderThreePosition(e.touches[0].clientX, e.touches[0].clientY);
       TweenMax.set('#Golf',{css:{top:e.touches[0].clientY,left:e.touches[0].clientX}})
     },{passive:false});
@@ -426,6 +426,7 @@ export class ThreeService {
 
       // Loading Animation
       let delayStart = 1.1;
+      let LoopEnd=false;
       TweenMax.delayedCall(1,()=>{
         // Start
         TweenMax.to(shadow.position,delayStart,{x:"-=.3",ease:Power1.easeInOut})
@@ -444,7 +445,7 @@ export class ThreeService {
             tm1.kill();
             tm2.kill();
             tm3.kill();
-
+            LoopEnd=true;
             TweenMax.to(shadow.position,1,{x:"+=.6",ease:Power1.easeInOut})
             TweenMax.to(Loader.position,1,{x:"+=.6",ease:Power1.easeInOut})
             TweenMax.to(Loader.rotation,1,{z:-31.5*Math.PI/180,ease:Power1.easeInOut});
@@ -460,7 +461,7 @@ export class ThreeService {
 
         tm4 = TweenMax.to(Sphere.position,1,{x:"+=.6",ease:Power1.easeInOut,repeat:3,yoyo:true,delay:.88+delayStart})
         tm5 = TweenMax.to(shadow02.scale,1,{x:"-=.6",ease:Power1.easeInOut,repeat:3,yoyo:true,delay:.88+delayStart,onComplete:()=>{
-          if(ready){
+          if(LoopEnd){
             tm4.kill();
             tm5.kill();
             // x
