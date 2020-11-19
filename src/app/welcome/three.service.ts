@@ -219,20 +219,21 @@ export class ThreeService {
     window.addEventListener('resize', () => {
       this.resize();
     });
-    this.canvas.addEventListener("mousemove", (e) => {
-      this.renderThreePosition(e.x, e.y);
-      TweenMax.set('#Golf',{css:{top:e.y,left:e.x}})
-    },{passive:false});
 
-    this.canvas.addEventListener("touchmove", (e) => {
-      e.preventDefault();
-      this.renderThreePosition(e.touches[0].clientX, e.touches[0].clientY);
-      TweenMax.set('#Golf',{css:{top:e.touches[0].clientY,left:e.touches[0].clientX}})
-    },{passive:false});
+    TweenMax.delayedCall(2,()=>{
+      window.scrollTo(0,1);
 
-    console.log(document.body.scrollHeight)
-    window.scrollTo(0,document.body.scrollHeight);
-    console.log(document.body.scrollHeight)
+      this.canvas.addEventListener("mousemove", (e) => {
+        this.renderThreePosition(e.x, e.y);
+        TweenMax.set('#Golf',{css:{top:e.y,left:e.x}})
+      },{passive:false});
+  
+      this.canvas.addEventListener("touchmove", (e) => {
+        e.preventDefault();
+        this.renderThreePosition(e.touches[0].clientX, e.touches[0].clientY);
+        TweenMax.set('#Golf',{css:{top:e.touches[0].clientY,left:e.touches[0].clientX}})
+      },{passive:false});
+    })
   }
 
    BasePosition = new THREE.Vector2();
