@@ -15,7 +15,6 @@ import { FourthScene } from './FourthScene.service';
 })
 export class WelcomeComponent implements OnInit {
   private welcomeCanvas = 'ThreeJSCanvas';
-  private ScenePhase:number;
 
   constructor(
     private RS: Resources,
@@ -49,7 +48,7 @@ export class WelcomeComponent implements OnInit {
         this.RS.InitResources();
         this.RS.ResourcesCompleted.subscribe((value)=>{
           if(value){
-            console.log('Loaded');
+            console.log('Start');
             this.Start();
           }
         });
@@ -120,7 +119,7 @@ export class WelcomeComponent implements OnInit {
           
         break;
         case 2:
-          TweenMax.set('.Background',{css:{background:"linear-gradient( to bottom,#c9e9f2 0%,#c9e9f2 31%,#aee3f2 31%,#aee3f2 100%)"}});
+          TweenMax.set('.Background',{css:{background:"linear-gradient( to bottom,#c9e9f2 0%,#c9e9f2 var(--BGPercent),#aee3f2 var(--BGPercent),#aee3f2 100%)"}});
           document.getElementById('Main').classList.remove('BG2');
           document.getElementById('arrow-fill').style.fill="#AEE3F2";
           TweenMax.delayedCall(3,()=>{
@@ -131,7 +130,6 @@ export class WelcomeComponent implements OnInit {
           this.FourthS.lastScreen();
         break;
         case 3:
-          // TweenMax.set('.Background',{css:{background:"linear-gradient( to bottom,#e5c2b6 0%,#e5c2b6 31%,#e8d8cd 31%,#e8d8cd 100%)"}});
           document.getElementById('Main').classList.add('BG2');
           document.getElementById('arrow-fill').style.fill="#e8d8cd";
           this.FourthS.StartFourthScene();
@@ -143,19 +141,5 @@ export class WelcomeComponent implements OnInit {
     // this.TS.InitThirdScene();
     // this.TS.StartThirdScene();
   }
-
-  changeBackground(color:string){
-    
-
-  }
-
-  // render() {
-  //   requestAnimationFrame(() => {
-  //     this.render();
-  //   });
-
-  //   this.ThreeService.render();
-  // }
-
 }
 

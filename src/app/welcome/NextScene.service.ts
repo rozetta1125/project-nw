@@ -139,9 +139,9 @@ export class NextScene{
     // NextScene Animation 
     TweenMax.to('#nextStage .nextLeft',.15,{css:{opacity:0},ease:Power2.easeInOut});
     TweenMax.set('#nextStage .mid',{css:{opacity:0}});
-    TweenMax.to('.active',.3,{xPercent:100,delay:.15,ease:Power2.easeInOut});
-    TweenMax.to('#nextStage',.3,{ease:Power2.easeInOut,css:{opacity:0},delay:.7});
-    TweenMax.set('#nextStage',{css:{visibility:"hidden"},delay:1});
+    TweenMax.to('.active',.6,{xPercent:100,delay:.15,ease:Power2.easeInOut});
+    TweenMax.to('#nextStage',.3,{ease:Power2.easeInOut,css:{opacity:0},delay:1});
+    TweenMax.set('#nextStage',{css:{visibility:"hidden"},delay:1.5});
     
     // var offsetl = document.querySelector('#nextStage .nextRight') as HTMLElement;
     // TweenMax.to('#nextStage .nextLeft',.2,{css:{left:offsetl.offsetLeft+"px"}});

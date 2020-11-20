@@ -400,16 +400,15 @@ export class ThreeService {
 
       // Minimum Timer
       let MinimumLoadingTime = {value:0};
-      TweenMax.to(MinimumLoadingTime,3.2,{value:1,ease:Power0.easeNone});
+      TweenMax.to(MinimumLoadingTime,4,{value:1,ease:Power0.easeNone});
 
       // Check if Content Ready
       let ready = false;
-      this.RS.ResourcesCompleted.subscribe((value)=>{
+      this.RS.LoadedCompleted.subscribe((value)=>{
         if(value){
-          
           if(MinimumLoadingTime.value!==1){
             // if faster than minimum loading time, wait 
-            TweenMax.delayedCall(3.2-MinimumLoadingTime.value,()=>{
+            TweenMax.delayedCall(4-MinimumLoadingTime.value,()=>{
               ready=true;
               // Start Introduction
               TweenMax.delayedCall(1,()=>{

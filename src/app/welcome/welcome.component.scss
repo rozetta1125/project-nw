@@ -17,73 +17,12 @@
 }
 
 
-// .Background{
-//   // background: linear-gradient(
-//   //   to bottom,
-//   //   #eddbcd 0%,
-//   //   #eee2d9 100%
-//   // );
-//   // f0d4c8
-//   width:100vw;
-//   height: 100vh;
-//   background:#eee2d9;
-//   // background: linear-gradient(
-//   //   to bottom,
-//   //   #f0d4c8 0%,
-//   //   #f0d4c8 var(--BGPercent),
-//   //   #eee2d9 var(--BGPercent),
-//   //   #eee2d9 100%
-//   // );
-//   // background: linear-gradient(
-//   //   to bottom,
-//   // #c9e9f2 0%,
-//   // #c9e9f2 35%,
-//   // #aee3f2 35%,
-//   // #aee3f2 100%
-//   // );
-// }
-
-// .Background.BG2::before{
-//   transform:translateX(0%);
-// }
-
-// .Background::before{
-//   content: "";
-//   position: absolute;
-//   top: 0;
-//   left: 0;
-//   width: 100%;
-//   height: 100%;
-//   transform:translateX(100%);
-//   background: linear-gradient(
-//     to bottom,
-//     #f0d4c8 0%,
-//     #f0d4c8 var(--BGPercent),
-//     #eee2d9 var(--BGPercent),
-//     #eee2d9 100%
-//   );
-//   opacity: 1;
-//   transition: transform 1.2s;
-//   transition-timing-function: ease;
-//   z-index: -1;
-// }
-
-
-@include Phone{
-
-}
 
 .Background{
   --BGPercent: 31%;
-  // background: linear-gradient(
-  //   to bottom,
-  //   #eddbcd 0%,
-  //   #eee2d9 100%
-  // );
   width:100vw;
   height: 100vh;
   opacity: 1;
-  // f0d4c8
   background: linear-gradient(
     to bottom,
     #f0d4c8 0%,
@@ -98,63 +37,41 @@
     #e8d8cd var(--BGPercent),
     #e8d8cd 100%
   );
-  // background:#e8d8cd;
-
-  // background: linear-gradient(
-  //   to bottom,#c9e9f2 0%,#c9e9f2 var(--BGPercent),#aee3f2 var(--BGPercent),#aee3f2 100%
-  // );
-  // background: linear-gradient(
-  //   to bottom,
-  // #c9e9f2 0%,
-  // #c9e9f2 35%,
-  // #aee3f2 35%,
-  // #aee3f2 100%
-  // );
   @include Phone{
     --BGPercent: 28%;
   }
-}
 
-.Background.BG2::before{
-  opacity: 1;
-}
-
-.Background.BG3::before{
-  background:linear-gradient(
-    to bottom,
-    #e5c2b6 0%,
-    #e5c2b6 var(--BGPercent),
-    #e8d8cd var(--BGPercent),
-    #e8d8cd 100%
-  );
-}
-
-.Background::before{
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  // background: linear-gradient(
-  //   to bottom,
-  // #f0d4c8 0%,
-  // #f0d4c8 var(--BGPercent),
-  // #eee2d9 var(--BGPercent),
-  // #eee2d9 100%
-  // );
-  background: linear-gradient(
-    to bottom,
-  #bad2ad 0%,
-  #bad2ad var(--BGPercent),
-  #cdd9c6 var(--BGPercent),
-  #cdd9c6 100%
-  );
-  opacity: 0;
-  transition: opacity .8s;
-  transition-timing-function: linear;
-  z-index: -1;
-
+  &::before{
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      to bottom,
+    #bad2ad 0%,
+    #bad2ad var(--BGPercent),
+    #cdd9c6 var(--BGPercent),
+    #cdd9c6 100%
+    );
+    opacity: 0;
+    transition: opacity .8s;
+    transition-timing-function: linear;
+    z-index: -1;
+  }
+  &.BG2::before{
+    opacity: 1;
+  }
+  &.BG3::before{
+    background:linear-gradient(
+      to bottom,
+      #e5c2b6 0%,
+      #e5c2b6 var(--BGPercent),
+      #e8d8cd var(--BGPercent),
+      #e8d8cd 100%
+    );
+  }
 }
 
 #ThreeJSCanvas{
@@ -165,26 +82,6 @@
   height: 100%;
 }
 
-.background {
-  z-index: 3;
-  // background: #848484;
-  // background: linear-gradient(to bottom, #dbbbaa 0%, #dfc1b1 35%, #e6d7c8 35%, #e6d7c8  100%);
-  // background: #aee3f2;
-  // background: linear-gradient(to bottom, #c9e9f2 0%, #c9e9f2 35%, #aee3f2 35%, #aee3f2  100%);
-  // A3E1FF 8ac2ef
-}
-
-
-
-@mixin phone {
-    @media (max-width: 599px) { @content; }
-}
-
-.leaf{
-  @mixin phone {
-    // transform: ;
-  }
-}
 
 #Golf{
   position: absolute;
@@ -224,34 +121,6 @@
     pointer-events: none;
 }
 
-
-@keyframes BalloonMouseDown {
-    from{
-        transform: scale(1)
-    }
-    to{
-        transform: scale(0.75)
-    }
-}
-
-@keyframes BalloonMouseUp {
-    from{
-        transform: scale(0.75)
-    }
-    to{
-        transform: scale(1)
-    }
-}
-
-.BalloonMouseDown{
-    animation: BalloonMouseDown .3s forwards;
-}
-
-.BalloonMouseUp{
-    animation: BalloonMouseUp .3s forwards;
-}
-
-
 .Golf{
   pointer-events: none;
 }
@@ -265,7 +134,7 @@
     position: fixed;
     top: 40px;
     left: 50px;
-    @include phone{
+    @include Phone{
       font-size: 16px;
       top:3%;
       left:3%;
@@ -275,7 +144,7 @@
     position: fixed;
     top: 40px;
     right: 50px;
-    @include phone{
+    @include Phone{
       font-size: 16px;
       top:3%;
       right:3%;
@@ -368,7 +237,7 @@
   }
   @include Phone{
     transform: scale(.7);
-    bottom: 10%;
+    bottom: 11%;
   }
   @include Tablet{
     transform: scale(.8);
@@ -584,7 +453,6 @@
   right:5%;
   @include Phone{
     font-size: 1.2rem;
-    top:10%;
   }
   @include Tablet{
     font-size: 1.2rem;
@@ -608,7 +476,7 @@
   width:46px;
   height:28px;
   @include Phone{
-    top:10%;
+    transform: scale(.7);
   }
   .Xshape{
     background: #000000;
@@ -627,5 +495,61 @@
     min-height: 100%;
     min-width:100%;
     border-radius: 15px;
+  }
+}
+
+
+
+#portrait{
+  position: absolute;
+  z-index: 3;
+  background: rgba(255,255,255,1);
+  width: 100%;
+  height: 100%;
+  top:0;
+  left: 0;
+  opacity: 0;
+  visibility: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 2s ease-in-out;
+  .smartphone{
+    width: 105px;
+    height: 205px;
+    border: 8px solid #000;
+    border-radius: 22px;
+    animation: rotateDown 4s ease-in-out infinite;
+  }
+  &.ready{
+    opacity: .6;
+    visibility: visible;
+  }
+  @media screen and (orientation: landscape) {
+    &.ready{
+      opacity: 0;
+      visibility: hidden;
+    }
+  }
+}
+
+@keyframes rotateDown{
+  0%{
+    opacity: 0;
+    transform: rotate(0deg);
+  }
+  20%{
+    opacity: 1;
+  }
+  40%{
+    transform: rotate(90deg);
+  }
+  80%{
+    opacity: 1;
+  }
+  100%{
+    opacity: 0;
+    transform: rotate(90deg);
   }
 }

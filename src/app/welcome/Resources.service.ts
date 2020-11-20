@@ -3,7 +3,6 @@ import { Injectable } from '@angular/core';
 import { Power0, TweenMax } from 'gsap';
 import GLTFLoader from 'three-gltf-loader';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader';
-import { variable } from '@angular/compiler/src/output/output_ast';
 import { Subject } from 'rxjs';
 
 @Injectable({
@@ -14,6 +13,7 @@ import { Subject } from 'rxjs';
 export class Resources{
   constructor() {}
   public ResourcesCompleted: Subject<Boolean> = new Subject<Boolean>();
+  public LoadedCompleted: Subject<Boolean> = new Subject<Boolean>();
   
   loader: GLTFLoader;
   textureLoader;
@@ -25,18 +25,17 @@ export class Resources{
     this.manager = new THREE.LoadingManager();
 
     this.manager.onProgress =  (url, itemsLoaded, itemsTotal)=>{
-      console.log( 'Loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.' );
+      // console.log( 'Loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.' );
     };
     this.manager.onError = (url)=>{
       console.log( 'There was an error loading ' + url );
     };
 
 
-
-
     this.manager.onLoad = ()=>{
-      console.log('completed')
+      console.log('Resources load completed');
       this.ResourcesCompleted.next(true);
+      this.CheckOrientation();
     }
 
     
@@ -234,5 +233,26 @@ export class Resources{
     this.loader.load('assets/model/balloon01.glb',(gltf)=>{ this.Balloon = gltf; });
     this.loader.load('assets/model/Text.glb',(gltf)=>{ this.Text = gltf; });
     this.loader.load('assets/model/TextDecoration.glb',(gltf)=>{ this.TextDecoration = gltf; });
+  }
+
+
+  CheckOrientation(){
+    // first time
+    document.getElementById('portrait').classList.add('ready');
+    if(window.innerHeight<window.innerWidth){
+      this.LoadedCompleted.next(true);
+    }
+
+    // wait for resize
+    window.addEventListener('resize',this.CheckResized);
+  }
+
+  CheckResized = ()=>{
+    if(window.innerHeight<window.innerWidth){
+      TweenMax.delayedCall(2,()=>{
+        this.LoadedCompleted.next(true);
+      })
+      window.removeEventListener('resize',this.CheckResized);
+    }
   }
 }
