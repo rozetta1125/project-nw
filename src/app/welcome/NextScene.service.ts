@@ -139,7 +139,7 @@ export class NextScene{
     // NextScene Animation 
     TweenMax.to('#nextStage .nextLeft',.15,{css:{opacity:0},ease:Power2.easeInOut});
     TweenMax.set('#nextStage .mid',{css:{opacity:0}});
-    TweenMax.to('.active',.6,{xPercent:100,delay:.15,ease:Power2.easeInOut});
+    TweenMax.to('#nextStage .active',.6,{x:0,delay:.15,ease:Power2.easeInOut});
     TweenMax.to('#nextStage',.3,{ease:Power2.easeInOut,css:{opacity:0},delay:1});
     TweenMax.set('#nextStage',{css:{visibility:"hidden"},delay:1.5});
     
@@ -173,7 +173,7 @@ export class NextScene{
   restart(){
     TweenMax.set('#nextStage .nextLeft',{css:{opacity:1}});
     TweenMax.set('#nextStage .mid',{css:{opacity:1}});
-    TweenMax.set('#nextStage .active',{xPercent:-100});
+    TweenMax.set('#nextStage .active',{x:-1000});
 
     TweenMax.set('#nextStage .nextLeft',{css:{left:0+"px"}});
     TweenMax.set('#nextStage .mid .svg',{css:{width:200+"px"}});
