@@ -32,7 +32,7 @@ export class NextScene{
     // this.ThreeService.scene.add(Mesh02);
 
     // PC
-    document.querySelector('#nextStage .nextLeft').addEventListener("mousedown", throttle(this.Start,200),{passive:false});
+    document.querySelector('#nextStage .nextLeft').addEventListener("mousedown", throttle(this.Start,200));
     document.addEventListener("mouseup", ()=>{
       if(this.onNextLeft){
         document.removeEventListener("mousemove", this.Moving);
@@ -43,7 +43,7 @@ export class NextScene{
     })
 
     // Mobile
-    document.querySelector('#nextStage .nextLeft').addEventListener("touchstart", throttle(this.TouchStart,200),{passive:false});
+    document.querySelector('#nextStage .nextLeft').addEventListener("touchstart", throttle(this.TouchStart,200));
     document.addEventListener("touchend", ()=>{
       if(this.onNextLeft){
         document.removeEventListener("touchmove", this.TouchMoving);
@@ -58,7 +58,7 @@ export class NextScene{
   Start = (e) => {
     console.log("clicked")
     if(!this.onNextLeft){
-      document.addEventListener("mousemove", this.Moving,{passive:false});
+      document.addEventListener("mousemove", this.Moving);
       this.firstClientX=e.clientX;
       this.onNextLeft = true;
       console.log('start')
@@ -83,7 +83,7 @@ export class NextScene{
     e.preventDefault();
     console.log("touched")
     if(!this.onNextLeft){
-      document.addEventListener("touchmove", this.TouchMoving,{passive:false});
+      document.addEventListener("touchmove", this.TouchMoving);
       this.firstClientX=e.touches[0].clientX;
       this.onNextLeft = true;
       console.log('start')
