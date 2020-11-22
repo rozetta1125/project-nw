@@ -96,8 +96,8 @@ export class ThreeService {
     this.textureLoader = new THREE.TextureLoader();
     this.clock = new THREE.Clock();
 
-    let width = window.innerWidth;
-    let height = window.innerHeight;
+    var width = document.documentElement.clientWidth;
+    var height = document.documentElement.clientHeight;
     this.renderer.setSize(width,height);
         
 
@@ -588,8 +588,8 @@ export class ThreeService {
   resize() {
     var PixelRatio = 1;
 
-    let width = window.innerWidth;
-    let height = window.innerHeight;
+    let width = document.documentElement.clientWidth;
+    let height = document.documentElement.clientHeight;
 
     this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();
