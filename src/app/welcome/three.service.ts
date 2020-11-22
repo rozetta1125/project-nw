@@ -223,13 +223,11 @@ export class ThreeService {
 
     this.canvas.addEventListener("mousemove", (e) => {
       this.renderThreePosition(e.x, e.y);
-      // window.scrollTo(0, 500);
       TweenMax.set('#Golf',{css:{top:e.y,left:e.x}})
     },{passive:false});
 
     this.canvas.addEventListener("touchmove", (e) => {
       e.preventDefault();
-      window.scrollTo(0, 500);
       this.renderThreePosition(e.touches[0].clientX, e.touches[0].clientY);
       TweenMax.set('#Golf',{css:{top:e.touches[0].clientY,left:e.touches[0].clientX}})
     },{passive:false});
