@@ -96,8 +96,8 @@ export class ThreeService {
     this.textureLoader = new THREE.TextureLoader();
     this.clock = new THREE.Clock();
 
-    var width = document.documentElement.clientWidth;
-    var height = document.documentElement.clientHeight;
+    let width = window.innerWidth;
+    let height = window.innerHeight;
     this.renderer.setSize(width,height);
         
 
@@ -227,7 +227,7 @@ export class ThreeService {
     },{passive:false});
 
     this.canvas.addEventListener("touchmove", (e) => {
-      // e.preventDefault();
+      e.preventDefault();
       // window.scrollTo(0, 1);
       this.renderThreePosition(e.touches[0].clientX, e.touches[0].clientY);
       TweenMax.set('#Golf',{css:{top:e.touches[0].clientY,left:e.touches[0].clientX}})
@@ -588,8 +588,8 @@ export class ThreeService {
   resize() {
     var PixelRatio = 1;
 
-    let width = document.documentElement.clientWidth;
-    let height = document.documentElement.clientHeight;
+    let width = window.innerWidth;
+    let height = window.innerHeight;
 
     this.camera.aspect = width / height;
     this.camera.updateProjectionMatrix();
