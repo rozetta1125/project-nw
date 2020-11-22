@@ -14,8 +14,8 @@ html,body{
     // cursor: none !important;
     font-family: 'Quicksand', sans-serif;
     @include Phone{
-      position: fixed;
-      overflow: visible;
+      position: relative;
+      overflow: hidden;
       height: calc( 100vh + 1px );
     }
 }
