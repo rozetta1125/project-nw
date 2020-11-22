@@ -88,7 +88,6 @@ export class ThreeService {
       // antialias: true // smooth edges
     });
     this.renderer.gammaOutput=true;
-    this.renderer.gammaFactor=2;
     var pixelRatio=2;
 
     this.renderer.setPixelRatio(pixelRatio);
@@ -126,7 +125,7 @@ export class ThreeService {
       this.GoalAngle.set(0,1.1,7);
       this.Goal.set(-15,.9,0)
     } else{
-      this.GoalAngle.set(0,1.25,8.4);
+      this.GoalAngle.set(0,1.35,8.4);
       this.Goal.set(-15,1,0)
     }
 
@@ -228,7 +227,6 @@ export class ThreeService {
 
     this.canvas.addEventListener("touchmove", (e) => {
       e.preventDefault();
-      // window.scrollTo(0, 1);
       this.renderThreePosition(e.touches[0].clientX, e.touches[0].clientY);
       TweenMax.set('#Golf',{css:{top:e.touches[0].clientY,left:e.touches[0].clientX}})
     },{passive:false});
