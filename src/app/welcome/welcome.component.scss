@@ -199,6 +199,8 @@
   margin:0 auto;
   display: flex;
   justify-content: space-between;
+  user-select: none;
+  touch-action: none;
   align-items: center;
   opacity: 0;
   z-index: 2;
