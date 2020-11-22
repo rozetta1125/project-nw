@@ -13,11 +13,11 @@ html,body{
     margin: 0;
     // cursor: none !important;
     font-family: 'Quicksand', sans-serif;
-    @include Phone{
-      position: relative;
-      overflow: hidden;
-      height: calc( 100vh + 1px );
-    }
+    // @include Phone{
+    //   position: relative;
+    //   overflow: hidden;
+    //   height: calc( 100vh + 1px );
+    // }
 }
 
 
