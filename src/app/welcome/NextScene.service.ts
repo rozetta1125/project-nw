@@ -80,7 +80,7 @@ export class NextScene{
 
   // Touch, mobile event;
   TouchStart = (e) => {
-    e.preventDefault();
+    // e.preventDefault();
     console.log("touched")
     if(!this.onNextLeft){
       document.addEventListener("touchmove", this.TouchMoving);
@@ -91,7 +91,7 @@ export class NextScene{
   }
   
   TouchMoving = (e) => {
-    e.preventDefault();
+    // e.preventDefault();
     var num = e.touches[0].clientX-this.firstClientX > 0 ? e.touches[0].clientX-this.firstClientX : 0;
     if(num>0){
       if(num>=250){
