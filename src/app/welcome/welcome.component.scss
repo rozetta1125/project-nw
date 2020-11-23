@@ -287,6 +287,9 @@
     use{
       animation: WaveMove 5s cubic-bezier(.55, .5, .45, .5) infinite;
     }
+    @include PhoneTablet{
+      top:-30%;
+    }
   }
   .bar{
     pointer-events: none;
@@ -454,6 +457,7 @@
   user-select: none;
   border: none;
   background: none;
+  display: inline-block;
   font-size: 1.4rem;
   letter-spacing: 0px;
   font-weight: 700;
@@ -466,6 +470,7 @@
   right:5%;
   @include PhoneTablet{
     font-size: 1rem;
+    top:6%;
     left:3%;
   }
 }
