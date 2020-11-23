@@ -46,6 +46,13 @@ export class Resources{
 
     this.textureLoader = new THREE.TextureLoader(this.manager);
 
+    // Check screen rotation
+    if(window.innerHeight<window.innerWidth){
+    } else {
+      // wait for resize
+      window.addEventListener('resize',this.CheckResized);
+    }
+
     this.FirstSceneResource();
     this.ColorResource();
     this.SecondSceneResource();
@@ -241,9 +248,6 @@ export class Resources{
     document.getElementById('portrait').classList.add('ready');
     if(window.innerHeight<window.innerWidth){
       this.LoadedCompleted.next(true);
-    } else {
-      // wait for resize
-      window.addEventListener('resize',this.CheckResized);
     }
   }
 
