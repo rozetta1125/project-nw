@@ -4,18 +4,11 @@
   overflow: hidden;
 }
 
-@mixin Phone{
-  @media screen and (max-width: 769px){
+@mixin PhoneTablet{
+  @media screen and (max-width: 1025px){
     @content;
   }
 }
-
-@mixin Tablet{
-  @media screen and (min-width: 769px) and (max-width: 1024px){
-    @content;
-  }
-}
-
 
 
 .Background{
@@ -37,7 +30,7 @@
     #e8d8cd var(--BGPercent),
     #e8d8cd 100%
   );
-  @include Phone{
+  @include PhoneTablet{
     --BGPercent: 28%;
   }
 
@@ -126,32 +119,6 @@
   pointer-events: none;
 }
 
-.nav{
-  color: #fff;
-  font-size: 24px;
-  font-weight: 700;
-  display: inline-block;
-  .nav-left{
-    position: fixed;
-    top: 40px;
-    left: 50px;
-    @include Phone{
-      font-size: 16px;
-      top:3%;
-      left:3%;
-    }
-  }
-  .nav-right{
-    position: fixed;
-    top: 40px;
-    right: 50px;
-    @include Phone{
-      font-size: 16px;
-      top:3%;
-      right:3%;
-    }
-  }
-}
 
 .Text{
   position: absolute;
@@ -193,10 +160,12 @@
   position: absolute;
   width:290px;
   height:40px;
-  bottom:5vh;
-  left:0;
-  right:0;
-  margin:0 auto;
+  top:90%;
+  bottom:0%;
+  transform: translate(-50%,0%);
+  left: 50%;
+  right: 0;
+  margin:0;
   display: flex;
   justify-content: space-between;
   user-select: none;
@@ -223,8 +192,6 @@
     cursor: pointer;
     position: relative;
     z-index: 2;
-    left:0;
-    top:0;
     .nl-arrow{
       position: absolute;
       left:14px;
@@ -237,14 +204,16 @@
       position: absolute;
       left:11px;
       top:11px;
+      @include PhoneTablet{
+        transform: rotate(-90deg);
+      }
     }
   }
-  @include Phone{
-    transform: scale(.8);
-    bottom: 10vh;
-  }
-  @include Tablet{
-    transform: scale(.8);
+  @include PhoneTablet{
+    transform: translate(-50%,-50%) rotate(90deg) scale(0.65);
+    left: 94%;
+    right: 0%;
+    top:50%;
   }
 }
 
@@ -256,7 +225,7 @@
   height: 100%;
   background: #fdfdfd;
   transition: all 1s ease;
-  z-index: 2;
+  z-index: 3;
   // visibility: hidden;
   opacity: .4;
   .decoration{
@@ -294,6 +263,11 @@
       position: absolute;
       top:20%;
       left:65.15%;
+      @include PhoneTablet{
+        transform: scale(.75);
+        left: 60%;
+        top: 10%;
+      }
       .svg{
         display: block;
         circle{
@@ -322,6 +296,10 @@
     left: 27%;
     width: 210px;
     height: 10px;
+    @include PhoneTablet{
+      top:15%;
+      left:15%;
+    }
     h4{
       font-family: 'Montserrat';
       font-weight: 500;
@@ -367,18 +345,32 @@
           font-size: 2rem;
           margin: 10px 0 35px 0;
           font-weight: 700;
+          @include PhoneTablet{
+            font-size: 1.2rem;
+            margin: 5px 0 15px 0;
+          }
         }
         p{
           width:90%;
           font-size: 1.2rem;
           line-height: 1.8rem;
           font-weight: 600;
+          @include PhoneTablet{
+            font-size: .8rem;
+            line-height: 1rem;
+            width: 100%;
+          }
         }
         a{
           color:inherit;
           text-underline-offset: 1px;
         }
       }
+    }
+    @include PhoneTablet{
+      width: 70%;
+      height: 60vh;
+      top:-8%;
     }
   }
   .scroll{
@@ -390,6 +382,11 @@
     left: 27%;
     display: flex;
     align-items: center;
+    @include PhoneTablet{
+      top:85%;
+      left:12.5%;
+      transform: scale(.75);
+    }
     .mouse{
       width: 17px;
       height: 26px;
@@ -418,6 +415,19 @@
       margin: 0 9px;
       font-size: .8rem;
     }
+
+    .MOBILE{
+      display: none;
+    }
+    @include PhoneTablet{
+      .MOBILE{
+        display: block;
+      }
+      .PC{
+        display: none;
+      }
+    }
+
   }
 }
 
@@ -444,7 +454,7 @@
   user-select: none;
   border: none;
   background: none;
-  font-size: 1.6rem;
+  font-size: 1.4rem;
   letter-spacing: 0px;
   font-weight: 700;
   opacity: 1;
@@ -454,11 +464,9 @@
   position: absolute;
   top:6%;
   right:5%;
-  @include Phone{
-    font-size: 1.2rem;
-  }
-  @include Tablet{
-    font-size: 1.2rem;
+  @include PhoneTablet{
+    font-size: 1rem;
+    left:3%;
   }
 }
 
@@ -478,8 +486,10 @@
   right:6%;
   width:46px;
   height:28px;
-  @include Phone{
-    transform: scale(.7);
+  @include PhoneTablet{
+    transform: scale(.6);
+    top:6%;
+    left: 3.5%;
   }
   .Xshape{
     background: #000000;

@@ -58,45 +58,109 @@ export class WelcomeComponent implements OnInit {
 
   private AboutPage=0;
   // true mean waiting, false ready
-  private AboutPageThrottle=false;
+  
   AboutMenu(){
     document.getElementById("content-about").classList.add('open');
-    document.addEventListener('wheel',(e)=>{
-      if(!this.AboutPageThrottle){
-        if(e.deltaY>0){
-          // Down
+
+    // scroll down event
+    document.addEventListener('wheel',this.AboutMenuScroll);
+
+    // swipe down event
+    document.addEventListener('touchstart',this.AboutMenuStart)
+    document.addEventListener('touchmove',this.AboutMenuMove)
+    document.addEventListener('touchend',this.AboutMenuEnd)
+  }
+
+  private AboutPageThrottle=false;
+  AboutMenuScroll = (e)=>{
+    if(!this.AboutPageThrottle){
+      if(e.deltaY>0){
+        // Down
+        if(this.AboutPage!=-2){
+          TweenMax.to('.slide-wrapper',1.2,{yPercent:"-=33",ease:Power3.easeInOut})
+          TweenMax.to('.bar .l1',1.2,{attr:{x2:"+=33"},ease:Power3.easeInOut})
+          this.AboutPage-=1;
+
+          if(this.AboutPage==-2){
+            TweenMax.to('.scroll',1.2,{opacity:0,ease:Power3.easeInOut})
+          }
+        }
+      } else {
+        // Up
+        if(this.AboutPage!=0){
+          TweenMax.to('.slide-wrapper',1.2,{yPercent:"+=33",ease:Power3.easeInOut})
+          TweenMax.to('.bar .l1',1.2,{attr:{x2:"-=33"},ease:Power3.easeInOut})
+          this.AboutPage+=1;
+
+          if(this.AboutPage==-1){
+            TweenMax.to('.scroll',1.2,{opacity:1,ease:Power3.easeInOut})
+          }
+        }
+      }
+      this.AboutPageThrottle=true;
+      setTimeout(() => {
+        this.AboutPageThrottle=false;
+      }, 1200);
+    }
+  }
+
+  xStart=0;yStart=0;
+  xMove=0;yMove=0;
+  xDiff=0;yDiff=0;
+  AboutMenuStart = (e)=>{
+    this.xStart=e.touches[0].clientX;
+    this.yStart=e.touches[0].clientY;
+  }
+
+  AboutMenuMove = (e)=>{
+    this.xMove=e.touches[0].clientX;
+    this.yMove=e.touches[0].clientY;
+  }
+
+  AboutMenuEnd = (e)=>{
+    if(!this.AboutPageThrottle){
+      this.xDiff=this.xStart - this.xMove;
+      this.yDiff=this.yStart - this.yMove;
+      if(Math.abs(this.xDiff) < Math.abs(this.yDiff)){
+        if(this.yDiff>0){
+          // up
           if(this.AboutPage!=-2){
             TweenMax.to('.slide-wrapper',1.2,{yPercent:"-=33",ease:Power3.easeInOut})
             TweenMax.to('.bar .l1',1.2,{attr:{x2:"+=33"},ease:Power3.easeInOut})
             this.AboutPage-=1;
-
             if(this.AboutPage==-2){
               TweenMax.to('.scroll',1.2,{opacity:0,ease:Power3.easeInOut})
             }
           }
         } else {
-          // Up
+          // down
           if(this.AboutPage!=0){
             TweenMax.to('.slide-wrapper',1.2,{yPercent:"+=33",ease:Power3.easeInOut})
             TweenMax.to('.bar .l1',1.2,{attr:{x2:"-=33"},ease:Power3.easeInOut})
             this.AboutPage+=1;
-
             if(this.AboutPage==-1){
               TweenMax.to('.scroll',1.2,{opacity:1,ease:Power3.easeInOut})
             }
           }
         }
-        this.AboutPageThrottle=true;
-        setTimeout(() => {
-          this.AboutPageThrottle=false;
-        }, 1200);
       }
-
-    })
+      this.AboutPageThrottle=true;
+      setTimeout(() => {
+        this.AboutPageThrottle=false;
+      }, 1200);
+    }
   }
 
   CloseAboutMenu(){
     document.getElementById("content-about").classList.remove('open');
+    
+    // scroll down event
+    document.removeEventListener('wheel',this.AboutMenuScroll);
+
+    // swipe down event
+    document.removeEventListener('touchstart',this.AboutMenuStart)
+    document.removeEventListener('touchmove',this.AboutMenuMove)
+    document.removeEventListener('touchend',this.AboutMenuEnd)
   }
 
   Start(){

@@ -16,6 +16,7 @@ export class NextScene{
   }
 
   private firstClientX:number=0;
+  private firstClientY:number=0;
   private CurrentGoal:number=-15;
   private NextGoal:number=0;
   private onNextLeft:boolean=false;
@@ -47,7 +48,7 @@ export class NextScene{
     document.addEventListener("touchend", ()=>{
       if(this.onNextLeft){
         document.removeEventListener("touchmove", this.TouchMoving);
-        this.firstClientX=0;
+        this.firstClientY=0;
         this.onNextLeft=false;
         this.nextCancel();
       }
@@ -84,7 +85,7 @@ export class NextScene{
     console.log("touched")
     if(!this.onNextLeft){
       document.addEventListener("touchmove", this.TouchMoving,{passive:false});
-      this.firstClientX=e.touches[0].clientX;
+      this.firstClientY=e.touches[0].clientY;
       this.onNextLeft = true;
       console.log('start')
     }
@@ -92,7 +93,9 @@ export class NextScene{
   
   TouchMoving = (e) => {
     e.preventDefault();
-    var num = e.touches[0].clientX-this.firstClientX > 0 ? e.touches[0].clientX-this.firstClientX : 0;
+    var num = e.touches[0].clientY-this.firstClientY > 0 ? e.touches[0].clientY-this.firstClientY : 0;
+    // because scale .8 so i put multiplier on num
+    num*=1.25;
     if(num>0){
       if(num>=250){
         this.Succeed();
