@@ -467,11 +467,12 @@
   position: absolute;
   top:6%;
   right:5%;
+  text-align: left;
   @include PhoneTablet{
     font-size: 1rem;
     top:6%;
     left:3%;
-    width: 60px;
+    width: 80px;
   }
 }
 

@@ -241,16 +241,17 @@ export class Resources{
     document.getElementById('portrait').classList.add('ready');
     if(window.innerHeight<window.innerWidth){
       this.LoadedCompleted.next(true);
+    } else {
+      // wait for resize
+      window.addEventListener('resize',this.CheckResized);
     }
-
-    // wait for resize
-    window.addEventListener('resize',this.CheckResized);
   }
 
   CheckResized = ()=>{
     if(window.innerHeight<window.innerWidth){
       TweenMax.delayedCall(2,()=>{
-        this.LoadedCompleted.next(true);
+        window.location.reload();
+        // this.LoadedCompleted.next(true);
       })
       window.removeEventListener('resize',this.CheckResized);
     }
