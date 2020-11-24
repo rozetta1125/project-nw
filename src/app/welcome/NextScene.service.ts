@@ -36,6 +36,7 @@ export class NextScene{
     document.querySelector('#nextStage .nextLeft').addEventListener("mousedown", throttle(this.Start,200),{passive:false});
     document.addEventListener("mouseup", ()=>{
       if(this.onNextLeft){
+        TweenMax.to('#nextStage .nextLeft',.2,{css:{scale:1}});
         document.removeEventListener("mousemove", this.Moving);
         this.firstClientX=0;
         this.onNextLeft=false;
@@ -47,6 +48,7 @@ export class NextScene{
     document.querySelector('#nextStage .nextLeft').addEventListener("touchstart", throttle(this.TouchStart,200),{passive:false});
     document.addEventListener("touchend", ()=>{
       if(this.onNextLeft){
+        TweenMax.to('#nextStage .nextLeft',.2,{css:{scale:1}});
         document.removeEventListener("touchmove", this.TouchMoving);
         this.firstClientY=0;
         this.onNextLeft=false;
@@ -59,6 +61,7 @@ export class NextScene{
   Start = (e) => {
     console.log("clicked")
     if(!this.onNextLeft){
+      TweenMax.to('#nextStage .nextLeft',.2,{css:{scale:1.25}});
       document.addEventListener("mousemove", this.Moving,{passive:false});
       this.firstClientX=e.clientX;
       this.onNextLeft = true;
@@ -83,6 +86,7 @@ export class NextScene{
   TouchStart = (e) => {
     e.preventDefault();
     console.log("touched")
+    TweenMax.to('#nextStage .nextLeft',.2,{css:{scale:1.25}});
     if(!this.onNextLeft){
       document.addEventListener("touchmove", this.TouchMoving,{passive:false});
       this.firstClientY=e.touches[0].clientY;
@@ -114,24 +118,24 @@ export class NextScene{
     console.log('Go to Scene'+this.ScenePhase);
     TweenMax.to(this.ThreeService.Goal,2,{ease:Power2.easeInOut,x:this.NextGoal});
 
-
+    
     let width = window.innerWidth;
     switch(this.ScenePhase){
       case 1:
         if(width<769){
-          TweenMax.to(this.ThreeService.GoalAngle,1.5,{ease:Power2.easeInOut,y:"+=.65",z:"-=1"});
-          TweenMax.to(this.ThreeService.Goal,1.5,{ease:Power2.easeInOut,y:"-=.2"});
+          TweenMax.to(this.ThreeService.GoalAngle,2,{ease:Power2.easeInOut,y:"+=.65",z:"-=1"});
+          TweenMax.to(this.ThreeService.Goal,2,{ease:Power2.easeInOut,y:"-=.2"});
         } else {
-          TweenMax.to(this.ThreeService.GoalAngle,1.5,{ease:Power2.easeInOut,y:"+=.7",z:"-=.5"});
-          TweenMax.to(this.ThreeService.Goal,1.5,{ease:Power2.easeInOut,y:"-=.1"});
+          TweenMax.to(this.ThreeService.GoalAngle,2,{ease:Power2.easeInOut,y:"+=.7",z:"-=.5"});
+          TweenMax.to(this.ThreeService.Goal,2,{ease:Power2.easeInOut,y:"-=.1"});
         }
       break;
       case 2:
         if(width<769){
-          TweenMax.to(this.ThreeService.GoalAngle,1.5,{ease:Power2.easeInOut,y:"-=.25",z:"+=.6"});
-          TweenMax.to(this.ThreeService.Goal,1.5,{ease:Power2.easeInOut,y:"+=.1"});
+          TweenMax.to(this.ThreeService.GoalAngle,2,{ease:Power2.easeInOut,y:"-=.25",z:"+=.6"});
+          TweenMax.to(this.ThreeService.Goal,2,{ease:Power2.easeInOut,y:"+=.1"});
         } else {
-          TweenMax.to(this.ThreeService.GoalAngle,1.5,{ease:Power2.easeInOut,y:"-=.5",z:"+=.3"});
+          TweenMax.to(this.ThreeService.GoalAngle,2,{ease:Power2.easeInOut,y:"-=.5",z:"+=.3"});
         }
       break;
     }
@@ -142,9 +146,10 @@ export class NextScene{
     // NextScene Animation 
     TweenMax.to('#nextStage .nextLeft',.15,{css:{opacity:0},ease:Power2.easeInOut});
     TweenMax.set('#nextStage .mid',{css:{opacity:0}});
-    TweenMax.to('#nextStage .active',.6,{x:0,delay:.15,ease:Power2.easeInOut});
-    TweenMax.to('#nextStage',.3,{ease:Power2.easeInOut,css:{opacity:0},delay:1});
-    TweenMax.set('#nextStage',{css:{visibility:"hidden"},delay:1.5});
+    TweenMax.to('#nextStage .nextRight',.4,{css:{scale:1.25},ease:Power1.easeInOut});
+    TweenMax.to('#nextStage .active',.3,{x:0,ease:Power2.easeInOut});
+    TweenMax.to('#nextStage',.4,{ease:Power1.easeInOut,css:{opacity:0},delay:.3});
+    TweenMax.set('#nextStage',{css:{visibility:"hidden"},delay:1});
     
     // var offsetl = document.querySelector('#nextStage .nextRight') as HTMLElement;
     // TweenMax.to('#nextStage .nextLeft',.2,{css:{left:offsetl.offsetLeft+"px"}});
@@ -174,6 +179,8 @@ export class NextScene{
   }
 
   restart(){
+    TweenMax.set('#nextStage .nextLeft',{css:{scale:1}});
+    TweenMax.set('#nextStage .nextRight',{css:{scale:1}});
     TweenMax.set('#nextStage .nextLeft',{css:{opacity:1}});
     TweenMax.set('#nextStage .mid',{css:{opacity:1}});
     TweenMax.set('#nextStage .active',{x:-1000});

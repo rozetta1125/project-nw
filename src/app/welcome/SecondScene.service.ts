@@ -1121,7 +1121,11 @@ export class SecondScene{
     Cube008.addShape(new CANNON.Box(new CANNON.Vec3(5,10,.1)),new CANNON.Vec3(-5.25,-.225,0),quat);
     Cube008.addShape(new CANNON.Box(new CANNON.Vec3(5,5,.1)),new CANNON.Vec3(0,-.225,-8),quat);
     Cube008.addShape(new CANNON.Box(new CANNON.Vec3(5,5,.1)),new CANNON.Vec3(0,-.225,8),quat);
+    Cube008.addShape(new CANNON.Sphere(.16),new CANNON.Vec3(1.4,.0,0),quat);
+    Cube008.addShape(new CANNON.Sphere(.16),new CANNON.Vec3(1.45,-.02,1.3),quat);
 
+    Cube008.addShape(new CANNON.Sphere(.14),new CANNON.Vec3(-1.75,-.01,0),quat);
+    Cube008.addShape(new CANNON.Sphere(.2),new CANNON.Vec3(-2,-.01,.1),quat);
 
     this.world02.addBody(Cube008);
     this.StageCannnonArray.push(Cube008);

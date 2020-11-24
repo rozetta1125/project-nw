@@ -174,7 +174,9 @@ export class WelcomeComponent implements OnInit {
           TweenMax.set('#about-button',{visibility:'visible'});
           break;
         case 1: 
-          document.getElementById('Main').classList.add('BG2');
+          TweenMax.delayedCall(.5,()=>{
+            document.getElementById('Main').classList.add('BG2');
+          })
           document.getElementById('arrow-fill').style.fill="#CDD9C6";
           
           this.FS.CancelFirstScene();
@@ -184,7 +186,9 @@ export class WelcomeComponent implements OnInit {
         break;
         case 2:
           TweenMax.set('.Background',{css:{background:"linear-gradient( to bottom,#c9e9f2 0%,#c9e9f2 var(--BGPercent),#aee3f2 var(--BGPercent),#aee3f2 100%)"}});
-          document.getElementById('Main').classList.remove('BG2');
+          TweenMax.delayedCall(.5,()=>{
+            document.getElementById('Main').classList.remove('BG2');
+          })
           document.getElementById('arrow-fill').style.fill="#AEE3F2";
           TweenMax.delayedCall(3,()=>{
             document.getElementById('Main').classList.add('BG3');
@@ -194,7 +198,9 @@ export class WelcomeComponent implements OnInit {
           this.FourthS.lastScreen();
         break;
         case 3:
-          document.getElementById('Main').classList.add('BG2');
+          TweenMax.delayedCall(.5,()=>{
+            document.getElementById('Main').classList.add('BG2');
+          })
           document.getElementById('arrow-fill').style.fill="#e8d8cd";
           this.FourthS.StartFourthScene();
         break;

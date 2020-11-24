@@ -209,7 +209,7 @@ export class FourthScene{
     })
 
     // Raycaster Plane
-    let plane = new THREE.Mesh(new THREE.PlaneBufferGeometry(3,4.4),new THREE.MeshBasicMaterial({transparent:true,opacity:0}));
+    let plane = new THREE.Mesh(new THREE.PlaneBufferGeometry(5,5),new THREE.MeshBasicMaterial({transparent:true,opacity:0}));
     plane.position.set(0,-.06,1)
     plane.rotation.set(-90*Math.PI/180,0,0);
     plane.name="raycasterPlane";

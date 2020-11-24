@@ -49,8 +49,8 @@
     #cdd9c6 100%
     );
     opacity: 0;
-    transition: opacity .8s;
-    transition-timing-function: linear;
+    transition: opacity 1s;
+    transition-timing-function: ease-in-out;
     z-index: -1;
   }
   &.BG2::before{
@@ -452,7 +452,7 @@
   font-family: 'Quicksand';
   font-family: 'Mikado Bold';
   font-family: 'Montserrat';
-  color: #fff;
+  color: rgba(255,255,255,.8);
   user-select: none;
   border: none;
   background: none;
@@ -468,11 +468,16 @@
   top:6%;
   right:5%;
   text-align: left;
+  transition: color .5s ease;
   @include PhoneTablet{
     font-size: 1rem;
     top:6%;
     left:3%;
     width: 80px;
+  }
+  &:hover{
+    color: rgba(255,255,255,1);
+
   }
 }
 
@@ -491,11 +496,17 @@
   top:7%;
   right:6%;
   width:46px;
-  height:28px;
+  height:46px;
+  padding: 0;
+  margin: 0;
+  transition: transform .3s ease;
   @include PhoneTablet{
     transform: scale(.6);
     top:6%;
     left: 3.5%;
+  }
+  &:hover{
+    animation: XshapeAnimation .6s ease;
   }
   .Xshape{
     background: #000000;
@@ -516,7 +527,26 @@
     border-radius: 15px;
   }
 }
-
+@keyframes XshapeAnimation{
+  0%{
+    transform: rotate(0deg);
+  }
+  25%{
+    transform: rotate(25deg);
+  }
+  50%{
+    transform: rotate(-6deg);
+  }
+  70%{
+    transform: rotate(6deg);
+  }
+  90%{
+    transform: rotate(-4deg);
+  }
+  100%{
+    transform: rotate(0deg);
+  }
+}
 
 
 #portrait{
