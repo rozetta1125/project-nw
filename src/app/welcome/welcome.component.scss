@@ -506,7 +506,9 @@
     left: 3.5%;
   }
   &:hover{
-    animation: XshapeAnimation .6s ease;
+    .wrap{
+      animation: XshapeAnimation .6s ease;
+    }
   }
   .Xshape{
     background: #000000;

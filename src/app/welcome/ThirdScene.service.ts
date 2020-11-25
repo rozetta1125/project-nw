@@ -155,7 +155,7 @@ export class ThirdScene{
 
     var shadow = new THREE.Mesh(new THREE.PlaneGeometry(6,6),material);
     shadow.rotation.set(-Math.PI/2,0,0)
-    shadow.position.set(0,.151,0);
+    shadow.position.set(0,.151,.005);
 
     this.RS.Island.scene.add(shadow);
     this.ThreeService.scene.add(this.RS.Island.scene);
@@ -531,7 +531,7 @@ export class ThirdScene{
     TweenMax.fromTo(this.BubbleObject.position,1.6,{y:1.4},{ease:Power0.easeNone,y:2.1});
     TweenMax.to(this.Bubble.position,.8,{ease:Power0.easeNone,x:"-=.05"});
     TweenMax.to(this.Bubble.position,.8,{ease:Power0.easeNone,x:"+=.1",delay:.8,onComplete:()=>{
-      this.ThirdSceneObject.push(this.BubbleObject);
+      this.ThirdSceneObject.unshift(this.BubbleObject);
       this.ThreeService.scene.add(this.BubbleObject);
     }});
 
@@ -1307,7 +1307,7 @@ export class ThirdScene{
           if(intersect[0].object.parent.name == "Tree01"){
             if(!this.Tree01CoinDroped){
               var random = Math.random();
-              if(random<.5){
+              if(random<.8){
                 this.TreeDropCoin(intersect[0].object.parent);
                 this.Tree01CoinDroped = true;
               }
@@ -1315,7 +1315,7 @@ export class ThirdScene{
           } else {
             if(!this.Tree02CoinDroped){
               var random = Math.random();
-              if(random<.5){
+              if(random<.8){
                 this.TreeDropCoin(intersect[0].object.parent);
                 this.Tree02CoinDroped = true;
               }

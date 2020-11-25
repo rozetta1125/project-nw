@@ -435,10 +435,9 @@ export class FirstScene {
         this.RS.Train.scene.children[""+i+""].material = mate02;
         this.RS.Train.scene.children[""+i+""].scale.y=1.4;
       } else if (this.RS.Train.scene.children[i].name == "SmokePipe") {
-        let mate02 = new THREE.MeshMatcapMaterial({
-          color: 0xffffff,
-          side: 2,
-          matcap: this.RS.FSblue
+        let mate02 = new THREE.MeshBasicMaterial({
+          transparent:true,
+          opacity:0,
         })
         this.RS.Train.scene.children[""+i+""].material = mate02
         this.SmokePipe.push(this.RS.Train.scene.children[i]);
@@ -783,10 +782,10 @@ export class FirstScene {
   }
 
   CreateSmokes() {
-    this.Smoke = new THREE.Mesh(new THREE.SphereBufferGeometry(.04, 10, 10));
+    this.Smoke = new THREE.Mesh(new THREE.SphereBufferGeometry(.05, 10, 10));
     for (var i = 0; i < 80; i++) {
       let smokeClone = this.Smoke.clone();
-      let mate = new THREE.MeshMatcapMaterial({ transparent: true,color:0xffffff, matcap: this.RS.Smoke, opacity: 0, depthWrite: false });
+      let mate = new THREE.MeshMatcapMaterial({ transparent: true,color:0xf0f0f0, matcap: this.RS.Smoke, opacity: 0, depthWrite: false });
       smokeClone.material = mate;
       this.Smokes.push(smokeClone);
       this.ThreeService.scene.add(smokeClone);
@@ -1029,7 +1028,7 @@ export class FirstScene {
     this.TrainPosition[1].rotation.y = this.TrainPosition[3].rotation.y;
     // Position
     TweenMax.fromTo(this.Smokes[this.SmokeI].position, 1.6,
-      { x: this.SmokePipe[0].position.x, z: this.SmokePipe[0].position.z, y: this.SmokePipe[0].position.y },
+      { x: this.SmokePipe[0].position.x, z: this.SmokePipe[0].position.z, y: this.SmokePipe[0].position.y+.02 },
       { x: this.SmokePipe[0].position.x + (.3 - Math.random() * .3), z: this.SmokePipe[0].position.z + (.3 - Math.random() * .3), y: this.SmokePipe[0].position.y + Math.random() * .4 + .4 });
     // Scale
     TweenMax.fromTo(this.Smokes[this.SmokeI].scale, 1.6,

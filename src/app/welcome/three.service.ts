@@ -299,16 +299,7 @@ export class ThreeService {
 
 
   Loading(){
-    let blue = this.textureLoader.load('assets/matcaps/01/E39FA1.png');
-    blue.encoding=THREE.sRGBEncoding;
-
-    let mate = new THREE.MeshMatcapMaterial({
-      matcap:blue,
-      color:0xffffff,
-      side:2
-    })
-
-    let pink = this.textureLoader.load('assets/matcaps/01/E39FA1.png');
+    let pink = this.textureLoader.load('assets/matcaps/01/E39FA1.jpg');
     pink.encoding=THREE.sRGBEncoding;
 
     let mate02 = new THREE.MeshMatcapMaterial({
@@ -323,7 +314,7 @@ export class ThreeService {
     Loader.rotation.set(0*Math.PI/180,0*Math.PI/180,0);
 
 
-    let Texture = this.textureLoader.load('assets/shadow/Cylinder.png');
+    let Texture = this.textureLoader.load('assets/shadow/Cylinder.jpg');
     let uniforms = {
       tShadow:{value:Texture},
       uShadowColor:{value:new THREE.Color("#d1b8a7")},
@@ -340,7 +331,7 @@ export class ThreeService {
     shadow.position.set(Loader.position.x,-.2,0);
 
     // Top Shadow Sphere
-    let Texture02 = this.textureLoader.load('assets/shadow/Sphere.png');
+    let Texture02 = this.textureLoader.load('assets/shadow/Sphere.jpg');
     let uniforms02 = {
       tShadow:{value:Texture02},
       uShadowColor:{value:new THREE.Color("#d6b3b4")},
@@ -355,7 +346,7 @@ export class ThreeService {
     shadow02.position.set(0,-.099,.02);
 
     // Bot Shadow Sphere
-    let Texture03 = this.textureLoader.load('assets/shadow/Sphere02.png');
+    let Texture03 = this.textureLoader.load('assets/shadow/Sphere02.jpg');
     let uniforms03 = {
       tShadow:{value:Texture03},
       uShadowColor:{value:new THREE.Color("#d1b8a7")},
@@ -380,7 +371,7 @@ export class ThreeService {
         if(GLB.children[i].name=="Sphere"){
           Sphere = GLB.children[i];
           console.log(Sphere);
-          GLB.children[i].material = mate;
+          GLB.children[i].material = mate02;
         } else {
           Cylinder = GLB.children[i];
           GLB.children[i].material = mate02;

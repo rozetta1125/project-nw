@@ -219,7 +219,7 @@ export class FourthScene{
   }
 
   CreateShadow(name:string){
-    let abc = this.ThreeService.textureLoader.load('assets/shadow/Text/'+name+'.png');
+    let abc = this.ThreeService.textureLoader.load('assets/shadow/Text/'+name+'.jpg');
 
     let uniforms = {
       tShadow:{value:abc},

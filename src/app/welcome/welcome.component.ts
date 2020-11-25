@@ -108,11 +108,13 @@ export class WelcomeComponent implements OnInit {
   xMove=0;yMove=0;
   xDiff=0;yDiff=0;
   AboutMenuStart = (e)=>{
+    e.preventDefault();
     this.xStart=e.touches[0].clientX;
     this.yStart=e.touches[0].clientY;
   }
 
   AboutMenuMove = (e)=>{
+    e.preventDefault();
     this.xMove=e.touches[0].clientX;
     this.yMove=e.touches[0].clientY;
   }

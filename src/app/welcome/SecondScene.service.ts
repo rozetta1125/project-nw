@@ -45,7 +45,7 @@ export class SecondScene{
   StartSecondScene(){
     this.SecondSceneRender();
     this.addEvent();
-    TweenMax.delayedCall(1,()=>{
+    TweenMax.delayedCall(2,()=>{
       this.MiniGolf();
       this.world02.gravity.set(0, -10, 0);
     })
@@ -430,7 +430,7 @@ export class SecondScene{
 
       // Entrance
       body.collisionFilterMask=2;
-      body.position.set(Position.x,Position.y - .6,Position.z);
+      body.position.set(Position.x,Position.y - .5,Position.z);
       body.velocity.set(.09,6,-.18);
       this.GolfState.value=0;
       TweenMax.delayedCall(.5,()=>{
@@ -604,7 +604,7 @@ export class SecondScene{
 
     let uniforms = {
       tShadow:{value:this.RS.WindmillShadow01},
-      uShadowColor:{value:new THREE.Color("#a5bc98")},
+      uShadowColor:{value:new THREE.Color("#97bb80")},
       uAlpha:{value:1}
     }
     let material = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms,depthWrite:false,
@@ -619,7 +619,7 @@ export class SecondScene{
 
     let uniforms02 = {
       tShadow:{value:this.RS.WindmillShadow02},
-      uShadowColor:{value:new THREE.Color("#a5bc98")},
+      uShadowColor:{value:new THREE.Color("#a1b893")},
       uAlpha:{value:1}
     }
     let material02 = new THREE.ShaderMaterial({wireframe:false,transparent:true,uniforms:uniforms02,depthWrite:false,

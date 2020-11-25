@@ -25,7 +25,7 @@ export class Resources{
     this.manager = new THREE.LoadingManager();
 
     this.manager.onProgress =  (url, itemsLoaded, itemsTotal)=>{
-      // console.log( 'Loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.' );
+      console.log( 'Loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.' );
     };
     this.manager.onError = (url)=>{
       console.log( 'There was an error loading ' + url );
@@ -94,38 +94,38 @@ export class Resources{
   LSblue;
   ColorResource(){
 
-    this.textureLoader.load('assets/matcaps/Smoke.png',(texture)=>{ this.Smoke=texture; this.Smoke.encoding=THREE.sRGBEncoding; });
+    this.textureLoader.load('assets/matcaps/Smoke.jpg',(texture)=>{ this.Smoke=texture; this.Smoke.encoding=THREE.sRGBEncoding; });
     // 1
-    this.textureLoader.load('assets/matcaps/01/F0F0F0.png',(texture)=>{ this.FSwhite=texture; this.FSwhite.encoding=THREE.sRGBEncoding; });
-    this.textureLoader.load('assets/matcaps/01/97ADD902.png',(texture)=>{ this.FSblue=texture; this.FSblue.encoding=THREE.sRGBEncoding; });
-    this.textureLoader.load('assets/matcaps/01/E7ABB1.png',(texture)=>{ this.FSpink=texture; this.FSpink.encoding=THREE.sRGBEncoding; });
+    this.textureLoader.load('assets/matcaps/01/F0F0F0.jpg',(texture)=>{ this.FSwhite=texture; this.FSwhite.encoding=THREE.sRGBEncoding; });
+    this.textureLoader.load('assets/matcaps/01/97ADD902.jpg',(texture)=>{ this.FSblue=texture; this.FSblue.encoding=THREE.sRGBEncoding; });
+    this.textureLoader.load('assets/matcaps/01/E7ABB1.jpg',(texture)=>{ this.FSpink=texture; this.FSpink.encoding=THREE.sRGBEncoding; });
 
 
     // 2
-    this.textureLoader.load('assets/matcaps/02/F5F5F5.png',(texture)=>{ this.SSwhite=texture; this.SSwhite.encoding=THREE.sRGBEncoding; });
-    this.textureLoader.load('assets/matcaps/02/wood.png',(texture)=>{ this.SSwood=texture; this.SSwood.encoding=THREE.sRGBEncoding; });
-    this.textureLoader.load('assets/matcaps/02/tree.png',(texture)=>{ this.SStree=texture; this.SStree.encoding=THREE.sRGBEncoding; });
-    this.textureLoader.load('assets/matcaps/02/aebfda.png',(texture)=>{ this.SSblue=texture; this.SSblue.encoding=THREE.sRGBEncoding; });
-    this.textureLoader.load('assets/matcaps/02/red.png',(texture)=>{ this.SSred=texture; this.SSred.encoding=THREE.sRGBEncoding; });
-    this.textureLoader.load('assets/matcaps/02/yellow.png',(texture)=>{ this.SSyellow=texture; this.SSyellow.encoding=THREE.sRGBEncoding; });
+    this.textureLoader.load('assets/matcaps/02/F5F5F5.jpg',(texture)=>{ this.SSwhite=texture; this.SSwhite.encoding=THREE.sRGBEncoding; });
+    this.textureLoader.load('assets/matcaps/02/wood.jpg',(texture)=>{ this.SSwood=texture; this.SSwood.encoding=THREE.sRGBEncoding; });
+    this.textureLoader.load('assets/matcaps/02/tree.jpg',(texture)=>{ this.SStree=texture; this.SStree.encoding=THREE.sRGBEncoding; });
+    this.textureLoader.load('assets/matcaps/02/aebfda.jpg',(texture)=>{ this.SSblue=texture; this.SSblue.encoding=THREE.sRGBEncoding; });
+    this.textureLoader.load('assets/matcaps/02/red.jpg',(texture)=>{ this.SSred=texture; this.SSred.encoding=THREE.sRGBEncoding; });
+    this.textureLoader.load('assets/matcaps/02/yellow.jpg',(texture)=>{ this.SSyellow=texture; this.SSyellow.encoding=THREE.sRGBEncoding; });
 
-    this.textureLoader.load('assets/matcaps/02/tree.png',(texture)=>{ this.SSStage=texture; this.SSStage.encoding=THREE.sRGBEncoding; });
-    this.textureLoader.load('assets/matcaps/02/wood.png',(texture)=>{ this.SSStage02=texture; this.SSStage02.encoding=THREE.sRGBEncoding; });
+    this.textureLoader.load('assets/matcaps/02/tree.jpg',(texture)=>{ this.SSStage=texture; this.SSStage.encoding=THREE.sRGBEncoding; });
+    this.textureLoader.load('assets/matcaps/02/wood.jpg',(texture)=>{ this.SSStage02=texture; this.SSStage02.encoding=THREE.sRGBEncoding; });
 
     // 3
-    this.textureLoader.load('assets/matcaps/03/white.png',(texture)=>{ this.TSwhite=texture; this.TSwhite.encoding=THREE.sRGBEncoding; });
-    this.textureLoader.load('assets/matcaps/03/tent01.png',(texture)=>{ this.TStent01=texture; this.TStent01.encoding=THREE.sRGBEncoding; });
-    this.textureLoader.load('assets/matcaps/03/tent02.png',(texture)=>{ this.TStent02=texture; this.TStent02.encoding=THREE.sRGBEncoding; });
-    this.textureLoader.load('assets/matcaps/03/land.png',(texture)=>{ this.TSland=texture; this.TSland.encoding=THREE.sRGBEncoding; });
-    this.textureLoader.load('assets/matcaps/03/sea.png',(texture)=>{ this.TSsea=texture; this.TSsea.encoding=THREE.sRGBEncoding; });
-    this.textureLoader.load('assets/matcaps/03/tree.png',(texture)=>{ this.TStree=texture; this.TStree.encoding=THREE.sRGBEncoding; });
-    this.textureLoader.load('assets/matcaps/03/wood.png',(texture)=>{ this.TSwood=texture; this.TSwood.encoding=THREE.sRGBEncoding; });
-    this.textureLoader.load('assets/matcaps/03/red.png',(texture)=>{ this.TSred=texture; this.TSred.encoding=THREE.sRGBEncoding; });
-    this.textureLoader.load('assets/matcaps/03/yellow.png',(texture)=>{ this.TSyellow=texture; this.TSyellow.encoding=THREE.sRGBEncoding; });
+    this.textureLoader.load('assets/matcaps/03/white.jpg',(texture)=>{ this.TSwhite=texture; this.TSwhite.encoding=THREE.sRGBEncoding; });
+    this.textureLoader.load('assets/matcaps/03/tent01.jpg',(texture)=>{ this.TStent01=texture; this.TStent01.encoding=THREE.sRGBEncoding; });
+    this.textureLoader.load('assets/matcaps/03/tent02.jpg',(texture)=>{ this.TStent02=texture; this.TStent02.encoding=THREE.sRGBEncoding; });
+    this.textureLoader.load('assets/matcaps/03/land.jpg',(texture)=>{ this.TSland=texture; this.TSland.encoding=THREE.sRGBEncoding; });
+    this.textureLoader.load('assets/matcaps/03/sea.jpg',(texture)=>{ this.TSsea=texture; this.TSsea.encoding=THREE.sRGBEncoding; });
+    this.textureLoader.load('assets/matcaps/03/tree.jpg',(texture)=>{ this.TStree=texture; this.TStree.encoding=THREE.sRGBEncoding; });
+    this.textureLoader.load('assets/matcaps/03/wood.jpg',(texture)=>{ this.TSwood=texture; this.TSwood.encoding=THREE.sRGBEncoding; });
+    this.textureLoader.load('assets/matcaps/03/red.jpg',(texture)=>{ this.TSred=texture; this.TSred.encoding=THREE.sRGBEncoding; });
+    this.textureLoader.load('assets/matcaps/03/yellow.jpg',(texture)=>{ this.TSyellow=texture; this.TSyellow.encoding=THREE.sRGBEncoding; });
 
-    this.textureLoader.load('assets/matcaps/03/E5CBA102.png',(texture)=>{ this.TSRoof=texture; this.TSRoof.encoding=THREE.sRGBEncoding; });
-    this.textureLoader.load('assets/matcaps/03/F3E9E0.png',(texture)=>{ this.TSHouse01=texture; this.TSHouse01.encoding=THREE.sRGBEncoding; });
-    this.textureLoader.load('assets/matcaps/03/E5CBA1.png',(texture)=>{ this.TSHouse02=texture; this.TSHouse02.encoding=THREE.sRGBEncoding; });
+    this.textureLoader.load('assets/matcaps/03/E5CBA102.jpg',(texture)=>{ this.TSRoof=texture; this.TSRoof.encoding=THREE.sRGBEncoding; });
+    this.textureLoader.load('assets/matcaps/03/F3E9E0.jpg',(texture)=>{ this.TSHouse01=texture; this.TSHouse01.encoding=THREE.sRGBEncoding; });
+    this.textureLoader.load('assets/matcaps/03/E5CBA1.jpg',(texture)=>{ this.TSHouse02=texture; this.TSHouse02.encoding=THREE.sRGBEncoding; });
     
   }
 
@@ -146,14 +146,14 @@ export class Resources{
   ParkShadow;
   Flag01;
   FirstSceneResource(){
-    this.textureLoader.load('assets/shadow/Train.png',(texture)=>{ this.TrainShadow=texture; });
-    this.textureLoader.load('assets/shadow/Swing01.png',(texture)=>{ this.SwingShadow01=texture; });
-    this.textureLoader.load('assets/shadow/Swing02.png',(texture)=>{ this.SwingShadow02=texture; });
-    this.textureLoader.load('assets/shadow/Carnival01.png',(texture)=>{ this.CarnivalShadow01=texture; });
-    this.textureLoader.load('assets/shadow/Carnival02.png',(texture)=>{ this.CarnivalShadow02=texture; });
-    this.textureLoader.load('assets/shadow/Ferris01.png',(texture)=>{ this.FerrisShadow01=texture; });
-    this.textureLoader.load('assets/shadow/Ferris02.png',(texture)=>{ this.FerrisShadow02=texture; });
-    this.textureLoader.load('assets/shadow/Park01.png',(texture)=>{ this.ParkShadow=texture; });
+    this.textureLoader.load('assets/shadow/Train.jpg',(texture)=>{ this.TrainShadow=texture; });
+    this.textureLoader.load('assets/shadow/Swing01.jpg',(texture)=>{ this.SwingShadow01=texture; });
+    this.textureLoader.load('assets/shadow/Swing02.jpg',(texture)=>{ this.SwingShadow02=texture; });
+    this.textureLoader.load('assets/shadow/Carnival01.jpg',(texture)=>{ this.CarnivalShadow01=texture; });
+    this.textureLoader.load('assets/shadow/Carnival02.jpg',(texture)=>{ this.CarnivalShadow02=texture; });
+    this.textureLoader.load('assets/shadow/Ferris01.jpg',(texture)=>{ this.FerrisShadow01=texture; });
+    this.textureLoader.load('assets/shadow/Ferris02.jpg',(texture)=>{ this.FerrisShadow02=texture; });
+    this.textureLoader.load('assets/shadow/Park01.jpg',(texture)=>{ this.ParkShadow=texture; });
 
 
     this.loader.load('assets/model/Carnival03.glb',(gltf)=>{ this.Carnival = gltf;});
@@ -175,10 +175,10 @@ export class Resources{
   GolfBall;
   
   SecondSceneResource(){
-    this.textureLoader.load('assets/shadow/Golf.png',(texture)=>{ this.GolfShadow=texture; });
-    this.textureLoader.load('assets/shadow/Windmill01.png',(texture)=>{ this.WindmillShadow01=texture; });
-    this.textureLoader.load('assets/shadow/Windmill02.png',(texture)=>{ this.WindmillShadow02=texture; });
-    this.textureLoader.load('assets/shadow/Windmill03.png',(texture)=>{ this.WindmillShadow03=texture; });
+    this.textureLoader.load('assets/shadow/Golf.jpg',(texture)=>{ this.GolfShadow=texture; });
+    this.textureLoader.load('assets/shadow/Windmill01.jpg',(texture)=>{ this.WindmillShadow01=texture; });
+    this.textureLoader.load('assets/shadow/Windmill02.jpg',(texture)=>{ this.WindmillShadow02=texture; });
+    this.textureLoader.load('assets/shadow/Windmill03.jpg',(texture)=>{ this.WindmillShadow03=texture; });
     this.textureLoader.load('assets/textures/golfball.jpg',(texture)=>{ this.GolfBallMap=texture; });
 
     this.loader.load('assets/model/Windmill07.glb',(gltf)=>{ this.Windmill = gltf; });
@@ -216,18 +216,16 @@ export class Resources{
   TextShadow;
   TextDecorationShadow;
   ThirdSceneResource(){
-    this.textureLoader.load('assets/shadow/House02.png',(texture)=>{ this.HouseShadow=texture; });
-    this.textureLoader.load('assets/shadow/Tent.png',(texture)=>{ this.TentShadow=texture; });
-    this.textureLoader.load('assets/shadow/Rock.png',(texture)=>{ this.RockShadow=texture; });
-    this.textureLoader.load('assets/shadow/Coin.png',(texture)=>{ this.CoinShadow=texture; });
-    this.textureLoader.load('assets/shadow/Island.png',(texture)=>{ this.TreeMailShadow=texture; });
-    this.textureLoader.load('assets/shadow/Gift.png',(texture)=>{ this.GiftShadow=texture; });
-    this.textureLoader.load('assets/shadow/TextShadow.png',(texture)=>{ this.TextShadow=texture; });
-    this.textureLoader.load('assets/shadow/TextDecorationShadow.png',(texture)=>{ this.TextDecorationShadow=texture; });
-
-    this.textureLoader.load('assets/shadow/Smoke02.png',(texture)=>{ this.SmokeTexture=texture; });
-    this.textureLoader.load('assets/shadow/Bubble.png',(texture)=>{ this.BubbleTexture=texture; });
-    this.textureLoader.load('assets/shadow/BubbleHouse.png',(texture)=>{ this.HouseBubble=texture; });
+    this.textureLoader.load('assets/shadow/House02.jpg',(texture)=>{ this.HouseShadow=texture; });
+    this.textureLoader.load('assets/shadow/Tent.jpg',(texture)=>{ this.TentShadow=texture; });
+    this.textureLoader.load('assets/shadow/Rock.jpg',(texture)=>{ this.RockShadow=texture; });
+    this.textureLoader.load('assets/shadow/Coin.jpg',(texture)=>{ this.CoinShadow=texture; });
+    this.textureLoader.load('assets/shadow/Island.jpg',(texture)=>{ this.TreeMailShadow=texture; });
+    this.textureLoader.load('assets/shadow/Gift.jpg',(texture)=>{ this.GiftShadow=texture; });
+    
+    this.textureLoader.load('assets/shadow/Smoke02.jpg',(texture)=>{ this.SmokeTexture=texture; });
+    this.textureLoader.load('assets/shadow/Bubble.jpg',(texture)=>{ this.BubbleTexture=texture; });
+    this.textureLoader.load('assets/shadow/BubbleHouse.jpg',(texture)=>{ this.HouseBubble=texture; });
 
     this.loader.load('assets/model/Island05.glb',(gltf)=>{ this.Island = gltf; });
     this.loader.load('assets/model/Coin.glb',(gltf)=>{ this.Coin = gltf; });
@@ -238,8 +236,9 @@ export class Resources{
     this.loader.load('assets/model/Box.glb',(gltf)=>{ this.Box = gltf; });
     this.loader.load('assets/model/Lid.glb',(gltf)=>{ this.Lid = gltf; });
     this.loader.load('assets/model/balloon01.glb',(gltf)=>{ this.Balloon = gltf; });
+
+    // Special case, Fourth scene
     this.loader.load('assets/model/Text.glb',(gltf)=>{ this.Text = gltf; });
-    this.loader.load('assets/model/TextDecoration.glb',(gltf)=>{ this.TextDecoration = gltf; });
   }
 
 
