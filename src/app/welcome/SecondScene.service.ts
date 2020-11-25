@@ -265,10 +265,7 @@ export class SecondScene{
 
 
       // THREE
-      // this.GolfClone = this.RS.GolfBall.scene.children[0];
-      // this.GolfClone.material=mate;
       this.GolfClone =  new THREE.Mesh( geometry, mate );
-      // this.GolfClone.scale.set(10,10,10);
       this.GolfClone.position.set(0,6,0)
     }
   }

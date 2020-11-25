@@ -179,7 +179,6 @@ export class Resources{
     this.textureLoader.load('assets/shadow/Windmill01.jpg',(texture)=>{ this.WindmillShadow01=texture; });
     this.textureLoader.load('assets/shadow/Windmill02.jpg',(texture)=>{ this.WindmillShadow02=texture; });
     this.textureLoader.load('assets/shadow/Windmill03.jpg',(texture)=>{ this.WindmillShadow03=texture; });
-    this.textureLoader.load('assets/textures/golfball.jpg',(texture)=>{ this.GolfBallMap=texture; });
 
     this.loader.load('assets/model/Windmill07.glb',(gltf)=>{ this.Windmill = gltf; });
     this.loader.load('assets/model/Flag001.glb',(gltf)=>{ this.Flag = gltf; });
