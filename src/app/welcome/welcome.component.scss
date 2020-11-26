@@ -219,6 +219,8 @@
 
 #content-about{
   position: absolute;
+  touch-action: none;
+  cursor: default;
   top:130%;
   right:0%;
   width: 100%;
@@ -323,6 +325,7 @@
     }
   }
   .slide-container{
+
     width: 46%;
     height: 40vh;
     margin: 0 auto;

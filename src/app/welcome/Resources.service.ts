@@ -47,6 +47,7 @@ export class Resources{
     this.textureLoader = new THREE.TextureLoader(this.manager);
 
     // Check screen rotation
+    document.getElementById('portrait').classList.add('ready');
     if(window.innerHeight<window.innerWidth){
     } else {
       // wait for resize
@@ -243,7 +244,6 @@ export class Resources{
 
   CheckOrientation(){
     // first time
-    document.getElementById('portrait').classList.add('ready');
     if(window.innerHeight<window.innerWidth){
       this.LoadedCompleted.next(true);
     }

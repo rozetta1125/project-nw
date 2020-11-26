@@ -4,6 +4,7 @@ import { TweenMax,Power1,Power0, Power4 } from 'gsap';
 import { Injectable } from '@angular/core';
 import { ThreeService } from './three.service';
 import { Resources } from './Resources.service';
+import { Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -18,6 +19,7 @@ export class FourthScene{
   private render;
   private FourthSceneObject=[];
   private MousePosition=new THREE.Vector3();
+  public InformationClicked: Subject<Boolean> = new Subject<Boolean>();
   StartFourthScene(){
     this.FourthSceneRender();
 
@@ -54,7 +56,10 @@ export class FourthScene{
       } else if (intersect[0].object.name=="refreshbutton"){
         console.log('refresh')
       } else if (intersect[0].object.name=="inforbutton"){
-        console.log('infor')
+        this.InformationClicked.next(true);
+        TweenMax.delayedCall(1,()=>{
+          this.InformationClicked.next(false);
+        })
       } 
     }
   }

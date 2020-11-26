@@ -27,7 +27,6 @@ export class WelcomeComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-
     // ABOUT PAGE
     let AboutButton = document.getElementById("about-button");
     AboutButton.addEventListener('click',()=>{
@@ -56,10 +55,11 @@ export class WelcomeComponent implements OnInit {
     });
   }
 
-  private AboutPage=0;
-  // true mean waiting, false ready
+
+
   
   AboutMenu(){
+    console.log('asdfasdf')
     document.getElementById("content-about").classList.add('open');
 
     // scroll down event
@@ -67,10 +67,12 @@ export class WelcomeComponent implements OnInit {
 
     // swipe down event
     document.addEventListener('touchstart',this.AboutMenuStart)
-    document.addEventListener('touchmove',this.AboutMenuMove)
+    document.addEventListener('touchmove',this.AboutMenuMove,{passive:false})
     document.addEventListener('touchend',this.AboutMenuEnd)
   }
 
+  private AboutPage=0;
+  // true mean waiting, false ready
   private AboutPageThrottle=false;
   AboutMenuScroll = (e)=>{
     if(!this.AboutPageThrottle){
@@ -108,7 +110,6 @@ export class WelcomeComponent implements OnInit {
   xMove=0;yMove=0;
   xDiff=0;yDiff=0;
   AboutMenuStart = (e)=>{
-    e.preventDefault();
     this.xStart=e.touches[0].clientX;
     this.yStart=e.touches[0].clientY;
   }
@@ -205,6 +206,11 @@ export class WelcomeComponent implements OnInit {
           })
           document.getElementById('arrow-fill').style.fill="#e8d8cd";
           this.FourthS.StartFourthScene();
+          this.FourthS.InformationClicked.subscribe((value)=>{
+            if(value){
+              this.AboutMenu();
+            }
+          });
         break;
       }
     });
