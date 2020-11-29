@@ -213,7 +213,9 @@ export class ThreeService {
     TweenMax.to(outer,.2,{css:{scale:1}});
   }
 
-
+  xStart=0;yStart=0;
+  xMove=0;yMove=0;
+  xDiff=0;yDiff=0;
   AddEvent(): void {
     this.render();
     window.addEventListener('resize', () => {
@@ -225,8 +227,23 @@ export class ThreeService {
       TweenMax.set('#Golf',{css:{top:e.y,left:e.x}})
     },{passive:false});
 
+
+    this.canvas.addEventListener('touchstart', (e) => {
+      this.xStart=e.touches[0].clientX;
+      this.yStart=e.touches[0].clientY;
+    })
+
     this.canvas.addEventListener("touchmove", (e) => {
-      e.preventDefault();
+      this.xMove=e.touches[0].clientX;
+      this.yMove=e.touches[0].clientY;
+
+      this.xDiff=this.xStart - this.xMove;
+      this.yDiff=this.yStart - this.yMove;
+      if(Math.abs(this.xDiff) < Math.abs(this.yDiff)){
+        if(this.yDiff>0){
+          e.preventDefault();
+        }
+      }
       this.renderThreePosition(e.touches[0].clientX, e.touches[0].clientY);
       TweenMax.set('#Golf',{css:{top:e.touches[0].clientY,left:e.touches[0].clientX}})
     },{passive:false});
