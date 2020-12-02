@@ -52,9 +52,9 @@ export class FourthScene{
     if(intersect.length>0){
       this.MousePosition.copy(intersect[0].point);
       if(intersect[0].object.name=="linkedinbutton"){
-        console.log('linkedin')
+        window.open("http://linkedin.com/in/tvnhan");
       } else if (intersect[0].object.name=="refreshbutton"){
-        console.log('refresh')
+        window.location.reload();
       } else if (intersect[0].object.name=="inforbutton"){
         this.InformationClicked.next(true);
         TweenMax.delayedCall(1,()=>{
@@ -119,7 +119,7 @@ export class FourthScene{
   private HoverStuffArray=[];
   lastScreen(){
     let LastScreen = new THREE.Object3D();
-    LastScreen.position.set(45,-.21,-1.8);
+    LastScreen.position.set(45,-.21,-2);
     LastScreen.rotation.set(26*Math.PI/180,-12.5*Math.PI/180,0);
     LastScreen.scale.set(1.05,1.05,1.05);
     this.ThreeService.scene.add(LastScreen);

@@ -59,13 +59,11 @@ export class NextScene{
 
   // Click, PC event;
   Start = (e) => {
-    console.log("clicked")
     if(!this.onNextLeft){
       TweenMax.to('#nextStage .nextLeft',.2,{css:{scale:1.25}});
       document.addEventListener("mousemove", this.Moving,{passive:false});
       this.firstClientX=e.clientX;
       this.onNextLeft = true;
-      console.log('start')
     }
   }
 
@@ -85,13 +83,11 @@ export class NextScene{
   // Touch, mobile event;
   TouchStart = (e) => {
     e.preventDefault();
-    console.log("touched")
     TweenMax.to('#nextStage .nextLeft',.2,{css:{scale:1.25}});
     if(!this.onNextLeft){
       document.addEventListener("touchmove", this.TouchMoving,{passive:false});
       this.firstClientY=e.touches[0].clientY;
       this.onNextLeft = true;
-      console.log('start')
     }
   }
   
@@ -99,7 +95,7 @@ export class NextScene{
     e.preventDefault();
     var num = e.touches[0].clientY-this.firstClientY > 0 ? e.touches[0].clientY-this.firstClientY : 0;
     // because scale .8 so i put multiplier on num
-    num*=1.25;
+    num*=1.4;
     if(num>0){
       if(num>=250){
         this.Succeed();
@@ -115,7 +111,7 @@ export class NextScene{
     // Phase, Camera, Goal
     this.ScenePhase += 1;
     this.ScenePhaseChange.next(this.ScenePhase);
-    console.log('Go to Scene'+this.ScenePhase);
+    console.log('Go to Scene'+(this.ScenePhase+1));
     TweenMax.to(this.ThreeService.Goal,2,{ease:Power2.easeInOut,x:this.NextGoal});
 
     
@@ -123,7 +119,7 @@ export class NextScene{
     switch(this.ScenePhase){
       case 1:
         if(width<769){
-          TweenMax.to(this.ThreeService.GoalAngle,2,{ease:Power2.easeInOut,y:"+=.65",z:"-=1"});
+          TweenMax.to(this.ThreeService.GoalAngle,2,{ease:Power2.easeInOut,y:"+=.6",z:"-=1"});
           TweenMax.to(this.ThreeService.Goal,2,{ease:Power2.easeInOut,y:"-=.2"});
         } else {
           TweenMax.to(this.ThreeService.GoalAngle,2,{ease:Power2.easeInOut,y:"+=.7",z:"-=.5"});
@@ -165,7 +161,7 @@ export class NextScene{
 
 
     // Restart After ?s
-    TweenMax.delayedCall(1,()=>{
+    TweenMax.delayedCall(5,()=>{
       if(this.ScenePhase<3){
         this.restart();
       }
@@ -174,7 +170,6 @@ export class NextScene{
 
   
   nextCancel(){
-    console.log('cancel')
     TweenMax.to('#nextStage .nextLeft',.4,{ease:Power1.easeOut,css:{left:0+"px"}});
     TweenMax.to('#nextStage .mid .svg',.4,{ease:Power1.easeOut,css:{width:200+"px"}});
     TweenMax.to(this.ThreeService.Goal,.4,{ease:Power1.easeOut,x:this.CurrentGoal})
@@ -189,8 +184,8 @@ export class NextScene{
 
     TweenMax.set('#nextStage .nextLeft',{css:{left:0+"px"}});
     TweenMax.set('#nextStage .mid .svg',{css:{width:200+"px"}});
-    TweenMax.to('#nextStage',1,{ease:Power2.easeInOut,css:{opacity:1}});
-    TweenMax.set('#nextStage',{css:{visibility:"visible"},delay:.5});
+    TweenMax.to('#nextStage',2,{ease:Power2.easeInOut,css:{opacity:1}});
+    TweenMax.set('#nextStage',{css:{visibility:"visible"}});
   }
 }
 

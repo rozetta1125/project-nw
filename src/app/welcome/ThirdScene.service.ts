@@ -18,7 +18,7 @@ export class ThirdScene{
 
   //
   private render;
-  private BalloonHeight=3;
+  private BalloonHeight=2.8;
   private FirstCursor = new THREE.Vector3();
   private LastCursor = new THREE.Vector3();
   private GiftBalloonArray = [];
@@ -30,7 +30,7 @@ export class ThirdScene{
     this.CreateIsland(30,-0.075,-.5);
     this.POPMaterial();
     if(window.innerWidth<769){
-      this.BalloonHeight=2.5;
+      this.BalloonHeight=2.2;
     }
 
     // this.RS.Lid.scene.position.set(15,2,0)
@@ -735,7 +735,6 @@ export class ThirdScene{
       // if overlap not true, or already ran 10 times, push it.
       if(!overlap || num>9){
         Array.push(Vec3);
-        console.log(num);
         num=0;
 
       }
@@ -1198,7 +1197,6 @@ export class ThirdScene{
     this.ThreeService.raycaster.setFromCamera(this.ThreeService.mouse,this.ThreeService.camera);
     var intersect = this.ThreeService.raycaster.intersectObjects(this.ThirdSceneObject,true)
     if(intersect.length>0){
-      console.log(intersect[0])
       switch (intersect[0].object.name) {
         case "Rock":
           var Vector = new THREE.Vector3();

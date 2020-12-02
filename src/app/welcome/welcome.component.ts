@@ -37,6 +37,14 @@ export class WelcomeComponent implements OnInit {
     HomeButton.addEventListener('click',()=>{
       this.CloseAboutMenu();
     });
+    
+    HomeButton.addEventListener('mouseover',()=>{
+      HomeButton.classList.add('animation');
+    })
+  
+    HomeButton.addEventListener('animationend',()=>{
+      HomeButton.classList.remove('animation');
+    })
 
     // THREE STUFF
     this.ThreeService.InitThree(this.welcomeCanvas);
@@ -59,7 +67,6 @@ export class WelcomeComponent implements OnInit {
 
   
   AboutMenu(){
-    console.log('asdfasdf')
     document.getElementById("content-about").classList.add('open');
 
     // scroll down event
@@ -173,19 +180,24 @@ export class WelcomeComponent implements OnInit {
     this.NS.ScenePhaseChange.subscribe((value)=>{
       switch(value){
         case 0:
-          TweenMax.to('#about-button',1,{opacity:1})
-          TweenMax.set('#about-button',{visibility:'visible'});
+          TweenMax.to('#about-button',2,{opacity:1,delay:3})
+          TweenMax.set('#about-button',{visibility:'visible',delay:3});
           break;
         case 1: 
+          // change bg color
           TweenMax.delayedCall(.5,()=>{
             document.getElementById('Main').classList.add('BG2');
           })
+
+          // next scene button arrow
           document.getElementById('arrow-fill').style.fill="#CDD9C6";
           
-          this.FS.CancelFirstScene();
+          // delay cancel old scene
+          TweenMax.delayedCall(2,()=>{
+            this.FS.CancelFirstScene();
+          });
           this.SS.StartSecondScene();
           this.TS.InitThirdScene();
-          
         break;
         case 2:
           TweenMax.set('.Background',{css:{background:"linear-gradient( to bottom,#c9e9f2 0%,#c9e9f2 var(--BGPercent),#aee3f2 var(--BGPercent),#aee3f2 100%)"}});
@@ -196,6 +208,7 @@ export class WelcomeComponent implements OnInit {
           TweenMax.delayedCall(3,()=>{
             document.getElementById('Main').classList.add('BG3');
           })
+
           this.SS.CancelSecondScene();
           this.TS.StartThirdScene();
           this.FourthS.lastScreen();

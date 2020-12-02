@@ -25,7 +25,7 @@ export class Resources{
     this.manager = new THREE.LoadingManager();
 
     this.manager.onProgress =  (url, itemsLoaded, itemsTotal)=>{
-      console.log( 'Loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.' );
+      // console.log( 'Loading file: ' + url + '.\nLoaded ' + itemsLoaded + ' of ' + itemsTotal + ' files.' );
     };
     this.manager.onError = (url)=>{
       console.log( 'There was an error loading ' + url );

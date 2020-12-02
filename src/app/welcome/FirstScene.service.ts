@@ -890,7 +890,6 @@ export class FirstScene {
     this.ThreeService.raycaster.setFromCamera(this.ThreeService.mouse, this.ThreeService.camera);
     var intersect = this.ThreeService.raycaster.intersectObjects(this.ParkObjects, true)
     if (intersect.length > 0) {
-      console.log(intersect[0].object.name)
       switch (intersect[0].object.name) {
         case "FerrisWheel00":
         case "FerrisWheel01":
@@ -907,7 +906,6 @@ export class FirstScene {
             this.FerrisWheelShadow();
             TweenMax.delayedCall(25, () => {
               this.FerrisAnimation = null;
-              console.log('asdf')
             });
           }
           break;

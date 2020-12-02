@@ -9,10 +9,14 @@
     @content;
   }
 }
-
+@mixin TouchDevice{
+  @media (hover:none) {
+    @content;
+  }
+}
 
 .Background{
-  --BGPercent: 31%;
+  --BGPercent: 30%;
   width:100vw;
   height: 100vh;
   opacity: 1;
@@ -135,10 +139,8 @@
     display: block;
     font-family: 'Mogra';
     // font-family: 'Salsa';
-    font-size: 1.8rem;
+    font-size: 2rem;
     opacity: 0;
-
-
   }
   #Introduction-h3{
     font-family: 'Mogra';
@@ -151,8 +153,14 @@
     opacity: 0;
     transform: translateY(25%);
   }
-  #Introduction-p{
-
+  @include PhoneTablet{
+    top:20%;
+    #Introduction-span{
+      font-size: 1.8rem;
+    }
+    #Introduction-h3{
+      font-size: 3.2rem;
+    }
   }
 }
 
@@ -204,13 +212,13 @@
       position: absolute;
       left:11px;
       top:11px;
-      @include PhoneTablet{
+      @include TouchDevice{
         transform: rotate(-90deg);
       }
     }
   }
-  @include PhoneTablet{
-    transform: translate(-50%,-50%) rotate(90deg) scale(0.65);
+  @include TouchDevice{
+    transform: translate(-50%,-65%) rotate(90deg) scale(0.65);
     left: 94%;
     right: 0%;
     top:50%;
@@ -302,7 +310,7 @@
     width: 210px;
     height: 10px;
     @include PhoneTablet{
-      top:15%;
+      top:22%;
       left:15%;
     }
     h4{
@@ -326,7 +334,6 @@
     }
   }
   .slide-container{
-
     width: 46%;
     height: 40vh;
     margin: 0 auto;
@@ -361,10 +368,17 @@
           font-size: 1.2rem;
           line-height: 1.8rem;
           font-weight: 600;
+          svg{
+            padding: 0 12px 0 0px;
+            vertical-align: middle;
+          }
           @include PhoneTablet{
             font-size: .8rem;
             line-height: 1rem;
             width: 100%;
+            svg{
+              transform: scale(.75);
+            }
           }
         }
         a{
@@ -376,7 +390,7 @@
     @include PhoneTablet{
       width: 70%;
       height: 60vh;
-      top:-8%;
+      top:0%;
     }
   }
   .scroll{
@@ -389,6 +403,7 @@
     display: flex;
     align-items: center;
     @include PhoneTablet{
+      display: none;
       top:80%;
       left:12.5%;
       transform: scale(.75);
@@ -456,32 +471,46 @@
   font-family: 'Quicksand';
   font-family: 'Mikado Bold';
   font-family: 'Montserrat';
-  color: rgba(255,255,255,.8);
+  color: #fff;
   user-select: none;
   border: none;
   background: none;
   display: inline-block;
-  font-size: 1.4rem;
+  font-size: 1.3rem;
   letter-spacing: 0px;
-  font-weight: 700;
-  opacity: 1;
-  visibility: visible;
+  font-weight: 600;
+  padding: 0;
+  opacity: 0;
+  visibility: hidden;
   cursor: pointer;
   outline: none;
   position: absolute;
   top:6%;
   right:5%;
-  text-align: left;
-  transition: color .5s ease;
+  text-align: center;
+  &:after{
+    position: absolute;
+    content:"";
+    right:0;
+    width: 0;
+    bottom:-4px;
+    background:#fff;
+    height:3px;
+    transition: width 0.3s ease-out;
+    @include PhoneTablet{
+      display: none;
+    }
+  }
+  &:hover:after{
+    left: 0;
+    right: auto;
+    width: 100%;
+  }
   @include PhoneTablet{
     font-size: 1rem;
     top:6%;
-    left:3%;
+    left:2%;
     width: 80px;
-  }
-  &:hover{
-    color: rgba(255,255,255,1);
-
   }
 }
 
@@ -503,16 +532,15 @@
   height:46px;
   padding: 0;
   margin: 0;
+  border-radius: 50%;
   transition: transform .3s ease;
   @include PhoneTablet{
     transform: scale(.6);
     top:6%;
     left: 3.5%;
   }
-  &:hover{
-    .wrap{
-      animation: XshapeAnimation .6s ease;
-    }
+  &.animation{
+    animation: XshapeAnimation .6s ease;
   }
   .Xshape{
     background: #000000;
@@ -538,16 +566,16 @@
     transform: rotate(0deg);
   }
   25%{
-    transform: rotate(25deg);
+    transform: rotate(28deg);
   }
   50%{
-    transform: rotate(-6deg);
+    transform: rotate(-8deg);
   }
   70%{
-    transform: rotate(6deg);
+    transform: rotate(8deg);
   }
   90%{
-    transform: rotate(-4deg);
+    transform: rotate(-5deg);
   }
   100%{
     transform: rotate(0deg);

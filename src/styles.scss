@@ -1,6 +1,6 @@
 /* You can add global styles to this file, and also import other style files */
 @mixin Phone{
-  @media screen and (max-width: 769px){
+  @media screen and (max-width: 1025px){
     @content;
   }
 }
@@ -70,8 +70,8 @@ $color: #000;
     background: #99BB87;
     background: linear-gradient(to right,#AAC99A 0%, #99BB87 100%);
     @include Phone{
-      width: 16px;
-      height: 10px;
+      width: 20px;
+      height: 15px;
     }
 }
 

@@ -62,9 +62,7 @@ export class ThreeService {
 
   // GUI
   // gui = new dat.GUI();
-  
-  // Shader
-  composer1; composer2; fxaaPass;
+
 
 
 
@@ -118,15 +116,12 @@ export class ThreeService {
 
     // Angle depend on screen width
 
-    if(width<769){
-      this.GoalAngle.set(0,1,7);
-      this.Goal.set(-15,.75,0)
-    } else if (width>769 && width<1025){
-      this.GoalAngle.set(0,1.1,7);
-      this.Goal.set(-15,.9,0)
+    if(width<1025){
+      this.GoalAngle.set(0,1.05,6.5);
+      this.Goal.set(-15,.7,0)
     } else{
       this.GoalAngle.set(0,1.35,8.4);
-      this.Goal.set(-15,1,0)
+      this.Goal.set(-15,.9,0)
     }
 
 
@@ -213,9 +208,7 @@ export class ThreeService {
     TweenMax.to(outer,.2,{css:{scale:1}});
   }
 
-  xStart=0;yStart=0;
-  xMove=0;yMove=0;
-  xDiff=0;yDiff=0;
+
   AddEvent(): void {
     this.render();
     window.addEventListener('resize', () => {
@@ -227,23 +220,8 @@ export class ThreeService {
       TweenMax.set('#Golf',{css:{top:e.y,left:e.x}})
     },{passive:false});
 
-
-    this.canvas.addEventListener('touchstart', (e) => {
-      this.xStart=e.touches[0].clientX;
-      this.yStart=e.touches[0].clientY;
-    })
-
     this.canvas.addEventListener("touchmove", (e) => {
-      this.xMove=e.touches[0].clientX;
-      this.yMove=e.touches[0].clientY;
-
-      this.xDiff=this.xStart - this.xMove;
-      this.yDiff=this.yStart - this.yMove;
-      if(Math.abs(this.xDiff) < Math.abs(this.yDiff)){
-        if(this.yDiff>0){
-          e.preventDefault();
-        }
-      }
+      e.preventDefault();
       this.renderThreePosition(e.touches[0].clientX, e.touches[0].clientY);
       TweenMax.set('#Golf',{css:{top:e.touches[0].clientY,left:e.touches[0].clientX}})
     },{passive:false});
@@ -310,8 +288,6 @@ export class ThreeService {
 
 
     this.renderer.render(this.scene, this.camera);
-    // this.composer1.render();
-    // this.composer2.render();
   }
 
 
@@ -387,7 +363,6 @@ export class ThreeService {
       for(var i=0;i<GLB.children.length;i++){
         if(GLB.children[i].name=="Sphere"){
           Sphere = GLB.children[i];
-          console.log(Sphere);
           GLB.children[i].material = mate02;
         } else {
           Cylinder = GLB.children[i];
@@ -402,13 +377,9 @@ export class ThreeService {
 
       this.Loader.next(true);
 
-    // Next Scene
-    TweenMax.to('#nextStage',2,{ease:Power1.easeOut,delay:4,css:{opacity:1}});
-    TweenMax.set('#nextStage',{css:{visibility:"visible"},delay:4});
-
       // Minimum Timer
       let MinimumLoadingTime = {value:0};
-      TweenMax.to(MinimumLoadingTime,4,{value:1,ease:Power0.easeNone});
+      TweenMax.to(MinimumLoadingTime,3.5,{value:1,ease:Power0.easeNone});
 
       // Check if Content Ready
       let ready = false;
@@ -416,12 +387,10 @@ export class ThreeService {
         if(value){
           if(MinimumLoadingTime.value!==1){
             // if faster than minimum loading time, wait 
-            TweenMax.delayedCall(4-MinimumLoadingTime.value,()=>{
+            TweenMax.delayedCall(3.5-MinimumLoadingTime.value,()=>{
               ready=true;
               // Start Introduction
-              TweenMax.delayedCall(1,()=>{
-                this.Introduction('A short','Experience');
-              })
+              this.Introduction('A short','Experience');
             })
           } else {
             // if lower than minimum loading time
@@ -516,9 +485,9 @@ export class ThreeService {
     }});
 
 
-    // // Next Scene
-    // TweenMax.to('#nextStage',2,{ease:Power1.easeOut,delay:4,css:{opacity:1}});
-    // TweenMax.set('#nextStage',{css:{visibility:"visible"},delay:4});
+    // Next Scene
+    TweenMax.to('#nextStage',2,{ease:Power1.easeOut,delay:4,css:{opacity:1}});
+    TweenMax.set('#nextStage',{css:{visibility:"visible"},delay:4});
   }
 
   BOOPArray=[];
