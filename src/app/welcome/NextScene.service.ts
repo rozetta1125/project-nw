@@ -161,7 +161,7 @@ export class NextScene{
 
 
     // Restart After ?s
-    TweenMax.delayedCall(5,()=>{
+    TweenMax.delayedCall(7.5,()=>{
       if(this.ScenePhase<3){
         this.restart();
       }
