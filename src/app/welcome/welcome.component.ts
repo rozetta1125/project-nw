@@ -78,38 +78,53 @@ export class WelcomeComponent implements OnInit {
     document.addEventListener('touchend',this.AboutMenuEnd)
   }
 
+
+  PageUp(){
+    if(this.AboutPage!=0){
+      TweenMax.to('.slide-wrapper',1.2,{yPercent:"+=25",ease:Power3.easeInOut})
+      TweenMax.to('.bar .l1',1.2,{attr:{x2:"-=25"},ease:Power3.easeInOut})
+      this.AboutPage-=1;
+
+      if(this.AboutPage==(this.TotalPage-2)){
+        TweenMax.to('.scroll',1.2,{opacity:1,ease:Power3.easeInOut})
+      }
+      this.AboutPageThrottle=true;
+      setTimeout(() => {
+        this.AboutPageThrottle=false;
+      }, 1200);
+    }
+  }
+
+  PageDown(){
+    if(this.AboutPage != (this.TotalPage-1) ){
+      TweenMax.to('.slide-wrapper',1.2,{yPercent:"-=25",ease:Power3.easeInOut})
+      TweenMax.to('.bar .l1',1.2,{attr:{x2:"+=25"},ease:Power3.easeInOut})
+      this.AboutPage+=1;
+
+      if(this.AboutPage==(this.TotalPage-1)){
+        TweenMax.to('.scroll',1.2,{opacity:0,ease:Power3.easeInOut})
+      }
+      this.AboutPageThrottle=true;
+      setTimeout(() => {
+        this.AboutPageThrottle=false;
+      }, 1200);
+    }
+  }
+
   private AboutPage=0;
+  private TotalPage=4;
   // true mean waiting, false ready
   private AboutPageThrottle=false;
   AboutMenuScroll = (e)=>{
     if(!this.AboutPageThrottle){
       if(e.deltaY>0){
         // Down
-        if(this.AboutPage!=-2){
-          TweenMax.to('.slide-wrapper',1.2,{yPercent:"-=33",ease:Power3.easeInOut})
-          TweenMax.to('.bar .l1',1.2,{attr:{x2:"+=33"},ease:Power3.easeInOut})
-          this.AboutPage-=1;
-
-          if(this.AboutPage==-2){
-            TweenMax.to('.scroll',1.2,{opacity:0,ease:Power3.easeInOut})
-          }
-        }
+        this.PageDown();
       } else {
         // Up
-        if(this.AboutPage!=0){
-          TweenMax.to('.slide-wrapper',1.2,{yPercent:"+=33",ease:Power3.easeInOut})
-          TweenMax.to('.bar .l1',1.2,{attr:{x2:"-=33"},ease:Power3.easeInOut})
-          this.AboutPage+=1;
-
-          if(this.AboutPage==-1){
-            TweenMax.to('.scroll',1.2,{opacity:1,ease:Power3.easeInOut})
-          }
-        }
+        this.PageUp();
       }
-      this.AboutPageThrottle=true;
-      setTimeout(() => {
-        this.AboutPageThrottle=false;
-      }, 1200);
+
     }
   }
 
@@ -134,24 +149,10 @@ export class WelcomeComponent implements OnInit {
       if(Math.abs(this.xDiff) < Math.abs(this.yDiff)){
         if(this.yDiff>0){
           // up
-          if(this.AboutPage!=-2){
-            TweenMax.to('.slide-wrapper',1.2,{yPercent:"-=33",ease:Power3.easeInOut})
-            TweenMax.to('.bar .l1',1.2,{attr:{x2:"+=33"},ease:Power3.easeInOut})
-            this.AboutPage-=1;
-            if(this.AboutPage==-2){
-              TweenMax.to('.scroll',1.2,{opacity:0,ease:Power3.easeInOut})
-            }
-          }
+          this.PageUp();
         } else {
           // down
-          if(this.AboutPage!=0){
-            TweenMax.to('.slide-wrapper',1.2,{yPercent:"+=33",ease:Power3.easeInOut})
-            TweenMax.to('.bar .l1',1.2,{attr:{x2:"-=33"},ease:Power3.easeInOut})
-            this.AboutPage+=1;
-            if(this.AboutPage==-1){
-              TweenMax.to('.scroll',1.2,{opacity:1,ease:Power3.easeInOut})
-            }
-          }
+          this.PageDown();
         }
       }
       this.AboutPageThrottle=true;

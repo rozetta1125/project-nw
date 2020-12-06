@@ -152,6 +152,12 @@ export class SecondScene{
     this.ThreeService.canvas.removeEventListener("mouseup", this.MouseUp);
     this.ThreeService.canvas.removeEventListener("touchstart",this.TouchStart);
     this.ThreeService.canvas.removeEventListener("touchend", this.ToucnEnd);
+
+
+    TweenMax.delayedCall(1.5,()=>{
+      this.ThreeService.scene.remove(this.Stage);
+      this.ThreeService.scene.remove(this.RS.Windmill.scene);
+    })
   }
 
 
@@ -577,6 +583,7 @@ export class SecondScene{
     this.ScoreLast = this.ScoreCurrent;
   }
   
+  private Stage;
   private StageThreeArray=[];
   private StageCannnonArray=[];
   private GolfFlip=[];
@@ -587,14 +594,14 @@ export class SecondScene{
   private windmillcannon = [];
   private GolfShadows = [];
   GolfStageCannon(){
-    let Stage = new THREE.Object3D();
-    this.ThreeService.scene.add(Stage);
+    this.Stage = new THREE.Object3D();
+    this.ThreeService.scene.add(this.Stage);
 
     let StageRotation = -26*Math.PI/180;
 
-    Stage.position.set(15,-.07,-1.5);
+    this.Stage.position.set(15,-.07,-1.5);
     // Stage.scale.set(1.1,1.1,1.1);
-    Stage.rotation.set(0*Math.PI/180,StageRotation,0*Math.PI/180);
+    this.Stage.rotation.set(0*Math.PI/180,StageRotation,0*Math.PI/180);
 
     let StageMaterial = new THREE.MeshBasicMaterial({transparent:true,opacity:0,color:0xffffff,depthWrite:false})
 
@@ -612,7 +619,7 @@ export class SecondScene{
     StageShadow.rotation.set(-Math.PI/2,0,0)
     StageShadow.position.set(0,0,0);
 
-    Stage.add(StageShadow);
+    this.Stage.add(StageShadow);
 
     let uniforms02 = {
       tShadow:{value:this.RS.WindmillShadow02},
@@ -627,7 +634,7 @@ export class SecondScene{
     StageShadow02.rotation.set(-Math.PI/2,0,0)
     StageShadow02.position.set(0,-.13,0);
 
-    Stage.add(StageShadow02);
+    this.Stage.add(StageShadow02);
 
 
     let uniforms03 = {
@@ -644,16 +651,16 @@ export class SecondScene{
     StageShadow03.scale.set(.5,.5,1)
     StageShadow03.position.set(0,1.2,.48);
 
-    Stage.add(StageShadow03);
+    this.Stage.add(StageShadow03);
 
     let StageShadow0302 = StageShadow03.clone();
-    Stage.add(StageShadow0302);
+    this.Stage.add(StageShadow0302);
 
     let StageShadow0303 = StageShadow03.clone();
-    Stage.add(StageShadow0303);
+    this.Stage.add(StageShadow0303);
 
     let StageShadow0304 = StageShadow03.clone();
-    Stage.add(StageShadow0304);
+    this.Stage.add(StageShadow0304);
 
 
     this.RS.Windmill.scene.position.set(15,0,-1.5);
@@ -839,7 +846,7 @@ export class SecondScene{
     this.RS.Flag.scene.children["0"].material = FlagMate;
     this.RS.Flag.scene.position.set(.35,.625,-2);
 
-    Stage.add(this.RS.Flag.scene);
+    this.Stage.add(this.RS.Flag.scene);
 
 
     var sizeX = .8;
@@ -859,7 +866,7 @@ export class SecondScene{
     let Cube01 = new THREE.Mesh(new THREE.BoxBufferGeometry(sizeX*2,sizeY*2,sizeZ*2),StageMaterial);
     Cube01.position.set(CG01.x,CG01.y,CG01.z);
     Cube01.rotation.set(CG01.Rx*Math.PI/180,CG01.Ry*Math.PI/180,CG01.Rz*Math.PI/180)
-    Stage.add(Cube01);
+    this.Stage.add(Cube01);
     this.StageThreeArray.push(Cube01);
     
     // CANNON 01
@@ -898,7 +905,7 @@ export class SecondScene{
     let Cube02 = new THREE.Mesh(new THREE.BoxBufferGeometry(sizeX*2,sizeY*2,sizeZ*2),StageMaterial);
     Cube02.position.set(CG02.x,CG02.y,CG02.z);
     Cube02.rotation.set(CG02.Rx*Math.PI/180,CG02.Ry*Math.PI/180,CG02.Rz*Math.PI/180)
-    Stage.add(Cube02);
+    this.Stage.add(Cube02);
     this.StageThreeArray.push(Cube02);
     
     // CANNON 02
@@ -927,7 +934,7 @@ export class SecondScene{
     let Cube03 = new THREE.Mesh(new THREE.BoxBufferGeometry(sizeX*2,sizeY*2,sizeZ*2),StageMaterial);
     Cube03.position.set(CG03.x,CG03.y,CG03.z);
     Cube03.rotation.set(CG03.Rx*Math.PI/180,CG03.Ry*Math.PI/180,CG03.Rz*Math.PI/180)
-    Stage.add(Cube03);
+    this.Stage.add(Cube03);
     this.StageThreeArray.push(Cube03);
     
     // CANNON 03
@@ -954,7 +961,7 @@ export class SecondScene{
     let Cube04 = new THREE.Mesh(new THREE.BoxBufferGeometry(sizeX*2,sizeY*2,sizeZ*2),StageMaterial);
     Cube04.position.set(CG04.x,CG04.y,CG04.z);
     Cube04.rotation.set(CG04.Rx*Math.PI/180,CG04.Ry*Math.PI/180,CG04.Rz*Math.PI/180)
-    Stage.add(Cube04);
+    this.Stage.add(Cube04);
     this.StageThreeArray.push(Cube04);
     
 
@@ -1010,7 +1017,7 @@ export class SecondScene{
     let Cube05 = new THREE.Mesh(new THREE.BoxBufferGeometry(sizeX*2,sizeY*2,sizeZ*2),StageMaterial);
     Cube05.position.set(CG05.x,CG05.y,CG05.z);
     Cube05.rotation.set(CG05.Rx*Math.PI/180,CG05.Ry*Math.PI/180,CG05.Rz*Math.PI/180);
-    Stage.add(Cube05);
+    this.Stage.add(Cube05);
     this.StageThreeArray.push(Cube05);
 
     // CANNON 05
@@ -1040,7 +1047,7 @@ export class SecondScene{
     let Cube06 = new THREE.Mesh(new THREE.BoxBufferGeometry(sizeX*2,sizeY*2,sizeZ*2),StageMaterial);
     Cube06.position.set(CG06.x,CG06.y,CG06.z);
     Cube06.rotation.set(CG06.Rx*Math.PI/180,CG06.Ry*Math.PI/180,CG06.Rz*Math.PI/180);
-    Stage.add(Cube06);
+    this.Stage.add(Cube06);
     this.StageThreeArray.push(Cube06);
 
     // CANNON 06
@@ -1076,7 +1083,7 @@ export class SecondScene{
     let Cube07 = new THREE.Mesh(new THREE.BoxBufferGeometry(sizeX*2,sizeY*2,sizeZ*2),StageMaterial);
     Cube07.position.set(CG07.x,CG07.y,CG07.z);
     Cube07.rotation.set(CG07.Rx*Math.PI/180,CG07.Ry*Math.PI/180,CG07.Rz*Math.PI/180);
-    Stage.add(Cube07);
+    this.Stage.add(Cube07);
     this.StageThreeArray.push(Cube07);
 
     // CANNON 07
@@ -1106,7 +1113,7 @@ export class SecondScene{
     let Cube08 = new THREE.Mesh(new THREE.BoxBufferGeometry(sizeX*2,sizeY*2,sizeZ*2),StageMaterial);
     Cube08.position.set(CG08.x,CG08.y,CG08.z);
     Cube08.rotation.set(CG08.Rx*Math.PI/180,CG08.Ry*Math.PI/180,CG08.Rz*Math.PI/180);
-    Stage.add(Cube08);
+    this.Stage.add(Cube08);
     this.StageThreeArray.push(Cube08);
 
     // CANNON 08

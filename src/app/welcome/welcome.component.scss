@@ -234,7 +234,7 @@
   right:0%;
   width: 100%;
   height: 100%;
-  background: #fdfdfd;
+  background: #fcfcfc;
   transition: all 1s ease;
   z-index: 3;
   // visibility: hidden;
@@ -250,16 +250,16 @@
     span{
       width: 1px;
       height: 100%;
-      background: #f0f0f0;
+      background: #f2f2f2;
       position: absolute;
       top:0%;
       left:0%;
     }
     span:nth-child(1){
-      left:14%;
+      left:12%;
     }
     span:nth-child(2){
-      left:32%;
+      left:26%;
     }
     span:nth-child(3){
       left:50%;
@@ -289,6 +289,7 @@
       }
     }
   }
+
   .wave{
     width: 100%;
     height:30%;
@@ -342,7 +343,7 @@
     overflow: hidden;
     .slide-wrapper{
       width:100%;
-      height: 300%;
+      height: 400%;
       display: flex;
       flex-direction: column;
       transform: translateY(0);
@@ -350,9 +351,9 @@
       .slide{
         // background: #F5F2EB;
         width:100%;
-        height: 33%;
-        color: #616161;
-        font-family: 'Quicksand';
+        height: 25%;
+        color: #212121;
+        font-family: 'Roboto';
         h3{
           width:100%;
           font-size: 2rem;
@@ -367,7 +368,7 @@
           width:90%;
           font-size: 1.2rem;
           line-height: 1.8rem;
-          font-weight: 600;
+          font-weight: 400;
           svg{
             padding: 0 12px 0 0px;
             vertical-align: middle;
@@ -468,8 +469,6 @@
 }
 
 #about-button{
-  font-family: 'Quicksand';
-  font-family: 'Mikado Bold';
   font-family: 'Montserrat';
   color: #fff;
   user-select: none;

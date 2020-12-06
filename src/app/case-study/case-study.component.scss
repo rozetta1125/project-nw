@@ -1,0 +1,308 @@
+@mixin PhoneTablet{
+  @media screen and (max-width: 1439px){
+    @content;
+  }
+}
+@mixin TouchDevice{
+  @media (hover:none) {
+    @content;
+  }
+}
+
+#CaseStudy{
+  width: 100%;
+  height: 100%;
+  // background-image: url('src/assets/images/groovepaper.png');
+  background: #f5f5f5;
+  font-family: 'Roboto';
+  #portrait{
+    position: absolute;
+    z-index: 3;
+    background: rgba(255,255,255,1);
+    width: 100%;
+    height: 100%;
+    top:0;
+    left: 0;
+    opacity: 0;
+    display: flex;
+    visibility: hidden;
+    align-items: center;
+    justify-content: center;
+    p{
+      font-size: 2rem;
+      font-weight: 700;
+    }
+    @include PhoneTablet{
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+  .logo{
+    position: absolute;
+    top: 7%;
+    left: 6%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    p{
+      color: #212121;
+      font-size: 1.2rem;
+      margin: 0 15px;
+      span{
+        display: block;
+        font-size: .6rem;
+      }
+    }
+    .image{
+      width: 54px;
+      height: 54px;
+      img{
+        width: 100%;
+        height: 100%;
+      }
+    }
+  }
+  .scroll{
+    user-select: none;
+    pointer-events: none;
+    touch-action: none;
+    position: absolute;
+    top: 85%;
+    left: 20%;
+    display: flex;
+    align-items: center;
+    @include PhoneTablet{
+      display: none;
+      top:80%;
+      left:12.5%;
+      transform: scale(.75);
+    }
+    .mouse{
+      width: 17px;
+      height: 26px;
+      border: 2px solid #757575;
+      border-radius: 16px;
+      span{
+        position: relative;
+        top:0%;
+      }
+      span:after{
+        content: "";
+        display: block;
+        width: 3px;
+        height: 7px;
+        border-radius: 50%;
+        position: relative;
+        top: -13px;
+        left: 7px;
+        background: #757575;
+      }
+    }
+    p{
+      font-family: 'Montserrat';
+      font-weight: 500;
+      color: #000000;
+      margin: 0 9px;
+      font-size: .8rem;
+    }
+
+    .MOBILE{
+      display: none;
+    }
+    @include PhoneTablet{
+      .MOBILE{
+        display: block;
+      }
+      .PC{
+        display: none;
+      }
+    }
+  }
+  .container{
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+  }
+  .menu{
+    position: absolute;
+    width: 200px;
+    height: 50px;
+    overflow: hidden;
+    top:22%;
+    left:20%;
+    .menuSlider{
+      display: flex;
+      width: 400%;
+      height: 50px;
+      flex-direction: row;
+      transform: translateY(0);
+      .subMenu{
+        height: 50px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        p{
+          font-family: 'Montserrat';
+          color: #616161;
+          font-weight: 500;
+          font-size: .9rem;
+          margin: 10px 0;
+        }
+        svg{
+          width: 100%;
+          height: 2px;
+        }
+        .l0{
+          stroke-width: 1px;
+          stroke:#cfcfcf;
+        }
+        .l1{
+          stroke-width: 1px;
+          stroke:#000000;
+        }
+      }
+      .introduction{
+
+      }
+    }
+  }
+  .sideMenu{
+    position: absolute;
+    width: 80px;
+    height: 30px;
+    text-align: right;
+    top:45%;
+    transform: translateY(-50%);
+    right:5%;
+    .sideMenuSlider{
+      display: flex;
+      width: 100%;
+      height: 48px;
+      flex-direction: column;
+      transform: translateY(0);
+      .subMenu{
+        height: 12px;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        p{
+          font-family: 'Montserrat';
+          color: #616161;
+          font-weight: 500;
+          font-size: .9rem;
+          margin: 0px 0;
+          position: absolute;
+          right:110%;
+          display: none;
+        }
+        svg{
+          width: 100%;
+          height: 1px;
+        }
+        .l0{
+          stroke-width: 1px;
+          stroke:#616161;
+        }
+        &:hover{
+          cursor: pointer;
+          p{
+            display: inline-block;
+          }
+        }
+      }
+    }
+  }
+  .slider{
+    width: 60%;
+    margin: 0 auto;
+    height: 1000%;
+    display: flex;
+    flex-direction: column;
+    transform: translateY(0);
+    .slide{
+      height: 10%;
+      margin: 25% 0 0 0;
+      color:#212121;
+      position: relative;
+      h4{
+        font-size: 2rem;
+      }
+      p{
+        font-size: 1.1rem;
+        width: 50%;
+        line-height: 28px;
+      }
+      #imageRoll{
+        position: absolute;
+        width: 40%;
+        max-width: 400px;
+        max-height: 532px;
+        transform:translateY(-50%);
+        overflow: hidden;
+        top:30%;
+        right: 0%;
+        .subImage{
+          width: 100%;
+          height: 400%;
+          display: flex;
+          flex-direction: column;
+        }
+        img{
+          width: 100%;
+          height: 100%;
+          display: block;
+        }
+      }
+    }
+    .introduction{
+      font-size: 2rem;
+    }
+    .SingleImage{
+      position: absolute;
+      width: 40%;
+      transform:translateY(-50%);
+      top:30%;
+      right: 0%;
+      img{
+        width: 100%;
+        height: 100%;
+        display: block;
+        border: 1px solid #ccc
+      }
+    }
+    .TwoPart{
+      display: flex;
+      flex-direction: row;
+      width:100%;
+      .Part{
+        padding: 0 30px;
+        flex:1;
+      }
+      .Part + .Part{
+        border-left: 1px solid #212121;
+      }
+      p{
+        width: 90%;
+      }
+    }
+  }
+
+  .dots{
+    user-select: none;
+    position: absolute;
+    top:25%;
+    transform:translateY(-50%) scale(.88);
+    right:16%;
+    .svg{
+      display: block;
+      circle{
+        cy:5;
+        r:1;
+        fill:#bbbbbb;
+      }
+    }
+  }
+}
