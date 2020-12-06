@@ -7,7 +7,7 @@ import { SecondScene } from './SecondScene.service';
 import { ThirdScene } from './ThirdScene.service';
 import { Power1,Power3, TweenMax } from 'gsap';
 import { FourthScene } from './FourthScene.service';
-import { Router } from '@angular/router';
+
 
 @Component({
   selector: 'app-welcome',
@@ -25,8 +25,9 @@ export class WelcomeComponent implements OnInit {
     private SS: SecondScene,
     private TS: ThirdScene,
     private FourthS: FourthScene,
-    private router: Router,
   ) { }
+
+
 
   ngOnInit() {
     // ABOUT PAGE
@@ -63,16 +64,11 @@ export class WelcomeComponent implements OnInit {
         });
       }
     });
+
   }
 
 
-  OpenCaseStudy(){
-    const url = this.router.serializeUrl(
-      this.router.createUrlTree([`/casestudy`])
-    );
-    window.open(url,'_blank');
-  }
-  
+
   AboutMenu(){
     document.getElementById("content-about").classList.add('open');
 

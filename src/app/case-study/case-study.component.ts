@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { Power1,Power3, TweenMax,TimelineMax } from 'gsap';
 
 
@@ -15,7 +15,11 @@ export class CaseStudyComponent implements OnInit {
     this.CreateSlideEvent();
     this.ImageRoll();
   }
-
+  @HostListener('window:popstate', ['$event'])
+  onPopState(event) {
+    console.log('Back button pressed');
+    window.location.reload();
+  }
 
   ImageRoll(){
     let TLM = new TimelineMax({repeat:-1});
