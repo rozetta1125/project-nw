@@ -15,6 +15,7 @@
   // background-image: url('src/assets/images/groovepaper.png');
   background: #f5f5f5;
   font-family: 'Roboto';
+  position: relative;
   #portrait{
     position: absolute;
     z-index: 3;
@@ -176,6 +177,7 @@
     top:45%;
     transform: translateY(-50%);
     right:5%;
+    z-index: 2;
     .sideMenuSlider{
       display: flex;
       width: 100%;
@@ -215,46 +217,54 @@
       }
     }
   }
+  .slider-wrapper{
+    height: 75%;
+    overflow: hidden;
+    position: relative;
+    transform: translateY(-50%);
+    top: 66%;
+  }
+  #imageRoll{
+    position: absolute;
+    width: 40%;
+    max-width: 400px;
+    max-height: 532px;
+    transform:translateY(-50%);
+    overflow: hidden;
+    top:50%;
+    right: 20%;
+    .subImage{
+      width: 100%;
+      height: 400%;
+      display: flex;
+      flex-direction: column;
+    }
+    img{
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+  }
   .slider{
     width: 60%;
     margin: 0 auto;
-    height: 1100%;
+    height: 1200%;
     display: flex;
     flex-direction: column;
     transform: translateY(0);
     .slide{
       height: 10%;
-      margin: 25% 0 0 0;
+      margin: 0;
       color:#212121;
       position: relative;
       h4{
         font-size: 2rem;
+        margin: 22px 0 35px;
       }
       p{
         font-size: 1.1rem;
         width: 50%;
         line-height: 28px;
-      }
-      #imageRoll{
-        position: absolute;
-        width: 40%;
-        max-width: 400px;
-        max-height: 532px;
-        transform:translateY(-50%);
-        overflow: hidden;
-        top:30%;
-        right: 0%;
-        .subImage{
-          width: 100%;
-          height: 400%;
-          display: flex;
-          flex-direction: column;
-        }
-        img{
-          width: 100%;
-          height: 100%;
-          display: block;
-        }
       }
     }
     .introduction{
@@ -264,7 +274,7 @@
       position: absolute;
       width: 40%;
       transform:translateY(-50%);
-      top:30%;
+      top:25%;
       right: 0%;
       img{
         width: 100%;

@@ -39,8 +39,8 @@ export class CaseStudyComponent implements OnInit {
   }
 
   private Paging=0;
-  private TotalPage = 11;
-  private TotalPagePercent = 100/11;
+  private TotalPage = 12;
+  private TotalPagePercent = 100/this.TotalPage;
   // true mean waiting, false ready
   private SlideThrottle=false;
   SlideScroll = (e)=>{
@@ -89,6 +89,7 @@ export class CaseStudyComponent implements OnInit {
       case 0:
         console.log('0 u')
         TweenMax.to('.menuSlider .introduction .l1',1.2,{attr:{x2:"-=50"},ease:Power3.easeInOut})
+        TweenMax.to('#imageRoll',1.2,{yPercent:"+=150",ease:Power3.easeInOut})
       break;
       case 1:
         console.log('1 u')
@@ -130,7 +131,12 @@ export class CaseStudyComponent implements OnInit {
       break;
       case 9:
         console.log('9 u')
-        TweenMax.to('.menuSlider .challenge .l1',1.2,{attr:{x2:"-=50"},ease:Power3.easeInOut})
+        TweenMax.to('.menuSlider .challenge .l1',1.2,{attr:{x2:"-=33.33"},ease:Power3.easeInOut})
+
+      break;
+      case 10:
+        console.log('10 u')
+        TweenMax.to('.menuSlider .challenge .l1',1.2,{attr:{x2:"-=33.33"},ease:Power3.easeInOut})
         TweenMax.to('.CSscroll',1.2,{opacity:1,ease:Power3.easeInOut})
       break;
     }
@@ -141,6 +147,7 @@ export class CaseStudyComponent implements OnInit {
       case 1:
         console.log('1 d')
         TweenMax.to('.menuSlider .introduction .l1',1.2,{attr:{x2:"+=50"},ease:Power3.easeInOut})
+        TweenMax.to('#imageRoll',1.2,{yPercent:"-=150",ease:Power3.easeInOut})
       break;
       case 2:
         console.log('2 d')
@@ -182,7 +189,11 @@ export class CaseStudyComponent implements OnInit {
       break;
       case 10:
         console.log('10 d')
-        TweenMax.to('.menuSlider .challenge .l1',1.2,{attr:{x2:"+=50"},ease:Power3.easeInOut})
+        TweenMax.to('.menuSlider .challenge .l1',1.2,{attr:{x2:"+=33.33"},ease:Power3.easeInOut})
+      break;
+      case 11:
+        console.log('11 d')
+        TweenMax.to('.menuSlider .challenge .l1',1.2,{attr:{x2:"+=33.33"},ease:Power3.easeInOut})
         TweenMax.to('.CSscroll',1.2,{opacity:0,ease:Power3.easeInOut})
       break;
     }
