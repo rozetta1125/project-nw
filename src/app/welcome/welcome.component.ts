@@ -152,10 +152,10 @@ export class WelcomeComponent implements OnInit {
       if(Math.abs(this.xDiff) < Math.abs(this.yDiff)){
         if(this.yDiff>0){
           // up
-          this.PageUp();
+          this.PageDown();
         } else {
           // down
-          this.PageDown();
+          this.PageUp();
         }
       }
       this.AboutPageThrottle=true;
