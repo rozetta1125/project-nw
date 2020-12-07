@@ -39,7 +39,8 @@ export class CaseStudyComponent implements OnInit {
   }
 
   private Paging=0;
-  private TotalPage = 10;
+  private TotalPage = 11;
+  private TotalPagePercent = 100/11;
   // true mean waiting, false ready
   private SlideThrottle=false;
   SlideScroll = (e)=>{
@@ -62,7 +63,7 @@ export class CaseStudyComponent implements OnInit {
 
 
   SlideUp(){
-    TweenMax.to('.slider',1.2,{yPercent:"+=10",ease:Power3.easeInOut})
+    TweenMax.to('.slider',1.2,{yPercent:"+="+this.TotalPagePercent,ease:Power3.easeInOut})
     this.Paging-=1;
 
     this.SlideThrottle=true;
@@ -72,7 +73,7 @@ export class CaseStudyComponent implements OnInit {
   }
 
   SlideDown(){
-    TweenMax.to('.slider',1.2,{yPercent:"-=10",ease:Power3.easeInOut})
+    TweenMax.to('.slider',1.2,{yPercent:"-="+this.TotalPagePercent,ease:Power3.easeInOut})
     this.Paging+=1;
 
     this.SlideThrottle=true;
@@ -125,7 +126,12 @@ export class CaseStudyComponent implements OnInit {
         console.log('8 u')
         TweenMax.to('.menuSlider',1.2,{xPercent:"+=25",ease:Power3.easeInOut})
         TweenMax.to('.sideMenuSlider .ideation .l0',1.2,{attr:{x1:"-=40"},ease:Power3.easeInOut});
-        TweenMax.to('.sideMenuSlider .conclusion .l0',1.2,{attr:{x1:"+=40"},ease:Power3.easeInOut});
+        TweenMax.to('.sideMenuSlider .challenge .l0',1.2,{attr:{x1:"+=40"},ease:Power3.easeInOut});
+      break;
+      case 9:
+        console.log('9 u')
+        TweenMax.to('.menuSlider .challenge .l1',1.2,{attr:{x2:"-=50"},ease:Power3.easeInOut})
+        TweenMax.to('.CSscroll',1.2,{opacity:1,ease:Power3.easeInOut})
       break;
     }
   }
@@ -172,13 +178,44 @@ export class CaseStudyComponent implements OnInit {
         console.log('9 d')
         TweenMax.to('.menuSlider',1.2,{xPercent:"-=25",ease:Power3.easeInOut})
         TweenMax.to('.sideMenuSlider .ideation .l0',1.2,{attr:{x1:"+=40"},ease:Power3.easeInOut});
-        TweenMax.to('.sideMenuSlider .conclusion .l0',1.2,{attr:{x1:"-=40"},ease:Power3.easeInOut});
+        TweenMax.to('.sideMenuSlider .challenge .l0',1.2,{attr:{x1:"-=40"},ease:Power3.easeInOut});
+      break;
+      case 10:
+        console.log('10 d')
+        TweenMax.to('.menuSlider .challenge .l1',1.2,{attr:{x2:"+=50"},ease:Power3.easeInOut})
+        TweenMax.to('.CSscroll',1.2,{opacity:0,ease:Power3.easeInOut})
       break;
     }
   }
 
   sideIntroduction(){
-    console.log("under development")
+    console.log("Under Development")
+    // let n = 0;
+    // this.calculateScroll(this.Paging,0)
+  }
+  sideResearch(){
+    console.log("Under Development")
+  }
+  sideIdeation(){
+    console.log("Under Development")
+  }
+  sideChallenge(){
+    console.log("Under Development")
+  }
+
+  calculateScroll(p0:number,p1:number){
+    if(p0>p1){
+      let d = p0-p1;
+      
+    } else {
+      let d = p1-p0;
+    }
+
+    // Menu Reset
+    TweenMax.to('.menuSlider .introduction .l1',1.2,{attr:{x2:"-=33.33"},ease:Power3.easeInOut})
+    TweenMax.to('.menuSlider .research .l1',1.2,{attr:{x2:"-=33.33"},ease:Power3.easeInOut})
+    TweenMax.to('.menuSlider .ideation .l1',1.2,{attr:{x2:"-=33.33"},ease:Power3.easeInOut})
+    TweenMax.to('.menuSlider .challenge .l1',1.2,{attr:{x2:"-=33.33"},ease:Power3.easeInOut})
   }
 
   // xStart=0;yStart=0;
