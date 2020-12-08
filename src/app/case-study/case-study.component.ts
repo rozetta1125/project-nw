@@ -33,9 +33,9 @@ export class CaseStudyComponent implements OnInit {
     // scroll down event
     document.addEventListener('wheel',this.SlideScroll);
     // swipe down event
-    // document.addEventListener('touchstart',this.SlideStart)
-    // document.addEventListener('touchmove',this.SlideMove,{passive:false})
-    // document.addEventListener('touchend',this.SlideEnd)
+    document.addEventListener('touchstart',this.SlideStart)
+    document.addEventListener('touchmove',this.SlideMove,{passive:false})
+    document.addEventListener('touchend',this.SlideEnd)
   }
 
   private Paging=0;
@@ -231,51 +231,43 @@ export class CaseStudyComponent implements OnInit {
     TweenMax.to('.menuSlider .challenge .l1',1.2,{attr:{x2:"33%"},ease:Power3.easeInOut})
   }
 
-  // xStart=0;yStart=0;
-  // xMove=0;yMove=0;
-  // xDiff=0;yDiff=0;
-  // SlideStart = (e)=>{
-  //   this.xStart=e.touches[0].clientX;
-  //   this.yStart=e.touches[0].clientY;
-  // }
+  xStart=0;yStart=0;
+  xMove=0;yMove=0;
+  xDiff=0;yDiff=0;
+  SlideStart = (e)=>{
+    this.xStart=e.touches[0].clientX;
+    this.yStart=e.touches[0].clientY;
+  }
 
-  // SlideMove = (e)=>{
-  //   e.preventDefault();
-  //   this.xMove=e.touches[0].clientX;
-  //   this.yMove=e.touches[0].clientY;
-  // }
+  SlideMove = (e)=>{
+    e.preventDefault();
+    this.xMove=e.touches[0].clientX;
+    this.yMove=e.touches[0].clientY;
+  }
 
-  // SlideEnd = (e)=>{
-  //   if(!this.SlideThrottle){
-  //     this.xDiff=this.xStart - this.xMove;
-  //     this.yDiff=this.yStart - this.yMove;
-  //     if(Math.abs(this.xDiff) < Math.abs(this.yDiff)){
-  //       if(this.yDiff>0){
-  //         // up
-  //         if(this.Paging!=-2){
-  //           TweenMax.to('.slide-wrapper',1.2,{yPercent:"-=33",ease:Power3.easeInOut})
-  //           TweenMax.to('.bar .l1',1.2,{attr:{x2:"+=33"},ease:Power3.easeInOut})
-  //           this.Paging-=1;
-  //           if(this.Paging==-2){
-  //             TweenMax.to('.scroll',1.2,{opacity:0,ease:Power3.easeInOut})
-  //           }
-  //         }
-  //       } else {
-  //         // down
-  //         if(this.Paging!=0){
-  //           TweenMax.to('.slide-wrapper',1.2,{yPercent:"+=33",ease:Power3.easeInOut})
-  //           TweenMax.to('.bar .l1',1.2,{attr:{x2:"-=33"},ease:Power3.easeInOut})
-  //           this.Paging+=1;
-  //           if(this.Paging==-1){
-  //             TweenMax.to('.scroll',1.2,{opacity:1,ease:Power3.easeInOut})
-  //           }
-  //         }
-  //       }
-  //     }
-  //     this.SlideThrottle=true;
-  //     setTimeout(() => {
-  //       this.SlideThrottle=false;
-  //     }, 1200);
-  //   }
-  // }
+  SlideEnd = (e)=>{
+    if(!this.SlideThrottle){
+      this.xDiff=this.xStart - this.xMove;
+      this.yDiff=this.yStart - this.yMove;
+      if(Math.abs(this.xDiff) < Math.abs(this.yDiff)){
+        if(this.yDiff>0){
+          // up
+          if(this.Paging != (this.TotalPage-1) ){
+            this.SlideDown();
+            this.MenuDown();
+          }
+        } else {
+          // down
+          if(this.Paging!=0){
+            this.SlideUp();
+            this.MenuUp();
+          }
+        }
+      }
+      this.SlideThrottle=true;
+      setTimeout(() => {
+        this.SlideThrottle=false;
+      }, 1200);
+    }
+  }
 }
