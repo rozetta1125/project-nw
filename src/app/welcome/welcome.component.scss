@@ -4,8 +4,13 @@
   overflow: hidden;
 }
 
-@mixin PhoneTablet{
-  @media screen and (max-width: 1025px){
+@mixin S900{
+  @media screen and (max-width: 900px){
+    @content;
+  }
+}
+@mixin S1440{
+  @media screen and (max-width: 1440px){
     @content;
   }
 }
@@ -34,7 +39,7 @@
     #e8d8cd var(--BGPercent),
     #e8d8cd 100%
   );
-  @include PhoneTablet{
+  @include S900{
     --BGPercent: 28%;
   }
 
@@ -153,7 +158,7 @@
     opacity: 0;
     transform: translateY(25%);
   }
-  @include PhoneTablet{
+  @include S900{
     top:20%;
     #Introduction-span{
       font-size: 1.8rem;
@@ -274,7 +279,7 @@
       position: absolute;
       top:20%;
       left:65.15%;
-      @include PhoneTablet{
+      @include S900{
         transform: scale(.75);
         left: 60%;
         top: 10%;
@@ -306,11 +311,15 @@
     pointer-events: none;
     touch-action: none;
     position: absolute;
-    top: 30%;
+    top: 27%;
     left: 27%;
     width: 210px;
     height: 10px;
-    @include PhoneTablet{
+    @include S1440{
+      top:25%;
+      left: 20%;
+    }
+    @include S900{
       top:22%;
       left:15%;
     }
@@ -338,9 +347,12 @@
     width: 46%;
     height: 40vh;
     margin: 0 auto;
-    top: 4%;
+    top: 0%;
     position: relative;
     overflow: hidden;
+    @include S1440{
+      width: 60%;
+    }
     .slide-wrapper{
       width:100%;
       height: 400%;
@@ -357,23 +369,23 @@
         h3{
           width:100%;
           font-size: 2rem;
-          margin: 10px 0 35px 0;
+          margin: 10px 0 30px 0;
           font-weight: 700;
-          @include PhoneTablet{
+          @include S900{
             font-size: 1.2rem;
             margin: 5px 0 15px 0;
           }
         }
         p{
           width:90%;
-          font-size: 1.2rem;
-          line-height: 1.8rem;
+          font-size: 1.1rem;
+          line-height: 1.5rem;
           font-weight: 400;
           svg{
             padding: 0 12px 0 0px;
             vertical-align: middle;
           }
-          @include PhoneTablet{
+          @include S900{
             font-size: .8rem;
             line-height: 1rem;
             width: 100%;
@@ -388,7 +400,7 @@
         }
       }
     }
-    @include PhoneTablet{
+    @include S900{
       width: 70%;
       height: 60vh;
       top:0%;
@@ -399,11 +411,14 @@
     pointer-events: none;
     touch-action: none;
     position: absolute;
-    top: 77%;
+    top: 80%;
     left: 27%;
     display: flex;
     align-items: center;
-    @include PhoneTablet{
+    @include S1440{
+      left: 20%;
+    }
+    @include S900{
       display: none;
       top:80%;
       left:12.5%;
@@ -441,7 +456,7 @@
     .MOBILE{
       display: none;
     }
-    @include PhoneTablet{
+    @include S900{
       .MOBILE{
         display: block;
       }
@@ -496,7 +511,7 @@
     background:#fff;
     height:3px;
     transition: width 0.3s ease-out;
-    @include PhoneTablet{
+    @include S900{
       display: none;
     }
   }
@@ -505,7 +520,7 @@
     right: auto;
     width: 100%;
   }
-  @include PhoneTablet{
+  @include S900{
     font-size: 1rem;
     top:6%;
     left:2%;
@@ -533,7 +548,7 @@
   margin: 0;
   border-radius: 50%;
   transition: transform .3s ease;
-  @include PhoneTablet{
+  @include S900{
     transform: scale(.6);
     top:6%;
     left: 3.5%;
@@ -584,7 +599,7 @@
 
 #portrait{
   position: absolute;
-  z-index: 3;
+  z-index: 4;
   background: rgba(255,255,255,1);
   width: 100%;
   height: 100%;

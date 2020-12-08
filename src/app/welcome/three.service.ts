@@ -116,7 +116,7 @@ export class ThreeService {
 
     // Angle depend on screen width
 
-    if(width<1025){
+    if(width<901){
       this.GoalAngle.set(0,1.05,6.5);
       this.Goal.set(-15,.7,0)
     } else{

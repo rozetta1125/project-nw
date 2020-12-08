@@ -72,13 +72,15 @@ export class WelcomeComponent implements OnInit {
   AboutMenu(){
     document.getElementById("content-about").classList.add('open');
 
-    // scroll down event
-    document.addEventListener('wheel',this.AboutMenuScroll);
+    TweenMax.delayedCall(1.2,()=>{
+      // scroll down event
+      document.addEventListener('wheel',this.AboutMenuScroll);
 
-    // swipe down event
-    document.addEventListener('touchstart',this.AboutMenuStart)
-    document.addEventListener('touchmove',this.AboutMenuMove,{passive:false})
-    document.addEventListener('touchend',this.AboutMenuEnd)
+      // swipe down event
+      document.addEventListener('touchstart',this.AboutMenuStart)
+      document.addEventListener('touchmove',this.AboutMenuMove,{passive:false})
+      document.addEventListener('touchend',this.AboutMenuEnd)
+    })
   }
 
 

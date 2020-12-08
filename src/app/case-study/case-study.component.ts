@@ -89,7 +89,7 @@ export class CaseStudyComponent implements OnInit {
       case 0:
         console.log('0 u')
         TweenMax.to('.menuSlider .introduction .l1',1.2,{attr:{x2:"-=50"},ease:Power3.easeInOut})
-        TweenMax.to('#imageRoll',1.2,{yPercent:"+=150",ease:Power3.easeInOut})
+        TweenMax.to('#imageRoll',1.2,{yPercent:"+=200",ease:Power3.easeInOut})
       break;
       case 1:
         console.log('1 u')
@@ -147,7 +147,7 @@ export class CaseStudyComponent implements OnInit {
       case 1:
         console.log('1 d')
         TweenMax.to('.menuSlider .introduction .l1',1.2,{attr:{x2:"+=50"},ease:Power3.easeInOut})
-        TweenMax.to('#imageRoll',1.2,{yPercent:"-=150",ease:Power3.easeInOut})
+        TweenMax.to('#imageRoll',1.2,{yPercent:"-=200",ease:Power3.easeInOut})
       break;
       case 2:
         console.log('2 d')
@@ -217,16 +217,18 @@ export class CaseStudyComponent implements OnInit {
   calculateScroll(p0:number,p1:number){
     if(p0>p1){
       let d = p0-p1;
-      
+      TweenMax.to('.slider',1.2,{yPercent:"+="+(this.TotalPagePercent*d),ease:Power3.easeInOut})
+      this.Paging=p1;
     } else {
       let d = p1-p0;
+      TweenMax.to('.slider',1.2,{yPercent:"-="+(this.TotalPagePercent*d),ease:Power3.easeInOut})
     }
 
     // Menu Reset
-    TweenMax.to('.menuSlider .introduction .l1',1.2,{attr:{x2:"-=33.33"},ease:Power3.easeInOut})
-    TweenMax.to('.menuSlider .research .l1',1.2,{attr:{x2:"-=33.33"},ease:Power3.easeInOut})
-    TweenMax.to('.menuSlider .ideation .l1',1.2,{attr:{x2:"-=33.33"},ease:Power3.easeInOut})
-    TweenMax.to('.menuSlider .challenge .l1',1.2,{attr:{x2:"-=33.33"},ease:Power3.easeInOut})
+    TweenMax.to('.menuSlider .introduction .l1',1.2,{attr:{x2:"50%"},ease:Power3.easeInOut})
+    TweenMax.to('.menuSlider .research .l1',1.2,{attr:{x2:"33%"},ease:Power3.easeInOut})
+    TweenMax.to('.menuSlider .ideation .l1',1.2,{attr:{x2:"25%"},ease:Power3.easeInOut})
+    TweenMax.to('.menuSlider .challenge .l1',1.2,{attr:{x2:"33%"},ease:Power3.easeInOut})
   }
 
   // xStart=0;yStart=0;
