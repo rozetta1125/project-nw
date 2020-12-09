@@ -1,6 +1,6 @@
 import { Component, HostListener, OnInit } from '@angular/core';
 import { Power1,Power3, TweenMax,TimelineMax } from 'gsap';
-
+import { Title } from "@angular/platform-browser";
 
 @Component({
   selector: 'app-case-study',
@@ -9,11 +9,14 @@ import { Power1,Power3, TweenMax,TimelineMax } from 'gsap';
 })
 export class CaseStudyComponent implements OnInit {
 
-  constructor() { }
+  constructor(private TitleService:Title) {
+    this.TitleService.setTitle('Tran Vinh Nhan - Case Study')
+   }
 
   ngOnInit() {
     this.CreateSlideEvent();
     this.ImageRoll();
+    this.CreateSideMenuEvent();
   }
   @HostListener('window:popstate', ['$event'])
   onPopState(event) {
@@ -36,6 +39,15 @@ export class CaseStudyComponent implements OnInit {
     document.addEventListener('touchstart',this.SlideStart)
     document.addEventListener('touchmove',this.SlideMove,{passive:false})
     document.addEventListener('touchend',this.SlideEnd)
+  }
+
+  CreateSideMenuEvent(){
+    
+  }
+
+  // Side menu enter event
+  IntroductionEnter(){
+    // TweenMax. = ('.sideMenuSlider .introduction .line');
   }
 
   private Paging=0;
@@ -87,55 +99,44 @@ export class CaseStudyComponent implements OnInit {
   MenuUp(){
     switch(this.Paging){
       case 0:
-        console.log('0 u')
         TweenMax.to('.menuSlider .introduction .l1',1.2,{attr:{x2:"-=50"},ease:Power3.easeInOut})
         TweenMax.to('#imageRoll',1.2,{yPercent:"+=200",ease:Power3.easeInOut})
       break;
       case 1:
-        console.log('1 u')
         TweenMax.to('.menuSlider',1.2,{xPercent:"+=25",ease:Power3.easeInOut})
-        TweenMax.to('.sideMenuSlider .introduction .l0',1.2,{attr:{x1:"-=40"},ease:Power3.easeInOut});
-        TweenMax.to('.sideMenuSlider .research .l0',1.2,{attr:{x1:"+=40"},ease:Power3.easeInOut});
+        TweenMax.to('.sideMenuSlider .introduction .line',.9,{css:{marginLeft:'0%',className:"+=active"},ease:Power3.easeInOut});
+        TweenMax.to('.sideMenuSlider .research .line',.9,{css:{marginLeft:'40%',className:"-=active"},ease:Power3.easeInOut});
       break;
       case 2:
-        console.log('2 u')
         TweenMax.to('.menuSlider .research .l1',1.2,{attr:{x2:"-=33.33"},ease:Power3.easeInOut})
       break;
       case 3:
-        console.log('3 u')
         TweenMax.to('.menuSlider .research .l1',1.2,{attr:{x2:"-=33.33"},ease:Power3.easeInOut})
       break;
       case 4:
-        console.log('4 u')
         TweenMax.to('.menuSlider',1.2,{xPercent:"+=25",ease:Power3.easeInOut})
-        TweenMax.to('.sideMenuSlider .research .l0',1.2,{attr:{x1:"-=40"},ease:Power3.easeInOut});
-        TweenMax.to('.sideMenuSlider .ideation .l0',1.2,{attr:{x1:"+=40"},ease:Power3.easeInOut});
+        TweenMax.to('.sideMenuSlider .research .line',.9,{css:{marginLeft:'0%',className:"+=active"},ease:Power3.easeInOut});
+        TweenMax.to('.sideMenuSlider .ideation .line',.9,{css:{marginLeft:'40%',className:"-=active"},ease:Power3.easeInOut});
       break;
       case 5:
-        console.log('5 u')
         TweenMax.to('.menuSlider .ideation .l1',1.2,{attr:{x2:"-=25"},ease:Power3.easeInOut})
       break;
       case 6:
-        console.log('6 u')
         TweenMax.to('.menuSlider .ideation .l1',1.2,{attr:{x2:"-=25"},ease:Power3.easeInOut})
       break;
       case 7:
-        console.log('7 u')
         TweenMax.to('.menuSlider .ideation .l1',1.2,{attr:{x2:"-=25"},ease:Power3.easeInOut})
       break;
       case 8:
-        console.log('8 u')
         TweenMax.to('.menuSlider',1.2,{xPercent:"+=25",ease:Power3.easeInOut})
-        TweenMax.to('.sideMenuSlider .ideation .l0',1.2,{attr:{x1:"-=40"},ease:Power3.easeInOut});
-        TweenMax.to('.sideMenuSlider .challenge .l0',1.2,{attr:{x1:"+=40"},ease:Power3.easeInOut});
+        TweenMax.to('.sideMenuSlider .ideation .line',.9,{css:{marginLeft:'0%',className:"+=active"},ease:Power3.easeInOut});
+        TweenMax.to('.sideMenuSlider .challenge .line',.9,{css:{marginLeft:'40%',className:"-=active"},ease:Power3.easeInOut});
       break;
       case 9:
-        console.log('9 u')
         TweenMax.to('.menuSlider .challenge .l1',1.2,{attr:{x2:"-=33.33"},ease:Power3.easeInOut})
 
       break;
       case 10:
-        console.log('10 u')
         TweenMax.to('.menuSlider .challenge .l1',1.2,{attr:{x2:"-=33.33"},ease:Power3.easeInOut})
         TweenMax.to('.CSscroll',1.2,{opacity:1,ease:Power3.easeInOut})
       break;
@@ -145,54 +146,43 @@ export class CaseStudyComponent implements OnInit {
   MenuDown(){
     switch(this.Paging){
       case 1:
-        console.log('1 d')
         TweenMax.to('.menuSlider .introduction .l1',1.2,{attr:{x2:"+=50"},ease:Power3.easeInOut})
         TweenMax.to('#imageRoll',1.2,{yPercent:"-=200",ease:Power3.easeInOut})
       break;
       case 2:
-        console.log('2 d')
         TweenMax.to('.menuSlider',1.2,{xPercent:"-=25",ease:Power3.easeInOut})
-        TweenMax.to('.sideMenuSlider .introduction .l0',1.2,{attr:{x1:"+=40"},ease:Power3.easeInOut});
-        TweenMax.to('.sideMenuSlider .research .l0',1.2,{attr:{x1:"-=40"},ease:Power3.easeInOut});
+        TweenMax.to('.sideMenuSlider .introduction .line',.9,{css:{marginLeft:'40%',className:"-=active"},ease:Power3.easeInOut});
+        TweenMax.to('.sideMenuSlider .research .line',.9,{css:{marginLeft:'0%',className:"+=active"},ease:Power3.easeInOut});
       break;
       case 3:
-        console.log('3 d')
         TweenMax.to('.menuSlider .research .l1',1.2,{attr:{x2:"+=33.33"},ease:Power3.easeInOut})
       break;
       case 4:
-        console.log('4 d')
         TweenMax.to('.menuSlider .research .l1',1.2,{attr:{x2:"+=33.33"},ease:Power3.easeInOut})
       break;
       case 5:
-        console.log('5 d')
         TweenMax.to('.menuSlider',1.2,{xPercent:"-=25",ease:Power3.easeInOut})
-        TweenMax.to('.sideMenuSlider .research .l0',1.2,{attr:{x1:"+=40"},ease:Power3.easeInOut});
-        TweenMax.to('.sideMenuSlider .ideation .l0',1.2,{attr:{x1:"-=40"},ease:Power3.easeInOut});
+        TweenMax.to('.sideMenuSlider .research .line',.9,{css:{marginLeft:'40%',className:"-=active"},ease:Power3.easeInOut});
+        TweenMax.to('.sideMenuSlider .ideation .line',.9,{css:{marginLeft:'0%',className:"+=active"},ease:Power3.easeInOut});
       break;
       case 6:
-        console.log('6 d')
         TweenMax.to('.menuSlider .ideation .l1',1.2,{attr:{x2:"+=25"},ease:Power3.easeInOut})
       break;
       case 7:
-        console.log('7 d')
         TweenMax.to('.menuSlider .ideation .l1',1.2,{attr:{x2:"+=25"},ease:Power3.easeInOut})
       break;
       case 8:
-        console.log('8 d')
         TweenMax.to('.menuSlider .ideation .l1',1.2,{attr:{x2:"+=25"},ease:Power3.easeInOut})
       break;
       case 9:
-        console.log('9 d')
         TweenMax.to('.menuSlider',1.2,{xPercent:"-=25",ease:Power3.easeInOut})
-        TweenMax.to('.sideMenuSlider .ideation .l0',1.2,{attr:{x1:"+=40"},ease:Power3.easeInOut});
-        TweenMax.to('.sideMenuSlider .challenge .l0',1.2,{attr:{x1:"-=40"},ease:Power3.easeInOut});
+        TweenMax.to('.sideMenuSlider .ideation .line',.9,{css:{marginLeft:'40%',className:"-=active"},ease:Power3.easeInOut});
+        TweenMax.to('.sideMenuSlider .challenge .line',.9,{css:{marginLeft:'0%',className:"+=active"},ease:Power3.easeInOut});
       break;
       case 10:
-        console.log('10 d')
         TweenMax.to('.menuSlider .challenge .l1',1.2,{attr:{x2:"+=33.33"},ease:Power3.easeInOut})
       break;
       case 11:
-        console.log('11 d')
         TweenMax.to('.menuSlider .challenge .l1',1.2,{attr:{x2:"+=33.33"},ease:Power3.easeInOut})
         TweenMax.to('.CSscroll',1.2,{opacity:0,ease:Power3.easeInOut})
       break;
@@ -200,21 +190,55 @@ export class CaseStudyComponent implements OnInit {
   }
 
   sideIntroduction(){
-    console.log("Under Development")
-    // let n = 0;
-    // this.calculateScroll(this.Paging,0)
+    if(!this.SlideThrottle){
+      let n = 0;
+      this.calculateScroll(this.Paging,n)
+      TweenMax.to('.menuSlider',1.2,{xPercent:"0%",ease:Power3.easeInOut})
+      TweenMax.to('.sideMenuSlider .introduction .line',.9,{css:{marginLeft:'0%',className:"+=active"},ease:Power3.easeInOut})
+      TweenMax.to('#imageRoll',1.2,{yPercent:"0",ease:Power3.easeInOut})
+    }
   }
   sideResearch(){
-    console.log("Under Development")
+    if(!this.SlideThrottle){
+      let n = 2;
+      this.calculateScroll(this.Paging,n)
+      TweenMax.to('.menuSlider',1.2,{xPercent:"-25%",ease:Power3.easeInOut})
+      TweenMax.to('.sideMenuSlider .research .line',.9,{css:{marginLeft:'0%',className:"+=active"},ease:Power3.easeInOut})
+      TweenMax.to('#imageRoll',1.2,{yPercent:"-200",ease:Power3.easeInOut})
+    }
   }
   sideIdeation(){
-    console.log("Under Development")
+    if(!this.SlideThrottle){
+      let n = 5;
+      this.calculateScroll(this.Paging,n)
+      TweenMax.to('.menuSlider',1.2,{xPercent:"-50%",ease:Power3.easeInOut})
+      TweenMax.to('.sideMenuSlider .ideation .line',.9,{css:{marginLeft:'0%',className:"+=active"},ease:Power3.easeInOut})
+      TweenMax.to('#imageRoll',1.2,{yPercent:"-200",ease:Power3.easeInOut})
+    }
   }
   sideChallenge(){
-    console.log("Under Development")
+    if(!this.SlideThrottle){
+      let n = 9;
+      this.calculateScroll(this.Paging,n)
+      TweenMax.to('.menuSlider',1.2,{xPercent:"-75%",ease:Power3.easeInOut})
+      TweenMax.to('.sideMenuSlider .challenge .line',.9,{css:{marginLeft:'0%',className:"+=active"},ease:Power3.easeInOut})
+      TweenMax.to('#imageRoll',1.2,{yPercent:"-200",ease:Power3.easeInOut})
+    }
   }
 
   calculateScroll(p0:number,p1:number){
+    // Menu Reset
+    TweenMax.to('.menuSlider .introduction .l1',1.2,{attr:{x2:"50%"},ease:Power3.easeInOut})
+    TweenMax.to('.menuSlider .research .l1',1.2,{attr:{x2:"33%"},ease:Power3.easeInOut})
+    TweenMax.to('.menuSlider .ideation .l1',1.2,{attr:{x2:"25%"},ease:Power3.easeInOut})
+    TweenMax.to('.menuSlider .challenge .l1',1.2,{attr:{x2:"33%"},ease:Power3.easeInOut})
+
+    // SideMenu Reset
+    TweenMax.to('.sideMenuSlider .introduction .line',.9,{css:{marginLeft:'40%',className:"-=active"},ease:Power3.easeInOut})
+    TweenMax.to('.sideMenuSlider .research .line',.9,{css:{marginLeft:'40%',className:"-=active"},ease:Power3.easeInOut})
+    TweenMax.to('.sideMenuSlider .ideation .line',.9,{css:{marginLeft:'40%',className:"-=active"},ease:Power3.easeInOut})
+    TweenMax.to('.sideMenuSlider .challenge .line',.9,{css:{marginLeft:'40%',className:"-=active"},ease:Power3.easeInOut})
+
     if(p0>p1){
       let d = p0-p1;
       TweenMax.to('.slider',1.2,{yPercent:"+="+(this.TotalPagePercent*d),ease:Power3.easeInOut})
@@ -222,13 +246,14 @@ export class CaseStudyComponent implements OnInit {
     } else {
       let d = p1-p0;
       TweenMax.to('.slider',1.2,{yPercent:"-="+(this.TotalPagePercent*d),ease:Power3.easeInOut})
+      this.Paging=p1;
     }
 
-    // Menu Reset
-    TweenMax.to('.menuSlider .introduction .l1',1.2,{attr:{x2:"50%"},ease:Power3.easeInOut})
-    TweenMax.to('.menuSlider .research .l1',1.2,{attr:{x2:"33%"},ease:Power3.easeInOut})
-    TweenMax.to('.menuSlider .ideation .l1',1.2,{attr:{x2:"25%"},ease:Power3.easeInOut})
-    TweenMax.to('.menuSlider .challenge .l1',1.2,{attr:{x2:"33%"},ease:Power3.easeInOut})
+    // Throttle
+    this.SlideThrottle=true;
+    setTimeout(() => {
+      this.SlideThrottle=false;
+    }, 1200);
   }
 
   xStart=0;yStart=0;

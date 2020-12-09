@@ -223,6 +223,7 @@
     transform: translateY(-50%);
     right:5%;
     z-index: 2;
+    user-select: none;
     touch-action: none;
     @include S900{
       right: 1%;
@@ -233,7 +234,7 @@
       width: 100%;
       height: 48px;
       flex-direction: column;
-      transform: translateY(0);
+      transition: all .3s ease-in-out;
       .subMenu{
         height: 12px;
         display: flex;
@@ -244,22 +245,31 @@
           font-family: 'Montserrat';
           color: #616161;
           font-weight: 500;
-          font-size: 1rem;
-          margin: 0px 5px;
+          font-size: .95rem;
+          margin: 0px 10px;
           position: absolute;
           right:110%;
           display: none;
         }
-        svg{
+        .line{
+          margin-left: 40%;
           width: 100%;
           height: 1px;
+          transition: all .3s ease-out;
         }
         .l0{
           stroke-width: 1px;
-          stroke:#000;
+          stroke:#757575;
+        }
+        .active{
+          margin-left: 0%;
+          transform: none;
         }
         &:hover{
           cursor: pointer;
+          .line{
+            transform: scaleX(1.2) translateX(-6%);
+          }
           p{
             display: inline-block;
           }
