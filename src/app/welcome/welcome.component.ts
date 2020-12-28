@@ -86,8 +86,8 @@ export class WelcomeComponent implements OnInit {
 
   PageUp(){
     if(this.AboutPage!=0){
-      TweenMax.to('.slide-wrapper',1.2,{yPercent:"+=25",ease:Power3.easeInOut})
-      TweenMax.to('.bar .l1',1.2,{attr:{x2:"-=25"},ease:Power3.easeInOut})
+      TweenMax.to('.slide-wrapper',1.2,{yPercent:"+=33.33",ease:Power3.easeInOut})
+      TweenMax.to('.bar .l1',1.2,{attr:{x2:"-=33.33"},ease:Power3.easeInOut})
       this.AboutPage-=1;
 
       if(this.AboutPage==(this.TotalPage-2)){
@@ -102,8 +102,8 @@ export class WelcomeComponent implements OnInit {
 
   PageDown(){
     if(this.AboutPage != (this.TotalPage-1) ){
-      TweenMax.to('.slide-wrapper',1.2,{yPercent:"-=25",ease:Power3.easeInOut})
-      TweenMax.to('.bar .l1',1.2,{attr:{x2:"+=25"},ease:Power3.easeInOut})
+      TweenMax.to('.slide-wrapper',1.2,{yPercent:"-=33.33",ease:Power3.easeInOut})
+      TweenMax.to('.bar .l1',1.2,{attr:{x2:"+=33.33"},ease:Power3.easeInOut})
       this.AboutPage+=1;
 
       if(this.AboutPage==(this.TotalPage-1)){

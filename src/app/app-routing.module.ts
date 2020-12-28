@@ -5,7 +5,7 @@ import { WelcomeComponent } from './welcome/welcome.component'
 
 const routes: Routes = [
   { path: '', component: WelcomeComponent },
-  { path: 'casestudy', component: CaseStudyComponent },
+  // { path: 'casestudy', component: CaseStudyComponent },
   { path: '**', pathMatch: 'full', component: WelcomeComponent },
 ];
 
