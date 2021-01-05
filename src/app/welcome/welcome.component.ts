@@ -117,7 +117,7 @@ export class WelcomeComponent implements OnInit {
   }
 
   private AboutPage=0;
-  private TotalPage=4;
+  private TotalPage=3;
   // true mean waiting, false ready
   private AboutPageThrottle=false;
   AboutMenuScroll = (e)=>{
